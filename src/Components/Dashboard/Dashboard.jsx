@@ -11,9 +11,6 @@ const styles = theme => ({
     width: 1000,
     margin: '0 auto'
   },
-  grid: {
-    marginTop: 68
-  },
   paper: {
     padding: theme.spacing.unit * 2,
     textAlign: 'center'

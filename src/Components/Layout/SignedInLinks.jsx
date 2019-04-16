@@ -13,7 +13,7 @@ const styles = {
     background: '#3d56e2'
   },
   button: {
-    marginLeft: 12
+    marginLeft: 10
   },
 };
 
