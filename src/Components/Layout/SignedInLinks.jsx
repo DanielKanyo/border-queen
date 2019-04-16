@@ -20,7 +20,7 @@ const styles = {
 const SignedInLinks = ({ classes }) => {
   return (
     <React.Fragment>
-      <Button component={NavLink} to="/" className={classes.button} color="inherit">New Table</Button>
+      <Button component={NavLink} to="/create" className={classes.button} color="inherit">New Table</Button>
       <Button component={NavLink} to="/" className={classes.button} color="inherit">Log Out</Button>
       <Avatar component={NavLink} to="/" className={classes.avatar}>DK</Avatar>
     </React.Fragment>
