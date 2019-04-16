@@ -30,11 +30,11 @@ const styles = theme => ({
   }
 });
 
-const TableSummary = ({ classes }) => {
+const TableSummary = ({ classes, table }) => {
   return (
     <Paper className={`${classes.paper} table-summary`}>
       <div className={classes.header}>
-        <div className={classes.headerTitle}><Typography variant="h5">Table title</Typography></div>
+        <div className={classes.headerTitle}><Typography variant="h5">{table.title}</Typography></div>
         <div className="table-header-action">
           <IconButton aria-label="Open" className={classes.actionButton}>
             <OpenIcon />
@@ -42,7 +42,7 @@ const TableSummary = ({ classes }) => {
         </div>
       </div>
       <div className="table-description">
-        This is my very first table here...
+        {table.description}
       </div>
       <div className={classes.contentAction}>
         <IconButton aria-label="Open" className={classes.actionButton}>
@@ -55,6 +55,7 @@ const TableSummary = ({ classes }) => {
 
 TableSummary.propTypes = {
   classes: PropTypes.object.isRequired,
+  table: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(TableSummary)

@@ -4,6 +4,8 @@ import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import Notifications from './Notifications'
 import TableList from '../Tables/TableList'
+import { connect } from 'react-redux'
+import { compose } from 'redux'
 
 const styles = theme => ({
   root: {
@@ -19,12 +21,12 @@ const styles = theme => ({
 
 export class Dashboard extends Component {
   render() {
-    const { classes } = this.props;
+    const { classes, tables } = this.props;
     return (
       <div className={classes.root}>
         <Grid container spacing={8} className={classes.grid}>
           <Grid item xs={12} sm={8}>
-            <TableList />
+            <TableList tables={tables} />
           </Grid>
           <Grid item xs={12} sm={4}>
             <Notifications />
@@ -35,8 +37,14 @@ export class Dashboard extends Component {
   }
 }
 
+const mapStateToProps = (state) => {
+  return {
+    tables: state.table.tables
+  }
+}
+
 Dashboard.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(Dashboard)
+export default compose(connect(mapStateToProps), withStyles(styles))(Dashboard)
