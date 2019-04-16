@@ -4,6 +4,7 @@ import Navbar from './Components/Layout/Navbar'
 import Dashboard from './Components/Dashboard/Dashboard'
 import SignIn from './Components/Auth/SignIn'
 import SignUp from './Components/Auth/SignUp'
+import TableSettings from './Components/Tables/TableSettings'
 
 class App extends Component {
   render() {
@@ -16,6 +17,7 @@ class App extends Component {
               <Route exact path="/" component={Dashboard} />
               <Route path="/signin" component={SignIn} />
               <Route path="/signup" component={SignUp} />
+              <Route path="/settings/:id" component={TableSettings} />
             </Switch>
           </div>
         </div>

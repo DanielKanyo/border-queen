@@ -8,11 +8,16 @@ import Button from '@material-ui/core/Button'
 
 const styles = theme => ({
   root: {
+    height: 'calc(100vh - 144px)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  paper: {
     ...theme.mixins.gutters(),
     paddingTop: theme.spacing.unit * 2,
     paddingBottom: theme.spacing.unit * 2,
-    width: 460,
-    margin: '0 auto'
+    width: 460
   },
   title: {
     textAlign: 'center'
@@ -51,52 +56,56 @@ export class SignUp extends Component {
     const { classes } = this.props;
     const { email, password, firstName, lastName } = this.state;
     return (
-      <Paper className={classes.root}>
-        <Typography variant="h5" component="h3" className={classes.title}>
-          Sign Up
-        </Typography>
-        <form onSubmit={this.handleSubmit}>
-          <TextField
-            id="firstName"
-            label="First Name"
-            className={classes.textField}
-            value={firstName}
-            onChange={this.handleChange}
-            margin="normal"
-            type="text"
-          />
-          <TextField
-            id="lastName"
-            label="Last Name"
-            className={classes.textField}
-            value={lastName}
-            onChange={this.handleChange}
-            margin="normal"
-            type="text"
-          />
-          <TextField
-            id="email"
-            label="E-mail"
-            className={classes.textField}
-            value={email}
-            onChange={this.handleChange}
-            margin="normal"
-            type="text"
-          />
-          <TextField
-            id="password"
-            label="Password"
-            className={classes.textField}
-            value={password}
-            onChange={this.handleChange}
-            margin="normal"
-            type="password"
-          />
-          <Button variant="contained" color="primary" className={classes.button} type="submit">
-            Sign Up
-          </Button>
-        </form>
-      </Paper>
+      <div className={classes.root}>
+        <div>
+          <Paper className={classes.paper}>
+            <Typography variant="h5" component="h3" className={classes.title}>
+              Sign Up
+            </Typography>
+            <form onSubmit={this.handleSubmit}>
+              <TextField
+                id="firstName"
+                label="First Name"
+                className={classes.textField}
+                value={firstName}
+                onChange={this.handleChange}
+                margin="normal"
+                type="text"
+              />
+              <TextField
+                id="lastName"
+                label="Last Name"
+                className={classes.textField}
+                value={lastName}
+                onChange={this.handleChange}
+                margin="normal"
+                type="text"
+              />
+              <TextField
+                id="email"
+                label="E-mail"
+                className={classes.textField}
+                value={email}
+                onChange={this.handleChange}
+                margin="normal"
+                type="text"
+              />
+              <TextField
+                id="password"
+                label="Password"
+                className={classes.textField}
+                value={password}
+                onChange={this.handleChange}
+                margin="normal"
+                type="password"
+              />
+              <Button variant="contained" color="primary" className={classes.button} type="submit">
+                Sign Up
+              </Button>
+            </form>
+          </Paper>
+        </div>
+      </div>
     )
   }
 }
