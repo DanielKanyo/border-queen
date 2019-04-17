@@ -21,12 +21,12 @@ const styles = theme => ({
 
 export class Dashboard extends Component {
   render() {
-    const { classes, tables } = this.props;
+    const { classes, tableDetails } = this.props;
     return (
       <div className={classes.root}>
         <Grid container spacing={8} className={classes.grid}>
           <Grid item xs={12} sm={8}>
-            <TableList tables={tables} />
+            <TableList tableDetails={tableDetails} />
           </Grid>
           <Grid item xs={12} sm={4}>
             <Notifications />
@@ -38,13 +38,16 @@ export class Dashboard extends Component {
 }
 
 const mapStateToProps = (state) => {
+  console.log(state);
+  
   return {
-    tables: state.table.tables
+    tableDetails: state.table.detail.details
   }
 }
 
 Dashboard.propTypes = {
   classes: PropTypes.object.isRequired,
+  tableDetails: PropTypes.array.isRequired,
 };
 
 export default compose(connect(mapStateToProps), withStyles(styles))(Dashboard)

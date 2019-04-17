@@ -7,7 +7,7 @@ import IconButton from '@material-ui/core/IconButton'
 import OpenIcon from '@material-ui/icons/OpenInNewOutlined'
 import SettingsIcon from '@material-ui/icons/SettingsOutlined'
 
-const styles = theme => ({
+const styles = ({
   paper: {
     padding: '8px 8px 8px 20px'
   },
@@ -30,11 +30,11 @@ const styles = theme => ({
   }
 });
 
-const TableSummary = ({ classes, table }) => {
+const TableSummary = ({ classes, tableDetail }) => {
   return (
     <Paper className={`${classes.paper} table-summary`}>
       <div className={classes.header}>
-        <div className={classes.headerTitle}><Typography variant="h5">{table.title}</Typography></div>
+        <div className={classes.headerTitle}><Typography variant="h5">{tableDetail.title}</Typography></div>
         <div className="table-header-action">
           <IconButton aria-label="Open" className={classes.actionButton}>
             <OpenIcon />
@@ -42,7 +42,7 @@ const TableSummary = ({ classes, table }) => {
         </div>
       </div>
       <div className="table-description">
-        {table.description}
+        {tableDetail.description}
       </div>
       <div className={classes.contentAction}>
         <IconButton aria-label="Open" className={classes.actionButton}>
@@ -55,7 +55,7 @@ const TableSummary = ({ classes, table }) => {
 
 TableSummary.propTypes = {
   classes: PropTypes.object.isRequired,
-  table: PropTypes.object.isRequired,
+  tableDetail: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(TableSummary)

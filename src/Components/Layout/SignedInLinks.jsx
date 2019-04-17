@@ -10,7 +10,7 @@ const styles = {
     margin: 10,
     textDecoration: 'none',
     fontSize: 16,
-    background: '#6d418e'
+    background: '#bd6cf9'
   },
   button: {
     marginLeft: 10
