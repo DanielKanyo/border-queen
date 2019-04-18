@@ -6,8 +6,7 @@ import Dashboard from './Components/Dashboard/Dashboard'
 import SignIn from './Components/Auth/SignIn'
 import SignUp from './Components/Auth/SignUp'
 import TableSettings from './Components/Tables/TableSettings'
-import CreateTable from './Components/Tables/CreateTable'
-import green from '@material-ui/core/colors/green'
+import EditTable from './Components/Tables/EditTable'
 
 const theme = createMuiTheme({
   typography: {
@@ -16,8 +15,7 @@ const theme = createMuiTheme({
   palette: {
     primary: {
       main: '#7b1fa2',
-    },
-    secondary: green,
+    }
   },
 });
 
@@ -34,7 +32,7 @@ class App extends Component {
                 <Route path="/signin" component={SignIn} />
                 <Route path="/signup" component={SignUp} />
                 <Route path="/settings/:id" component={TableSettings} />
-                <Route path="/create" component={CreateTable} />
+                <Route path="/edit/:id" component={EditTable} />
               </Switch>
             </div>
           </MuiThemeProvider>
@@ -45,4 +43,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default App

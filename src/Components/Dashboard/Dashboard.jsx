@@ -4,8 +4,18 @@ import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import Notifications from './Notifications'
 import TableList from '../Tables/TableList'
+import Fab from '@material-ui/core/Fab'
+import AddIcon from '@material-ui/icons/Add'
+import Button from '@material-ui/core/Button'
+import Tooltip from '@material-ui/core/Tooltip'
+import TextField from '@material-ui/core/TextField'
+import Dialog from '@material-ui/core/Dialog'
+import DialogActions from '@material-ui/core/DialogActions'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogTitle from '@material-ui/core/DialogTitle'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
+import { createTable } from '../../Store/Actions/tableActions'
 
 const styles = theme => ({
   root: {
@@ -17,11 +27,48 @@ const styles = theme => ({
     padding: theme.spacing.unit * 2,
     textAlign: 'center'
   },
+  fab: {
+    margin: theme.spacing.unit * 2,
+    position: 'absolute',
+    right: 0,
+    bottom: 0
+  },
+  input: {
+    minWidth: 380
+  }
 });
 
 export class Dashboard extends Component {
+
+  state = {
+    open: false,
+    title: '',
+    description: ''
+  };
+
+  handleClickOpenDialog = () => {
+    this.setState({ open: true });
+  };
+
+  handleCloseDialog = () => {
+    this.setState({ open: false });
+  };
+
+  handleChange = e => {
+    this.setState({
+      [e.target.id]: e.target.value
+    });
+  };
+
+  handleSubmit = e => {
+    e.preventDefault();
+
+    this.props.createTable(this.state);
+  };
+
   render() {
     const { classes, tableDetails } = this.props;
+    const { title, description } = this.state;
     return (
       <div className={classes.root}>
         <Grid container spacing={8} className={classes.grid}>
@@ -32,22 +79,74 @@ export class Dashboard extends Component {
             <Notifications />
           </Grid>
         </Grid>
+
+        <Tooltip title="New Table" aria-label="Add" placement="left">
+          <Fab color="secondary" aria-label="New table" className={classes.fab} onClick={this.handleClickOpenDialog}>
+            <AddIcon />
+          </Fab>
+        </Tooltip>
+
+        <Dialog
+          open={this.state.open}
+          onClose={this.handleCloseDialog}
+          aria-labelledby="form-dialog-title"
+        >
+          <form onSubmit={this.handleSubmit}>
+            <DialogTitle id="form-dialog-title">Create table</DialogTitle>
+            <DialogContent>
+              <TextField
+                className={classes.input}
+                value={title}
+                autoFocus
+                margin="dense"
+                id="title"
+                label="Title"
+                type="text"
+                fullWidth
+                onChange={this.handleChange}
+              />
+              <TextField
+                className={classes.input}
+                value={description}
+                margin="dense"
+                id="description"
+                label="Description"
+                type="text"
+                fullWidth
+                onChange={this.handleChange}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={this.handleCloseDialog} color="primary">
+                Cancel
+              </Button>
+              <Button onClick={this.handleCloseDialog} color="primary" type="submit">
+                Save
+              </Button>
+            </DialogActions>
+          </form>
+        </Dialog>
       </div>
     )
   }
 }
 
 const mapStateToProps = (state) => {
-  console.log(state);
-  
   return {
     tableDetails: state.table.detail.details
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    createTable: (table) => dispatch(createTable(table))
   }
 }
 
 Dashboard.propTypes = {
   classes: PropTypes.object.isRequired,
   tableDetails: PropTypes.array.isRequired,
+  createTable: PropTypes.func.isRequired,
 };
 
-export default compose(connect(mapStateToProps), withStyles(styles))(Dashboard)
+export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(Dashboard)

@@ -8,7 +8,7 @@ import Button from '@material-ui/core/Button'
 
 const styles = theme => ({
   root: {
-    height: 'calc(100vh - 144px)',
+    height: 'calc(100vh - 72px)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center'

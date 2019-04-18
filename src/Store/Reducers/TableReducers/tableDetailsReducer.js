@@ -18,6 +18,15 @@ const initState = {
 }
 
 const tableDetailsReducer = (state = initState, action) => {
+
+  switch (action.type) {
+    case 'CREATE_TABLE':
+      console.log('Create table', action.table);    
+      break;
+    default:
+      break;
+  }
+  
   return state;
 }
 

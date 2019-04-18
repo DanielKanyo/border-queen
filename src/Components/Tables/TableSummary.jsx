@@ -6,6 +6,7 @@ import Typography from '@material-ui/core/Typography'
 import IconButton from '@material-ui/core/IconButton'
 import OpenIcon from '@material-ui/icons/OpenInNewOutlined'
 import SettingsIcon from '@material-ui/icons/SettingsOutlined'
+import { Link } from 'react-router-dom'
 
 const styles = ({
   paper: {
@@ -36,7 +37,7 @@ const TableSummary = ({ classes, tableDetail }) => {
       <div className={classes.header}>
         <div className={classes.headerTitle}><Typography variant="h5">{tableDetail.title}</Typography></div>
         <div className="table-header-action">
-          <IconButton aria-label="Open" className={classes.actionButton}>
+          <IconButton aria-label="Open" className={classes.actionButton} component={Link} to={`/edit/${tableDetail.id}`}>
             <OpenIcon />
           </IconButton>
         </div>
@@ -45,7 +46,7 @@ const TableSummary = ({ classes, tableDetail }) => {
         {tableDetail.description}
       </div>
       <div className={classes.contentAction}>
-        <IconButton aria-label="Open" className={classes.actionButton}>
+        <IconButton aria-label="Open" className={classes.actionButton} component={Link} to={`/settings/${tableDetail.id}`}>
           <SettingsIcon />
         </IconButton>
       </div>
