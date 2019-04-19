@@ -1,10 +1,14 @@
 import authReducer from './authReducer'
-import tableRootReducer from './TableReducers/tableRootReducer'
+import tableReducer from './tableReducer'
+import columnReducer from './columnReducer'
+import rowReducer from './rowReducer'
 import { combineReducers } from 'redux'
 
 const rootReducer = combineReducers({
   auth: authReducer,
-  table: tableRootReducer
+  table: tableReducer,
+  column: columnReducer,
+  row: rowReducer
 });
 
 export default rootReducer

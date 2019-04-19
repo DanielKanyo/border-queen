@@ -2,16 +2,18 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import TableSummary from './TableSummary'
 
-const TableList = ({ tableDetails }) => {
+const TableList = ({ tables }) => {
   return (
     <React.Fragment>
-      {tableDetails && tableDetails.map(tableDetail => <TableSummary tableDetail={tableDetail} key={tableDetail.id} />)}
+      {tables && Object.keys(tables).map(key => {
+        return <TableSummary table={tables[key]} key={tables[key].id} />
+      })}
     </React.Fragment>
   )
 }
 
 TableList.propTypes = {
-  tableDetails: PropTypes.array.isRequired,
+  tables: PropTypes.object.isRequired,
 };
 
 export default TableList

@@ -67,13 +67,13 @@ export class Dashboard extends Component {
   };
 
   render() {
-    const { classes, tableDetails } = this.props;
+    const { classes, tables } = this.props;
     const { title, description } = this.state;
     return (
       <div className={classes.root}>
         <Grid container spacing={8} className={classes.grid}>
           <Grid item xs={12} sm={8}>
-            <TableList tableDetails={tableDetails} />
+            <TableList tables={tables} />
           </Grid>
           <Grid item xs={12} sm={4}>
             <Notifications />
@@ -132,8 +132,10 @@ export class Dashboard extends Component {
 }
 
 const mapStateToProps = (state) => {
+  console.log(state);
+  
   return {
-    tableDetails: state.table.detail.details
+    tables: state.table.tables.byId
   }
 }
 
@@ -145,7 +147,7 @@ const mapDispatchToProps = (dispatch) => {
 
 Dashboard.propTypes = {
   classes: PropTypes.object.isRequired,
-  tableDetails: PropTypes.array.isRequired,
+  tables: PropTypes.object.isRequired,
   createTable: PropTypes.func.isRequired,
 };
 

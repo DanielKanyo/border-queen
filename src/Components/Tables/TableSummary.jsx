@@ -31,22 +31,20 @@ const styles = ({
   }
 });
 
-const TableSummary = ({ classes, tableDetail }) => {
+const TableSummary = ({ classes, table }) => {
   return (
     <Paper className={`${classes.paper} table-summary`}>
       <div className={classes.header}>
-        <div className={classes.headerTitle}><Typography variant="h5">{tableDetail.title}</Typography></div>
+        <div className={classes.headerTitle}><Typography variant="h5">{table.title}</Typography></div>
         <div className="table-header-action">
-          <IconButton aria-label="Open" className={classes.actionButton} component={Link} to={`/edit/${tableDetail.id}`}>
+          <IconButton aria-label="Open" className={classes.actionButton} component={Link} to={`/edit/${table.id}`}>
             <OpenIcon />
           </IconButton>
         </div>
       </div>
-      <div className="table-description">
-        {tableDetail.description}
-      </div>
+      <div className="table-description">{table.description}</div>
       <div className={classes.contentAction}>
-        <IconButton aria-label="Open" className={classes.actionButton} component={Link} to={`/settings/${tableDetail.id}`}>
+        <IconButton aria-label="Open" className={classes.actionButton} component={Link} to={`/settings/${table.id}`}>
           <SettingsIcon />
         </IconButton>
       </div>
@@ -56,7 +54,7 @@ const TableSummary = ({ classes, tableDetail }) => {
 
 TableSummary.propTypes = {
   classes: PropTypes.object.isRequired,
-  tableDetail: PropTypes.object.isRequired,
+  table: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(TableSummary)
