@@ -122,12 +122,8 @@ export class Dashboard extends Component {
               />
             </DialogContent>
             <DialogActions>
-              <Button onClick={this.handleCloseDialog} color="primary">
-                Cancel
-              </Button>
-              <Button onClick={this.handleCloseDialog} color="primary" type="submit">
-                Save
-              </Button>
+              <Button onClick={this.handleCloseDialog} color="primary">Cancel</Button>
+              <Button onClick={this.handleCloseDialog} color="primary" type="submit">Save</Button>
             </DialogActions>
           </form>
         </Dialog>
