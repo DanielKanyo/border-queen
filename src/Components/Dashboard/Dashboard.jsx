@@ -15,7 +15,8 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { createTable } from '../../Store/Actions/tableActions'
+import { createTable, addTables } from '../../Store/Actions/tableActions'
+import { firestoreConnect } from 'react-redux-firebase'
 
 const styles = theme => ({
   root: {
@@ -45,6 +46,10 @@ export class Dashboard extends Component {
     title: '',
     description: ''
   };
+
+  componentWillMount = () => {
+    this.props.addTables();
+  }
 
   handleClickOpenDialog = () => {
     this.setState({ open: true });
@@ -132,23 +137,28 @@ export class Dashboard extends Component {
 }
 
 const mapStateToProps = (state) => {
-  console.log(state);
-  
+  // console.log(state);
   return {
-    tables: state.table.tables.byId
+    tables: state.firestore.data.tables
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    createTable: (table) => dispatch(createTable(table))
+    createTable: (table) => dispatch(createTable(table)),
+    addTables: () => dispatch(addTables())
   }
 }
 
 Dashboard.propTypes = {
   classes: PropTypes.object.isRequired,
-  tables: PropTypes.object.isRequired,
   createTable: PropTypes.func.isRequired,
 };
 
-export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(Dashboard)
+export default compose(
+  connect(mapStateToProps, mapDispatchToProps), 
+  withStyles(styles),
+  firestoreConnect([
+    { collection: 'tables', orderBy: ['createdAt', 'asc'] }
+  ])
+)(Dashboard)

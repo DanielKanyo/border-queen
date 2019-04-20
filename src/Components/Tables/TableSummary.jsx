@@ -7,6 +7,7 @@ import IconButton from '@material-ui/core/IconButton'
 import OpenIcon from '@material-ui/icons/OpenInNewOutlined'
 import SettingsIcon from '@material-ui/icons/SettingsOutlined'
 import { Link } from 'react-router-dom'
+import moment from 'moment'
 
 const styles = ({
   paper: {
@@ -27,26 +28,34 @@ const styles = ({
   contentAction: {
     marginTop: 8,
     display: 'flex',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
+    alignItems: 'center'
   }
 });
 
-const TableSummary = ({ classes, table }) => {
+const TableSummary = ({ classes, table, id }) => {
   return (
     <Paper className={`${classes.paper} table-summary`}>
       <div className={classes.header}>
         <div className={classes.headerTitle}><Typography variant="h5">{table.title}</Typography></div>
         <div className="table-header-action">
-          <IconButton aria-label="Open" className={classes.actionButton} component={Link} to={`/edit/${table.id}`}>
+          <IconButton aria-label="Open" className={classes.actionButton} component={Link} to={`/edit/${id}`}>
             <OpenIcon />
           </IconButton>
         </div>
       </div>
       <div className="table-description">{table.description}</div>
       <div className={classes.contentAction}>
-        <IconButton aria-label="Open" className={classes.actionButton} component={Link} to={`/settings/${table.id}`}>
-          <SettingsIcon />
-        </IconButton>
+        <div>
+          <Typography color="primary" variant="subtitle1">
+            {moment(table.createdAt.toDate()).calendar()}
+          </Typography>
+        </div>
+        <div>
+          <IconButton aria-label="Open" className={classes.actionButton} component={Link} to={`/settings/${id}`}>
+            <SettingsIcon />
+          </IconButton>
+        </div>
       </div>
     </Paper>
   )
@@ -54,7 +63,6 @@ const TableSummary = ({ classes, table }) => {
 
 TableSummary.propTypes = {
   classes: PropTypes.object.isRequired,
-  table: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(TableSummary)
