@@ -7,6 +7,8 @@ import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
 import SignedInLinks from './SignedInLinks'
 import SignedOutLinks from './SignedOutLinks'
+import { connect } from 'react-redux'
+import { compose } from 'redux'
 
 const styles = {
   root: {
@@ -42,4 +44,10 @@ Navbar.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(Navbar)
+const mapStateToProps = (state) => {
+  return {
+
+  }
+}
+
+export default compose(connect(mapStateToProps), withStyles(styles))(Navbar)

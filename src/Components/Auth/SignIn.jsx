@@ -5,6 +5,9 @@ import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
+import { connect } from 'react-redux'
+import { signIn } from '../../Store/Actions/authActions'
+import { compose } from 'redux'
 
 const styles = theme => ({
   root: {
@@ -28,6 +31,11 @@ const styles = theme => ({
   button: {
     marginTop: 10,
     width: '100%'
+  },
+  errorMsg: {
+    marginTop: 15,
+    color: 'red',
+    textAlign: 'center'
   }
 });
 
@@ -46,12 +54,12 @@ export class SignIn extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    console.log(this.state);
 
+    this.props.signIn(this.state);
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, authError } = this.props;
     const { email, password } = this.state;
     return (
       <div className={classes.root}>
@@ -83,6 +91,7 @@ export class SignIn extends Component {
                 Login
               </Button>
             </form>
+            {authError && <div className={classes.errorMsg}>{authError}</div>}
           </Paper>
         </div>
       </div>
@@ -94,4 +103,17 @@ SignIn.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(SignIn)
+const mapStateToProps = (state) => {
+  return {
+    authError: state.auth.authError
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    signIn: (creds) => dispatch(signIn(creds))
+  }
+}
+
+
+export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(SignIn)
