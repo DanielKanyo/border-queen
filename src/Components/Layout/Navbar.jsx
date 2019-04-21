@@ -24,7 +24,8 @@ const styles = {
 };
 
 const Navbar = (props) => {
-  const { classes } = props;
+  const { classes, auth } = props;
+  const links = auth.uid ? <SignedInLinks /> : <SignedOutLinks />
   return (
     <div className={classes.root}>
       <AppBar position="fixed">
@@ -32,8 +33,7 @@ const Navbar = (props) => {
           <Typography variant="h6" color="inherit" className={classes.grow}>
             <Link to="/" className={classes.navbarTitle}>BorderQueen</Link>
           </Typography>
-          <SignedOutLinks />
-          <SignedInLinks />
+          {links}
         </Toolbar>
       </AppBar>
     </div>
@@ -46,7 +46,7 @@ Navbar.propTypes = {
 
 const mapStateToProps = (state) => {
   return {
-
+    auth: state.firebase.auth
   }
 }
 
