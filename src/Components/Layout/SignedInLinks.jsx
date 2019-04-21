@@ -4,6 +4,9 @@ import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
 import Avatar from '@material-ui/core/Avatar'
+import { signOut } from '../../Store/Actions/authActions'
+import { connect } from 'react-redux'
+import { compose } from 'redux'
 
 const styles = {
   avatar: {
@@ -17,10 +20,10 @@ const styles = {
   },
 };
 
-const SignedInLinks = ({ classes }) => {
+const SignedInLinks = ({ classes, signOut }) => {
   return (
     <React.Fragment>
-      <Button component={NavLink} to="/" className={classes.button} color="inherit">Log Out</Button>
+      <Button onClick={signOut} className={classes.button} color="inherit">Log Out</Button>
       <Avatar component={NavLink} to="/" className={classes.avatar}>DK</Avatar>
     </React.Fragment>
   )
@@ -30,4 +33,10 @@ SignedInLinks.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(SignedInLinks)
+const mapDispatchToProps = (dispatch) => {
+  return {
+    signOut: () => dispatch(signOut())
+  }
+}
+
+export default compose(connect(null, mapDispatchToProps), withStyles(styles))(SignedInLinks)
