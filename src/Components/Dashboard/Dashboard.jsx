@@ -11,6 +11,7 @@ import Button from '@material-ui/core/Button'
 import Tooltip from '@material-ui/core/Tooltip'
 import TextField from '@material-ui/core/TextField'
 import Dialog from '@material-ui/core/Dialog'
+import Paper from '@material-ui/core/Paper'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
@@ -19,6 +20,7 @@ import { compose } from 'redux'
 import { createTable, addTables } from '../../Store/Actions/tableActions'
 import { firestoreConnect } from 'react-redux-firebase'
 import { Redirect } from 'react-router-dom'
+import Chip from '@material-ui/core/Chip'
 
 const styles = theme => ({
   root: {
@@ -27,8 +29,16 @@ const styles = theme => ({
     margin: '0 auto'
   },
   paper: {
-    padding: theme.spacing.unit * 2,
-    textAlign: 'center'
+    marginBottom: 8,
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingTop: theme.spacing.unit * 2,
+    paddingBottom: theme.spacing.unit * 2,
+    background: '#7b1fa2',
+    color: 'white',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
   fab: {
     margin: theme.spacing.unit * 2,
@@ -83,6 +93,10 @@ export class Dashboard extends Component {
       <div className={classes.root}>
         <Grid container spacing={8} className={classes.grid}>
           <Grid item xs={12} sm={8}>
+            <Paper className={classes.paper}>
+              <div>Tables</div>
+              <div><Chip label={tables && tables.length ? tables.length : 0} /></div>
+            </Paper>
             {tables && tables.length ? <TableList tables={tables} /> : <EmptyList />}
           </Grid>
           <Grid item xs={12} sm={4}>

@@ -8,6 +8,7 @@ import Button from '@material-ui/core/Button'
 import { Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
+import { signUp } from '../../Store/Actions/authActions'
 
 const styles = theme => ({
   root: {
@@ -31,6 +32,11 @@ const styles = theme => ({
   button: {
     marginTop: 10,
     width: '100%'
+  },
+  errorMsg: {
+    marginTop: 15,
+    color: 'red',
+    textAlign: 'center'
   }
 });
 
@@ -52,11 +58,11 @@ export class SignUp extends Component {
   handleSubmit = e => {
     e.preventDefault();
 
-    console.log(this.state);
+    this.props.signUp(this.state)
   }
 
   render() {
-    const { classes, auth } = this.props;
+    const { classes, auth, authError } = this.props;
     const { email, password, firstName, lastName } = this.state;
 
     if (auth.uid) return <Redirect to='/' />
@@ -109,6 +115,7 @@ export class SignUp extends Component {
                 Sign Up
               </Button>
             </form>
+            {authError && <div className={classes.errorMsg}>{authError}</div>}
           </Paper>
         </div>
       </div>
@@ -118,7 +125,14 @@ export class SignUp extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    auth: state.firebase.auth
+    auth: state.firebase.auth,
+    authError: state.auth.authError
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    signUp: (newUser) => dispatch(signUp(newUser))
   }
 }
 
@@ -126,4 +140,4 @@ SignUp.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default compose(connect(mapStateToProps), withStyles(styles))(SignUp)
+export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(SignUp)
