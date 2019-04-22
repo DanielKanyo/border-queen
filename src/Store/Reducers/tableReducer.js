@@ -65,6 +65,21 @@ const addTableEntry = (state, action) => {
   }
 }
 
+const deleteTableEntry = (state, action) => {
+  const { payload } = action
+  const { id } = payload
+  const { tables } = state
+  
+  delete tables[id]
+  
+  return {
+    ...state,
+    tables: {
+      ...tables
+    }
+  }
+}
+
 const tableReducer = (state = initState, action) => {
   switch (action.type) {
     case 'ADD_TABLES':
@@ -74,6 +89,12 @@ const tableReducer = (state = initState, action) => {
     case 'CREATE_TABLE_ERROR':
       console.log('Add table error', action.error)
       return state
+    case 'DELETE_TABLE':
+      return deleteTableEntry(state, action)
+    case 'DELETE_TABLE_ERROR':
+      console.log('Delete table error', action.error)
+      return state
+    
     default:
       return state
   }

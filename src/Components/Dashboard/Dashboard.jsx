@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import Notifications from './Notifications'
 import TableList from '../Tables/TableList'
+import EmptyList from '../Layout/EmptyList'
 import Fab from '@material-ui/core/Fab'
 import AddIcon from '@material-ui/icons/Add'
 import Button from '@material-ui/core/Button'
@@ -17,6 +18,7 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { createTable, addTables } from '../../Store/Actions/tableActions'
 import { firestoreConnect } from 'react-redux-firebase'
+import { Redirect } from 'react-router-dom'
 
 const styles = theme => ({
   root: {
@@ -72,13 +74,16 @@ export class Dashboard extends Component {
   };
 
   render() {
-    const { classes, tables } = this.props;
+    const { classes, tables, auth } = this.props;
     const { title, description } = this.state;
+
+    if (!auth.uid) return <Redirect to='/signin' />
+
     return (
       <div className={classes.root}>
         <Grid container spacing={8} className={classes.grid}>
           <Grid item xs={12} sm={8}>
-            <TableList tables={tables} />
+            {tables && tables.length ? <TableList tables={tables} /> : <EmptyList />}
           </Grid>
           <Grid item xs={12} sm={4}>
             <Notifications />
@@ -133,9 +138,9 @@ export class Dashboard extends Component {
 }
 
 const mapStateToProps = (state) => {
-  // console.log(state);
   return {
-    tables: state.firestore.data.tables
+    tables: state.firestore.ordered.tables,
+    auth: state.firebase.auth
   }
 }
 
@@ -152,7 +157,7 @@ Dashboard.propTypes = {
 };
 
 export default compose(
-  connect(mapStateToProps, mapDispatchToProps), 
+  connect(mapStateToProps, mapDispatchToProps),
   withStyles(styles),
   firestoreConnect([
     { collection: 'tables', orderBy: ['createdAt', 'asc'] }

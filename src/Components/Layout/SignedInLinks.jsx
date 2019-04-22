@@ -24,6 +24,7 @@ const SignedInLinks = ({ classes, signOut }) => {
   return (
     <React.Fragment>
       <Button onClick={signOut} className={classes.button} color="inherit">Log Out</Button>
+      <Button component={NavLink} to="/" className={classes.button} color="inherit">Dashboard</Button>
       <Avatar component={NavLink} to="/" className={classes.avatar}>DK</Avatar>
     </React.Fragment>
   )

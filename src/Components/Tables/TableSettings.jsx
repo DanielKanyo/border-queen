@@ -3,6 +3,10 @@ import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
+import { Redirect } from 'react-router-dom'
+import { connect } from 'react-redux'
+import { compose } from 'redux'
+import { firestoreConnect } from 'react-redux-firebase'
 
 const styles = theme => ({
   root: {
@@ -18,8 +22,11 @@ const styles = theme => ({
 
 export class TableSettings extends Component {
   render() {
-    const { classes } = this.props;
+    const { classes, auth } = this.props;
     const { id } = this.props.match.params;
+
+    if (!auth.uid) return <Redirect to='/signin' />
+
     return (
       <div className={classes.root}>
         <Paper className={classes.paper}>
@@ -34,4 +41,21 @@ TableSettings.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(TableSettings)
+const mapStateToProps = (state, ownProps) => {
+  const id = ownProps.match.params.id;
+  const tables = state.firestore.data.tables;
+  const table = tables ? tables[id] : null;
+
+  return {
+    table,
+    auth: state.firebase.auth
+  }
+}
+
+export default compose(
+  connect(mapStateToProps),
+  withStyles(styles),
+  firestoreConnect([
+    { collection: 'tables' }
+  ])
+)(TableSettings)

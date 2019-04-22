@@ -5,7 +5,7 @@ const TableList = ({ tables }) => {
   return (
     <React.Fragment>
       {tables && Object.keys(tables).map(key => {
-        return <TableSummary table={tables[key]} key={key} id={key} />
+        return <TableSummary table={tables[key]} key={key} />
       })}
     </React.Fragment>
   )

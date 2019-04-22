@@ -1,7 +1,8 @@
 export const addTables = () => {
-  return (dispatch, getState, { getFirebase, getFirestore }) => {
+  return (dispatch, getState, { getFirestore }) => {
     const firestore = getFirestore();
     let tables = {};
+    let payload;
 
     firestore.collection('tables').get().then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
@@ -12,10 +13,11 @@ export const addTables = () => {
         }
       });
 
-      const payload = {
+      payload = {
         ...tables
       }
 
+    }).then(() => {
       dispatch({ type: 'ADD_TABLES', payload });
     });
   }
@@ -44,5 +46,19 @@ export const createTable = (table) => {
     }).catch(error => {
       dispatch({ type: 'CREATE_TABLE_ERROR', error });
     })
+  }
+}
+
+export const deleteTable = (id) => {
+  return (dispatch, getState, { getFirestore }) => {
+    // make async call to database
+    const firestore = getFirestore();
+    const payload = { id };
+
+    firestore.collection("tables").doc(id).delete().then(() => {
+      dispatch({ type: 'DELETE_TABLE', payload });
+    }).catch((error) => {
+      dispatch({ type: 'DELETE_TABLE_ERROR', error });
+    });
   }
 }

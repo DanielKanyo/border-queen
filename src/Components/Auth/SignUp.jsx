@@ -5,6 +5,9 @@ import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
+import { Redirect } from 'react-router-dom'
+import { connect } from 'react-redux'
+import { compose } from 'redux'
 
 const styles = theme => ({
   root: {
@@ -48,13 +51,16 @@ export class SignUp extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    console.log(this.state);
 
+    console.log(this.state);
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, auth } = this.props;
     const { email, password, firstName, lastName } = this.state;
+
+    if (auth.uid) return <Redirect to='/' />
+
     return (
       <div className={classes.root}>
         <div>
@@ -110,8 +116,14 @@ export class SignUp extends Component {
   }
 }
 
+const mapStateToProps = (state) => {
+  return {
+    auth: state.firebase.auth
+  }
+}
+
 SignUp.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(SignUp)
+export default compose(connect(mapStateToProps), withStyles(styles))(SignUp)

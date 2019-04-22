@@ -15,6 +15,9 @@ import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
+import { connect } from 'react-redux'
+import { compose } from 'redux'
+import { deleteTable } from '../../Store/Actions/tableActions'
 
 const styles = ({
   paper: {
@@ -54,8 +57,13 @@ export class TableSummary extends Component {
     this.setState({ open: false });
   };
 
+  handleDeleteTable = () => {
+    this.props.deleteTable(this.props.table.id);
+  }
+
   render() {
-    const { classes, table, id } = this.props;
+    const { classes, table } = this.props;
+    
     return (
       <React.Fragment>
         <Paper className={`${classes.paper} table-summary`}>
@@ -65,7 +73,7 @@ export class TableSummary extends Component {
               <IconButton aria-label="Delete" className={classes.actionButton} onClick={this.handleOpenDialog}>
                 <DeleteIcon />
               </IconButton>
-              <IconButton aria-label="Open" className={classes.actionButton} component={Link} to={`/edit/${id}`}>
+              <IconButton aria-label="Open" className={classes.actionButton} component={Link} to={`/edit/${table.id}`}>
                 <OpenIcon />
               </IconButton>
             </div>
@@ -78,7 +86,7 @@ export class TableSummary extends Component {
               </Typography>
             </div>
             <div>
-              <IconButton aria-label="Open" className={classes.actionButton} component={Link} to={`/settings/${id}`}>
+              <IconButton aria-label="Open" className={classes.actionButton} component={Link} to={`/settings/${table.id}`}>
                 <SettingsIcon />
               </IconButton>
             </div>
@@ -101,7 +109,7 @@ export class TableSummary extends Component {
             <Button onClick={this.handleCloseDialog} color="primary">
               Cancel
             </Button>
-            <Button onClick={this.handleCloseDialog} color="primary" autoFocus>
+            <Button onClick={() => {this.handleDeleteTable(); this.handleCloseDialog()}} color="primary" autoFocus>
               Delete
             </Button>
           </DialogActions>
@@ -115,4 +123,10 @@ TableSummary.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(TableSummary)
+const mapDispatchToProps = (dispatch) => {
+  return {
+    deleteTable: (id) => dispatch(deleteTable(id))
+  }
+}
+
+export default compose(connect(null, mapDispatchToProps), withStyles(styles))(TableSummary)
