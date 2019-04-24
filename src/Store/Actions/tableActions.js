@@ -24,9 +24,10 @@ export const addTables = () => {
 }
 
 export const createTable = (table) => {
-  return (dispatch, getState, { getFirebase, getFirestore }) => {
+  return (dispatch, getState, { getFirestore }) => {
     // make async call to database
     const firestore = getFirestore();
+    const authorId = getState().firebase.auth.uid;
 
     const payload = {
       title: table.title,
@@ -35,8 +36,9 @@ export const createTable = (table) => {
 
     firestore.collection('tables').add({
       ...payload,
-      authorId: 123456,
-      createdAt: new Date()
+      authorId,
+      createdAt: new Date(),
+      columns: []
     }).then(snapshot => {
       const { id } = snapshot;
 
@@ -45,7 +47,7 @@ export const createTable = (table) => {
       dispatch({ type: 'CREATE_TABLE', payload });
     }).catch(error => {
       dispatch({ type: 'CREATE_TABLE_ERROR', error });
-    })
+    });
   }
 }
 
