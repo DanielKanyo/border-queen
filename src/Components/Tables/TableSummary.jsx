@@ -82,7 +82,7 @@ export class TableSummary extends Component {
           <div className={classes.contentAction}>
             <div>
               <Typography color="primary" variant="subtitle1">
-                {moment(table.createdAt.toDate()).calendar()}
+                {moment(table.createdAt).format('LLLL')}
               </Typography>
             </div>
             <div>

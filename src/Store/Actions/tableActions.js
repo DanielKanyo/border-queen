@@ -1,10 +1,12 @@
-export const addTables = () => {
+export const initializeState = () => {
   return (dispatch, getState, { getFirestore }) => {
     const firestore = getFirestore();
+    const authorId = getState().firebase.auth.uid;
+
     let tables = {};
     let payload;
 
-    firestore.collection('tables').get().then((querySnapshot) => {
+    firestore.collection('tables').where('authorId', '==', authorId).get().then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         let table = doc.data();
       
@@ -16,9 +18,9 @@ export const addTables = () => {
       payload = {
         ...tables
       }
-
+      
     }).then(() => {
-      dispatch({ type: 'ADD_TABLES', payload });
+      dispatch({ type: 'INITIALIZE_STATE', payload });
     });
   }
 }
@@ -31,14 +33,13 @@ export const createTable = (table) => {
 
     const payload = {
       title: table.title,
-      description: table.description
+      description: table.description,
+      createdAt: new Date().getTime(),
+      authorId
     }
 
     firestore.collection('tables').add({
       ...payload,
-      authorId,
-      createdAt: new Date(),
-      columns: []
     }).then(snapshot => {
       const { id } = snapshot;
 

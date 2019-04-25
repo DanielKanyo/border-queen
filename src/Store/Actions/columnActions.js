@@ -5,11 +5,13 @@ export const createColumn = (tableId) => {
     const label = '';
     const type = 'TEXT';
     const color = 'transparent';
+    const ownerId = tableId;
 
     const payload = {
       label,
       type,
-      color
+      color,
+      ownerId
     };
 
     firestore.collection('columns').add({
@@ -17,14 +19,10 @@ export const createColumn = (tableId) => {
     }).then(snapshot => {
       const { id } = snapshot;
 
-      firestore.collection('columns').doc(id).update({ id }).then(() => {
-        firestore.collection('tables').doc(tableId).update({
-          'columns': firestore.FieldValue.arrayUnion(id)
-        }).then(() => {
-          payload.id = id;
-          dispatch({ type: 'CREATE_COLUMN_SUCCESS', payload });
-        });
-      });
+      firestore.collection('columns').doc(id).update({ id });
+      
+      payload.id = id;
+      dispatch({ type: 'CREATE_COLUMN_SUCCESS', payload });
     }).then(error => {
       dispatch({ type: 'CREATE_COLUMN_ERROR', error });
     })

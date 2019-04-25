@@ -17,7 +17,7 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { createTable, addTables } from '../../Store/Actions/tableActions'
+import { initializeState, createTable } from '../../Store/Actions/tableActions'
 import { firestoreConnect } from 'react-redux-firebase'
 import { Redirect } from 'react-router-dom'
 import Chip from '@material-ui/core/Chip'
@@ -60,7 +60,7 @@ export class Dashboard extends Component {
   };
 
   componentWillMount = () => {
-    this.props.addTables();
+    this.props.initializeState();
   }
 
   handleClickOpenDialog = () => {
@@ -86,6 +86,7 @@ export class Dashboard extends Component {
   render() {
     const { classes, tables, auth } = this.props;
     const { title, description } = this.state;
+    const tablesSize = Object.keys(tables).length;
 
     if (!auth.uid) return <Redirect to='/signin' />
 
@@ -95,9 +96,9 @@ export class Dashboard extends Component {
           <Grid item xs={12} sm={8}>
             <Paper className={classes.paper}>
               <div>Tables</div>
-              <div><Chip label={tables && tables.length ? tables.length : 0} /></div>
+              <div><Chip label={tablesSize} /></div>
             </Paper>
-            {tables && tables.length ? <TableList tables={tables} /> : <EmptyList />}
+            {tables && Object.keys(tables).length ? <TableList tables={tables} /> : <EmptyList />}
           </Grid>
           <Grid item xs={12} sm={4}>
             <Notifications />
@@ -153,7 +154,7 @@ export class Dashboard extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    tables: state.firestore.ordered.tables,
+    tables: state.table.tables,
     auth: state.firebase.auth
   }
 }
@@ -161,7 +162,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     createTable: (table) => dispatch(createTable(table)),
-    addTables: () => dispatch(addTables())
+    initializeState: () => dispatch(initializeState())
   }
 }
 
