@@ -54,9 +54,10 @@ export const createColumn = (tableId) => {
       firestore.collection('columns').doc(id).update({ id });
       
       payload.id = id;
+    }).then(() => {
       dispatch({ type: 'CREATE_COLUMN_SUCCESS', payload });
-    }).then(error => {
+    }).catch(error => {
       dispatch({ type: 'CREATE_COLUMN_ERROR', error });
-    })
+    });
   }
 }

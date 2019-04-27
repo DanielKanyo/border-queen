@@ -4,6 +4,7 @@ import EmptyList from '../Layout/EmptyList'
 export class Columns extends Component {
   render() {
     const { columns } = this.props;
+    
     return (
       <div>
         {

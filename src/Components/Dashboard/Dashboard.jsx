@@ -175,6 +175,6 @@ export default compose(
   connect(mapStateToProps, mapDispatchToProps),
   withStyles(styles),
   firestoreConnect([
-    { collection: 'tables', orderBy: ['createdAt', 'asc'] }
+    { collection: 'tables' }
   ])
 )(Dashboard)

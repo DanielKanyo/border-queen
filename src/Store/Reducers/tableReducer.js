@@ -83,6 +83,21 @@ const addTableEntry = (state, action) => {
   }
 }
 
+const addColumnEntry = (state, action) => {
+  const { payload } = action
+  const { id, label, type, color, ownerId } = payload
+
+  const column = { id, label, type, color, ownerId }
+
+  return {
+    ...state,
+    columns: {
+      ...state.columns,
+      [id]: column
+    }
+  }
+}
+
 const deleteTableEntry = (state, action) => {
   const { payload } = action
   const { id } = payload
@@ -111,6 +126,12 @@ const tableReducer = (state = initState, action) => {
       return addTableEntry(state, action)
     case 'CREATE_TABLE_ERROR':
       console.log('Add table error', action.error)
+      return state
+    
+    case 'CREATE_COLUMN_SUCCESS':
+      return addColumnEntry(state, action)
+    case 'CREATE_COLUMN_ERROR':
+      console.log('Add column error', action.error)
       return state
 
     case 'DELETE_TABLE':
