@@ -1,4 +1,4 @@
-export const initializeState = () => {
+export const initializeTables = () => {
   return (dispatch, getState, { getFirestore }) => {
     const firestore = getFirestore();
     const authorId = getState().firebase.auth.uid;
@@ -20,7 +20,7 @@ export const initializeState = () => {
       }
       
     }).then(() => {
-      dispatch({ type: 'INITIALIZE_STATE', payload });
+      dispatch({ type: 'INITIALIZE_TABLES', payload });
     });
   }
 }

@@ -1,3 +1,35 @@
+export const initializeColumns = (tableId) => {
+  return (dispatch, getState, { getFirestore }) => {
+    const firestore = getFirestore();
+
+    let columns = {};
+    let payload;
+
+    firestore.collection('columns').where('ownerId', '==', tableId).get().then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        let column = doc.data();
+      
+        columns[column.id] = {
+          ...column
+        }
+      });
+
+      payload = {
+        ...columns
+      }
+      
+    }).then(() => {
+      dispatch({ type: 'INITIALIZE_COLUMNS', payload });
+    });
+  }
+}
+
+export const resetColumns = () => {
+  return (dispatch) => {
+    dispatch({ type: 'RESET_COLUMNS' });
+  }
+}
+
 export const createColumn = (tableId) => {
   return (dispatch, getState, { getFirestore }) => {
     const firestore = getFirestore();

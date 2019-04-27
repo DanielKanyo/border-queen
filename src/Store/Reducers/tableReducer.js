@@ -40,7 +40,7 @@ const initState = {
   }
 }
 
-const initializeState = (state, action) => {
+const initializeTables = (state, action) => {
   const { payload } = action
 
   return {
@@ -48,6 +48,23 @@ const initializeState = (state, action) => {
     tables: {
       ...payload
     }
+  }
+}
+const initializeColumns = (state, action) => {
+  const { payload } = action
+
+  return {
+    ...state,
+    columns: {
+      ...payload
+    }
+  }
+}
+
+const resetColumns = (state) => {
+  return {
+    ...state,
+    columns: {}
   }
 }
 
@@ -83,8 +100,12 @@ const deleteTableEntry = (state, action) => {
 
 const tableReducer = (state = initState, action) => {
   switch (action.type) {
-    case 'INITIALIZE_STATE':
-      return initializeState(state, action)
+    case 'INITIALIZE_TABLES':
+      return initializeTables(state, action)
+    case 'INITIALIZE_COLUMNS':
+      return initializeColumns(state, action)
+    case 'RESET_COLUMNS':
+      return resetColumns(state)
 
     case 'CREATE_TABLE':
       return addTableEntry(state, action)

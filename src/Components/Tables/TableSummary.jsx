@@ -4,7 +4,7 @@ import { withStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import IconButton from '@material-ui/core/IconButton'
-import OpenIcon from '@material-ui/icons/OpenInNewOutlined'
+import EditIcon from '@material-ui/icons/EditOutlined'
 import SettingsIcon from '@material-ui/icons/SettingsOutlined'
 import DeleteIcon from '@material-ui/icons/DeleteOutline'
 import { Link } from 'react-router-dom'
@@ -74,7 +74,7 @@ export class TableSummary extends Component {
                 <DeleteIcon />
               </IconButton>
               <IconButton aria-label="Open" className={classes.actionButton} component={Link} to={`/edit/${table.id}`}>
-                <OpenIcon />
+                <EditIcon />
               </IconButton>
             </div>
           </div>

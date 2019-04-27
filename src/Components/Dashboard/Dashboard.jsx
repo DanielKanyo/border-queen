@@ -17,7 +17,7 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { initializeState, createTable } from '../../Store/Actions/tableActions'
+import { initializeTables, createTable } from '../../Store/Actions/tableActions'
 import { firestoreConnect } from 'react-redux-firebase'
 import { Redirect } from 'react-router-dom'
 import Chip from '@material-ui/core/Chip'
@@ -60,7 +60,7 @@ export class Dashboard extends Component {
   };
 
   componentWillMount = () => {
-    this.props.initializeState();
+    this.props.initializeTables();
   }
 
   handleClickOpenDialog = () => {
@@ -162,7 +162,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     createTable: (table) => dispatch(createTable(table)),
-    initializeState: () => dispatch(initializeState())
+    initializeTables: () => dispatch(initializeTables())
   }
 }
 
