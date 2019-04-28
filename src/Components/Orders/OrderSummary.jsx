@@ -17,7 +17,7 @@ import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { deleteTable } from '../../Store/Actions/tableActions'
+import { deleteOrder } from '../../Store/Actions/orderActions'
 
 const styles = ({
   paper: {
@@ -43,7 +43,7 @@ const styles = ({
   }
 });
 
-export class TableSummary extends Component {
+export class OrderSummary extends Component {
 
   state = {
     open: false,
@@ -57,36 +57,36 @@ export class TableSummary extends Component {
     this.setState({ open: false });
   };
 
-  handleDeleteTable = () => {
-    this.props.deleteTable(this.props.table.id);
+  handleDeleteOrder = () => {
+    this.props.deleteOrder(this.props.order.id);
   }
 
   render() {
-    const { classes, table } = this.props;
+    const { classes, order } = this.props;
     
     return (
       <React.Fragment>
-        <Paper className={`${classes.paper} table-summary`}>
+        <Paper className={`${classes.paper} order-summary`}>
           <div className={classes.header}>
-            <div className={classes.headerTitle}><Typography variant="h5">{table.title}</Typography></div>
-            <div className="table-header-action">
+            <div className={classes.headerTitle}><Typography variant="h5">{order.title}</Typography></div>
+            <div className="order-header-action">
               <IconButton aria-label="Delete" className={classes.actionButton} onClick={this.handleOpenDialog}>
                 <DeleteIcon />
               </IconButton>
-              <IconButton aria-label="Open" className={classes.actionButton} component={Link} to={`/edit/${table.id}`}>
+              <IconButton aria-label="Open" className={classes.actionButton} component={Link} to={`/edit/${order.id}`}>
                 <EditIcon />
               </IconButton>
             </div>
           </div>
-          <div className="table-description">{table.description}</div>
+          <div className="order-description">{order.description}</div>
           <div className={classes.contentAction}>
             <div>
               <Typography color="primary" variant="subtitle1">
-                {moment(table.createdAt).format('LLLL')}
+                {moment(order.createdAt).format('LLLL')}
               </Typography>
             </div>
             <div>
-              <IconButton aria-label="Open" className={classes.actionButton} component={Link} to={`/settings/${table.id}`}>
+              <IconButton aria-label="Open" className={classes.actionButton} component={Link} to={`/settings/${order.id}`}>
                 <SettingsIcon />
               </IconButton>
             </div>
@@ -99,17 +99,17 @@ export class TableSummary extends Component {
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
-          <DialogTitle id="alert-dialog-title">Delete table</DialogTitle>
+          <DialogTitle id="alert-dialog-title">Delete order</DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
-              Are you sure you want to delete your table? You will lose all saved data...
+              Are you sure you want to delete your order? You will lose all saved data...
             </DialogContentText>
           </DialogContent>
           <DialogActions>
             <Button onClick={this.handleCloseDialog} color="primary">
               Cancel
             </Button>
-            <Button onClick={() => {this.handleDeleteTable(); this.handleCloseDialog()}} color="primary" autoFocus>
+            <Button onClick={() => {this.handleDeleteOrder(); this.handleCloseDialog()}} color="primary" autoFocus>
               Delete
             </Button>
           </DialogActions>
@@ -119,14 +119,14 @@ export class TableSummary extends Component {
   }
 }
 
-TableSummary.propTypes = {
+OrderSummary.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    deleteTable: (id) => dispatch(deleteTable(id))
+    deleteOrder: (id) => dispatch(deleteOrder(id))
   }
 }
 
-export default compose(connect(null, mapDispatchToProps), withStyles(styles))(TableSummary)
+export default compose(connect(null, mapDispatchToProps), withStyles(styles))(OrderSummary)

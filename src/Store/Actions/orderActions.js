@@ -1,67 +1,67 @@
-export const initializeTables = () => {
+export const initializeOrders = () => {
   return (dispatch, getState, { getFirestore }) => {
     const firestore = getFirestore();
     const authorId = getState().firebase.auth.uid;
 
-    let tables = {};
+    let orders = {};
     let payload;
 
-    firestore.collection('tables').where('authorId', '==', authorId).get().then((querySnapshot) => {
+    firestore.collection('orders').where('authorId', '==', authorId).get().then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
-        let table = doc.data();
+        let order = doc.data();
       
-        tables[table.id] = {
-          ...table
+        orders[order.id] = {
+          ...order
         }
       });
 
       payload = {
-        ...tables
+        ...orders
       }
       
     }).then(() => {
-      dispatch({ type: 'INITIALIZE_TABLES', payload });
+      dispatch({ type: 'INITIALIZE_ORDERS', payload });
     });
   }
 }
 
-export const createTable = (table) => {
+export const createOrder = (order) => {
   return (dispatch, getState, { getFirestore }) => {
     // make async call to database
     const firestore = getFirestore();
     const authorId = getState().firebase.auth.uid;
 
     const payload = {
-      title: table.title,
-      description: table.description,
+      title: order.title,
+      description: order.description,
       createdAt: new Date().getTime(),
       authorId
     }
 
-    firestore.collection('tables').add({
+    firestore.collection('orders').add({
       ...payload,
     }).then(snapshot => {
       const { id } = snapshot;
 
-      firestore.collection('tables').doc(id).update({ id });
+      firestore.collection('orders').doc(id).update({ id });
       payload.id = id;
-      dispatch({ type: 'CREATE_TABLE', payload });
+      dispatch({ type: 'CREATE_ORDER', payload });
     }).catch(error => {
-      dispatch({ type: 'CREATE_TABLE_ERROR', error });
+      dispatch({ type: 'CREATE_ORDER_ERROR', error });
     });
   }
 }
 
-export const deleteTable = (id) => {
+export const deleteOrder = (id) => {
   return (dispatch, getState, { getFirestore }) => {
     // make async call to database
     const firestore = getFirestore();
     const payload = { id };
 
-    firestore.collection("tables").doc(id).delete().then(() => {
-      dispatch({ type: 'DELETE_TABLE', payload });
+    firestore.collection("orders").doc(id).delete().then(() => {
+      dispatch({ type: 'DELETE_ORDER', payload });
     }).catch((error) => {
-      dispatch({ type: 'DELETE_TABLE_ERROR', error });
+      dispatch({ type: 'DELETE_ORDER_ERROR', error });
     });
   }
 }

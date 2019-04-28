@@ -20,7 +20,7 @@ const styles = theme => ({
   }
 });
 
-export class EditTable extends Component {
+export class EditOrder extends Component {
   render() {
     const { classes, auth } = this.props;
     const { id } = this.props.match.params;
@@ -30,24 +30,24 @@ export class EditTable extends Component {
     return (
       <div className={classes.root}>
         <Paper className={classes.paper}>
-          <Typography variant="h5">Edit table - {id}</Typography>
+          <Typography variant="h5">Edit order - {id}</Typography>
         </Paper>
       </div>
     )
   }
 }
 
-EditTable.propTypes = {
+EditOrder.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = (state, ownProps) => {
   const id = ownProps.match.params.id;
-  const tables = state.firestore.data.tables;
-  const table = tables ? tables[id] : null;
+  const orders = state.firestore.data.orders;
+  const order = orders ? orders[id] : null;
   
   return {
-    table,
+    order,
     auth: state.firebase.auth
   }
 }
@@ -56,6 +56,6 @@ export default compose(
   connect(mapStateToProps), 
   withStyles(styles),
   firestoreConnect([
-    { collection: 'tables' }
+    { collection: 'orders' }
   ])
-)(EditTable)
+)(EditOrder)

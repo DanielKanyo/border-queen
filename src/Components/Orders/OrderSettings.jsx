@@ -33,11 +33,11 @@ const styles = theme => ({
   },
 });
 
-export class TableSettings extends Component {
+export class OrderSettings extends Component {
 
   componentWillMount = () => {
-    const tableId = this.props.match.params.id;
-    this.props.initializeColumns(tableId);
+    const orderId = this.props.match.params.id;
+    this.props.initializeColumns(orderId);
   }
 
   componentWillUnmount = () => {
@@ -45,20 +45,20 @@ export class TableSettings extends Component {
   }
 
   handleCreateColumn = () => {
-    const tableId = this.props.match.params.id;
-    this.props.createColumn(tableId);
+    const orderId = this.props.match.params.id;
+    this.props.createColumn(orderId);
   }
 
   render() {
-    const { classes, auth, table, columns } = this.props;
+    const { classes, auth, order, columns } = this.props;
     if (!auth.uid) return <Redirect to='/signin' />
 
-    if (table) {
+    if (order) {
       return (
         <div className={classes.root}>
           <Paper className={classes.paper}>
             <div className={classes.paperChild}>
-              <Typography variant="h5">{table.title}</Typography>
+              <Typography variant="h5">{order.title}</Typography>
               <div>
                 <Button variant="contained" color="primary" onClick={this.handleCreateColumn}>Create column</Button>
               </div>
@@ -77,27 +77,27 @@ export class TableSettings extends Component {
   }
 }
 
-TableSettings.propTypes = {
+OrderSettings.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = (state, ownProps) => {
   const id = ownProps.match.params.id;
-  const tables = state.firestore.data.tables;
-  const table = tables ? tables[id] : null;
+  const orders = state.firestore.data.orders;
+  const order = orders ? orders[id] : null;
 
   return {
-    table,
-    columns: state.table.columns,
+    order,
+    columns: state.order.columns,
     auth: state.firebase.auth
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    initializeColumns: (tableId) => dispatch(initializeColumns(tableId)),
+    initializeColumns: (orderId) => dispatch(initializeColumns(orderId)),
     resetColumns: () => dispatch(resetColumns()),
-    createColumn: (tableId) => dispatch(createColumn(tableId))
+    createColumn: (orderId) => dispatch(createColumn(orderId))
   }
 }
 
@@ -105,6 +105,6 @@ export default compose(
   connect(mapStateToProps, mapDispatchToProps),
   withStyles(styles),
   firestoreConnect([
-    { collection: 'tables' }
+    { collection: 'orders' }
   ])
-)(TableSettings)
+)(OrderSettings)

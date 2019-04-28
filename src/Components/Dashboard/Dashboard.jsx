@@ -3,7 +3,7 @@ import Grid from '@material-ui/core/Grid'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import Notifications from './Notifications'
-import TableList from '../Tables/TableList'
+import OrderList from '../Orders/OrderList'
 import EmptyList from '../Layout/EmptyList'
 import Fab from '@material-ui/core/Fab'
 import AddIcon from '@material-ui/icons/Add'
@@ -17,7 +17,7 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { initializeTables, createTable } from '../../Store/Actions/tableActions'
+import { initializeOrders, createOrder } from '../../Store/Actions/orderActions'
 import { firestoreConnect } from 'react-redux-firebase'
 import { Redirect } from 'react-router-dom'
 import Chip from '@material-ui/core/Chip'
@@ -60,7 +60,7 @@ export class Dashboard extends Component {
   };
 
   componentWillMount = () => {
-    this.props.initializeTables();
+    this.props.initializeOrders();
   }
 
   handleClickOpenDialog = () => {
@@ -80,13 +80,13 @@ export class Dashboard extends Component {
   handleSubmit = e => {
     e.preventDefault();
 
-    this.props.createTable(this.state);
+    this.props.createOrder(this.state);
   };
 
   render() {
-    const { classes, tables, auth } = this.props;
+    const { classes, orders, auth } = this.props;
     const { title, description } = this.state;
-    const tablesSize = Object.keys(tables).length;
+    const numberOfOrders = Object.keys(orders).length;
 
     if (!auth.uid) return <Redirect to='/signin' />
 
@@ -95,18 +95,18 @@ export class Dashboard extends Component {
         <Grid container spacing={8} className={classes.grid}>
           <Grid item xs={12} sm={8}>
             <Paper className={classes.paper}>
-              <div>Tables</div>
-              <div><Chip label={tablesSize} /></div>
+              <div>Orders</div>
+              <div><Chip label={numberOfOrders} /></div>
             </Paper>
-            {tables && Object.keys(tables).length ? <TableList tables={tables} /> : <EmptyList />}
+            {orders && Object.keys(orders).length ? <OrderList orders={orders} /> : <EmptyList />}
           </Grid>
           <Grid item xs={12} sm={4}>
             <Notifications />
           </Grid>
         </Grid>
 
-        <Tooltip title="New Table" aria-label="Add" placement="left">
-          <Fab color="secondary" aria-label="New table" className={classes.fab} onClick={this.handleClickOpenDialog}>
+        <Tooltip title="New Order" aria-label="New" placement="left">
+          <Fab color="secondary" aria-label="New order" className={classes.fab} onClick={this.handleClickOpenDialog}>
             <AddIcon />
           </Fab>
         </Tooltip>
@@ -117,7 +117,7 @@ export class Dashboard extends Component {
           aria-labelledby="form-dialog-title"
         >
           <form onSubmit={this.handleSubmit}>
-            <DialogTitle id="form-dialog-title">Create table</DialogTitle>
+            <DialogTitle id="form-dialog-title">Create order</DialogTitle>
             <DialogContent>
               <TextField
                 className={classes.input}
@@ -154,27 +154,27 @@ export class Dashboard extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    tables: state.table.tables,
+    orders: state.order.orders,
     auth: state.firebase.auth
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    createTable: (table) => dispatch(createTable(table)),
-    initializeTables: () => dispatch(initializeTables())
+    createOrder: (order) => dispatch(createOrder(order)),
+    initializeOrders: () => dispatch(initializeOrders())
   }
 }
 
 Dashboard.propTypes = {
   classes: PropTypes.object.isRequired,
-  createTable: PropTypes.func.isRequired,
+  createOrder: PropTypes.func.isRequired,
 };
 
 export default compose(
   connect(mapStateToProps, mapDispatchToProps),
   withStyles(styles),
   firestoreConnect([
-    { collection: 'tables' }
+    { collection: 'orders' }
   ])
 )(Dashboard)

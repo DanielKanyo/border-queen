@@ -1,5 +1,5 @@
 const initState = {
-  tables: {
+  orders: {
     // 'table1': {
     //   id: 'table1',
     //   title: 'Table 1',
@@ -40,12 +40,12 @@ const initState = {
   }
 }
 
-const initializeTables = (state, action) => {
+const initializeOrders = (state, action) => {
   const { payload } = action
 
   return {
     ...state,
-    tables: {
+    orders: {
       ...payload
     }
   }
@@ -68,17 +68,17 @@ const resetColumns = (state) => {
   }
 }
 
-const addTableEntry = (state, action) => {
+const addOrderEntry = (state, action) => {
   const { payload } = action
   const { id, title, description, createdAt, authorId } = payload
 
-  const table = { id, title, description, createdAt, authorId }
+  const order = { id, title, description, createdAt, authorId }
 
   return {
     ...state,
-    tables: {
-      ...state.tables,
-      [id]: table
+    orders: {
+      ...state.orders,
+      [id]: order
     }
   }
 }
@@ -98,34 +98,34 @@ const addColumnEntry = (state, action) => {
   }
 }
 
-const deleteTableEntry = (state, action) => {
+const deleteOrderEntry = (state, action) => {
   const { payload } = action
   const { id } = payload
-  const { tables } = state
+  const { orders } = state
   
-  delete tables[id]
+  delete orders[id]
   
   return {
     ...state,
-    tables: {
-      ...tables
+    orders: {
+      ...orders
     }
   }
 }
 
-const tableReducer = (state = initState, action) => {
+const orderReducer = (state = initState, action) => {
   switch (action.type) {
-    case 'INITIALIZE_TABLES':
-      return initializeTables(state, action)
+    case 'INITIALIZE_ORDERS':
+      return initializeOrders(state, action)
     case 'INITIALIZE_COLUMNS':
       return initializeColumns(state, action)
     case 'RESET_COLUMNS':
       return resetColumns(state)
 
-    case 'CREATE_TABLE':
-      return addTableEntry(state, action)
-    case 'CREATE_TABLE_ERROR':
-      console.log('Add table error', action.error)
+    case 'CREATE_ORDER':
+      return addOrderEntry(state, action)
+    case 'CREATE_ORDER_ERROR':
+      console.log('Add order error', action.error)
       return state
     
     case 'CREATE_COLUMN_SUCCESS':
@@ -134,10 +134,10 @@ const tableReducer = (state = initState, action) => {
       console.log('Add column error', action.error)
       return state
 
-    case 'DELETE_TABLE':
-      return deleteTableEntry(state, action)
-    case 'DELETE_TABLE_ERROR':
-      console.log('Delete table error', action.error)
+    case 'DELETE_ORDER':
+      return deleteOrderEntry(state, action)
+    case 'DELETE_ORDER_ERROR':
+      console.log('Delete order error', action.error)
       return state
 
     case 'SIGNOUT_SUCCESS':
@@ -148,4 +148,4 @@ const tableReducer = (state = initState, action) => {
   }
 }
 
-export default tableReducer
+export default orderReducer

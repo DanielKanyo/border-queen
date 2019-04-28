@@ -5,8 +5,8 @@ import Navbar from './Components/Layout/Navbar'
 import Dashboard from './Components/Dashboard/Dashboard'
 import SignIn from './Components/Auth/SignIn'
 import SignUp from './Components/Auth/SignUp'
-import TableSettings from './Components/Tables/TableSettings'
-import EditTable from './Components/Tables/EditTable'
+import TableSettings from './Components/Orders/OrderSettings'
+import EditTable from './Components/Orders/EditOrder'
 
 const theme = createMuiTheme({
   typography: {
