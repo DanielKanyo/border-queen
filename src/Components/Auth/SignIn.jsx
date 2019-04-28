@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
@@ -40,67 +40,53 @@ const styles = theme => ({
   }
 });
 
-export class SignIn extends Component {
+const SignIn = ({ classes, authError, auth, signIn }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-  state = {
-    email: '',
-    password: ''
-  }
-
-  handleChange = e => {
-    this.setState({
-      [e.target.id]: e.target.value
-    });
-  }
-
-  handleSubmit = e => {
+  const handleSubmit = e => {
     e.preventDefault();
-
-    this.props.signIn(this.state);
+    
+    signIn({email, password});
   }
 
-  render() {
-    const { classes, authError, auth } = this.props;
-    const { email, password } = this.state;
+  if (auth.uid) return <Redirect to='/' />
 
-    if (auth.uid) return <Redirect to='/' />
-
-    return (
-      <div className={classes.root}>
-        <div>
-          <Paper className={classes.paper}>
-            <Typography variant="h5" component="h3" className={classes.title}>
-              Sign In
+  return (
+    <div className={classes.root}>
+      <div>
+        <Paper className={classes.paper}>
+          <Typography variant="h5" component="h3" className={classes.title}>
+            Sign In
             </Typography>
-            <form onSubmit={this.handleSubmit}>
-              <TextField
-                id="email"
-                label="E-mail"
-                className={classes.textField}
-                value={email}
-                onChange={this.handleChange}
-                margin="normal"
-                type="text"
-              />
-              <TextField
-                id="password"
-                label="Password"
-                className={classes.textField}
-                value={password}
-                onChange={this.handleChange}
-                margin="normal"
-                type="password"
-              />
-              <Button variant="contained" color="primary" className={classes.button} type="submit">
-                Login
-              </Button>
-            </form>
-            {authError && <div className={classes.errorMsg}>{authError}</div>}
-          </Paper>
-        </div>
+          <form onSubmit={handleSubmit}>
+            <TextField
+              id="email"
+              label="E-mail"
+              className={classes.textField}
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              margin="normal"
+              type="text"
+            />
+            <TextField
+              id="password"
+              label="Password"
+              className={classes.textField}
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              margin="normal"
+              type="password"
+            />
+            <Button variant="contained" color="primary" className={classes.button} type="submit">
+              Login
+            </Button>
+          </form>
+          {authError && <div className={classes.errorMsg}>{authError}</div>}
+        </Paper>
       </div>
-    )
-  }
+    </div>
+  )
 }
 
 SignIn.propTypes = {
@@ -119,6 +105,5 @@ const mapDispatchToProps = (dispatch) => {
     signIn: (creds) => dispatch(signIn(creds))
   }
 }
-
 
 export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(SignIn)
