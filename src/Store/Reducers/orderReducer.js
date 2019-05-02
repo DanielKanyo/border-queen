@@ -108,10 +108,6 @@ const deleteOrderEntry = (state, action) => {
   
   const index = orderOfIds.indexOf(id)
 
-  if (index > -1) {
-    orderOfIds.splice(index, 1);
-  }
-
   delete orders[id]
   
   return {
@@ -119,7 +115,7 @@ const deleteOrderEntry = (state, action) => {
     orders: {
       ...orders
     },
-    orderOfIds
+    orderOfIds: [...orderOfIds.slice(0, index), ...orderOfIds.slice(index + 1)]
   }
 }
 
