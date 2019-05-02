@@ -5,8 +5,8 @@ import Navbar from './Components/Layout/Navbar'
 import Dashboard from './Components/Dashboard/Dashboard'
 import SignIn from './Components/Auth/SignIn'
 import SignUp from './Components/Auth/SignUp'
-import TableSettings from './Components/Orders/OrderSettings'
-import EditTable from './Components/Orders/EditOrder'
+import EditOrder from './Components/Orders/EditOrder'
+import OrderSettings from './Components/Orders/OrderSettings'
 
 const theme = createMuiTheme({
   typography: {
@@ -31,8 +31,8 @@ class App extends Component {
                 <Route exact path="/" component={Dashboard} />
                 <Route path="/signin" component={SignIn} />
                 <Route path="/signup" component={SignUp} />
-                <Route path="/settings/:id" component={TableSettings} />
-                <Route path="/edit/:id" component={EditTable} />
+                <Route path="/edit/:id" component={EditOrder} />
+                <Route path="/settings" component={OrderSettings} />
               </Switch>
             </div>
           </MuiThemeProvider>

@@ -5,7 +5,6 @@ import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import IconButton from '@material-ui/core/IconButton'
 import EditIcon from '@material-ui/icons/EditOutlined'
-import SettingsIcon from '@material-ui/icons/SettingsOutlined'
 import DeleteIcon from '@material-ui/icons/DeleteOutline'
 import { Link } from 'react-router-dom'
 import moment from 'moment'
@@ -28,17 +27,15 @@ const styles = ({
     justifyContent: 'space-between',
     marginBottom: 10
   },
-  actionButton: {
-    margin: 0
-  },
   headerTitle: {
     display: 'flex',
     alignItems: 'center'
   },
   contentAction: {
     marginTop: 8,
+    paddingRight: 20,
     display: 'flex',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     alignItems: 'center'
   }
 });
@@ -63,33 +60,26 @@ export class OrderSummary extends Component {
 
   render() {
     const { classes, order } = this.props;
-    
+
     return (
       <React.Fragment>
         <Paper className={`${classes.paper} order-summary`}>
           <div className={classes.header}>
             <div className={classes.headerTitle}><Typography variant="h5">{order.title}</Typography></div>
             <div className="order-header-action">
-              <IconButton aria-label="Delete" className={classes.actionButton} onClick={this.handleOpenDialog}>
+              <IconButton aria-label="Delete" onClick={this.handleOpenDialog}>
                 <DeleteIcon />
               </IconButton>
-              <IconButton aria-label="Open" className={classes.actionButton} component={Link} to={`/edit/${order.id}`}>
+              <IconButton aria-label="Open" component={Link} to={`/edit/${order.id}`}>
                 <EditIcon />
               </IconButton>
             </div>
           </div>
           <div className="order-description">{order.description}</div>
           <div className={classes.contentAction}>
-            <div>
-              <Typography color="primary" variant="subtitle1">
-                {moment(order.createdAt).format('LLLL')}
-              </Typography>
-            </div>
-            <div>
-              <IconButton aria-label="Open" className={classes.actionButton} component={Link} to={`/settings/${order.id}`}>
-                <SettingsIcon />
-              </IconButton>
-            </div>
+            <Typography color="primary" variant="subtitle1">
+              {moment(order.createdAt).format('MMMM DD, YYYY')}
+            </Typography>
           </div>
         </Paper>
 
@@ -109,7 +99,7 @@ export class OrderSummary extends Component {
             <Button onClick={this.handleCloseDialog} color="primary">
               Cancel
             </Button>
-            <Button onClick={() => {this.handleDeleteOrder(); this.handleCloseDialog()}} color="primary" autoFocus>
+            <Button onClick={() => { this.handleDeleteOrder(); this.handleCloseDialog() }} color="primary" autoFocus>
               Delete
             </Button>
           </DialogActions>

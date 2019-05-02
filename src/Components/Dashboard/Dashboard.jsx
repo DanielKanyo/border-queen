@@ -1,26 +1,28 @@
 import React, { Component } from 'react'
 import Grid from '@material-ui/core/Grid'
 import PropTypes from 'prop-types'
+import { Link } from 'react-router-dom'
 import { withStyles } from '@material-ui/core/styles'
 import Notifications from './Notifications'
-import OrderList from '../Orders/OrderList'
-import EmptyList from '../Layout/EmptyList'
 import Fab from '@material-ui/core/Fab'
 import AddIcon from '@material-ui/icons/Add'
+import Paper from '@material-ui/core/Paper'
+import SettingsIcon from '@material-ui/icons/SettingsOutlined'
 import Button from '@material-ui/core/Button'
+import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
 import TextField from '@material-ui/core/TextField'
 import Dialog from '@material-ui/core/Dialog'
-import Paper from '@material-ui/core/Paper'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { initializeOrders, createOrder } from '../../Store/Actions/orderActions'
-import { firestoreConnect } from 'react-redux-firebase'
+import { initializeOrders, createOrder, orderChanged } from '../../Store/Actions/orderActions'
 import { Redirect } from 'react-router-dom'
-import Chip from '@material-ui/core/Chip'
+import OrderSummary from '../Orders/OrderSummary'
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
+import EmptyList from '../Layout/EmptyList'
 
 const styles = theme => ({
   root: {
@@ -30,25 +32,42 @@ const styles = theme => ({
   },
   paper: {
     marginBottom: 8,
-    paddingLeft: 20,
-    paddingRight: 20,
-    paddingTop: 12,
-    paddingBottom: 12,
+    padding: theme.spacing.unit * 2,
     background: '#7b1fa2',
-    color: 'white',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center'
+    color: 'white'
   },
   fab: {
     margin: theme.spacing.unit * 2,
-    position: 'absolute',
+    position: 'fixed',
     right: 0,
     bottom: 0
   },
   input: {
     minWidth: 380
+  },
+  dialogTitle: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  settingsIcon: {
+    margin: '-10px -8px 0 0'
   }
+});
+
+// a little function to help us with reordering the result
+const reorder = (list, startIndex, endIndex) => {
+  const result = Array.from(list);
+  const [removed] = result.splice(startIndex, 1);
+  result.splice(endIndex, 0, removed);
+
+  return result;
+};
+
+const getItemStyle = (isDragging, draggableStyle) => ({
+  margin: `0 0 8px 0`,
+  ...draggableStyle
 });
 
 export class Dashboard extends Component {
@@ -57,7 +76,21 @@ export class Dashboard extends Component {
     open: false,
     title: '',
     description: ''
-  };
+  }
+
+  onDragEnd = result => {
+    if (!result.destination) {
+      return;
+    }
+
+    const orderOfIds = reorder(
+      this.props.orderOfIds,
+      result.source.index,
+      result.destination.index
+    );
+
+    this.props.orderChanged(orderOfIds);
+  }
 
   componentWillMount = () => {
     this.props.initializeOrders();
@@ -84,9 +117,8 @@ export class Dashboard extends Component {
   };
 
   render() {
-    const { classes, orders, auth } = this.props;
+    const { classes, orders, auth, orderOfIds } = this.props;
     const { title, description } = this.state;
-    const numberOfOrders = Object.keys(orders).length;
 
     if (!auth.uid) return <Redirect to='/signin' />
 
@@ -94,11 +126,39 @@ export class Dashboard extends Component {
       <div className={classes.root}>
         <Grid container spacing={8} className={classes.grid}>
           <Grid item xs={12} sm={8}>
-            <Paper className={classes.paper}>
-              <div>Orders</div>
-              <div><Chip label={numberOfOrders} /></div>
-            </Paper>
-            {orders && Object.keys(orders).length ? <OrderList orders={orders} /> : <EmptyList />}
+            <Paper elevation={1} className={classes.paper}>Orders</Paper>
+            {
+              Object.keys(orders).length && orderOfIds.length ?
+                <DragDropContext onDragEnd={this.onDragEnd}>
+                  <Droppable droppableId="droppable">
+                    {(provided, snapshot) => (
+                      <div
+                        {...provided.droppableProps}
+                        ref={provided.innerRef}
+                      >
+                        {orderOfIds.map((key, index) => {
+                          return <Draggable key={key} draggableId={key} index={index}>
+                            {(provided, snapshot) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                                style={getItemStyle(
+                                  snapshot.isDragging,
+                                  provided.draggableProps.style
+                                )}
+                              >
+                                <OrderSummary order={orders[key]} key={key} />
+                              </div>
+                            )}
+                          </Draggable>
+                        })}
+                        {provided.placeholder}
+                      </div>
+                    )}
+                  </Droppable>
+                </DragDropContext> : <EmptyList />
+            }
           </Grid>
           <Grid item xs={12} sm={4}>
             <Notifications />
@@ -117,7 +177,16 @@ export class Dashboard extends Component {
           aria-labelledby="form-dialog-title"
         >
           <form onSubmit={this.handleSubmit}>
-            <DialogTitle id="form-dialog-title">Create order</DialogTitle>
+            <DialogTitle id="form-dialog-title">
+              <div className={classes.dialogTitle}>
+                <div>Create order</div>
+                <div className={classes.settingsIcon}>
+                  <IconButton aria-label="Settings" component={Link} to={`/settings`}>
+                    <SettingsIcon />
+                  </IconButton>
+                </div>
+              </div>
+            </DialogTitle>
             <DialogContent>
               <TextField
                 className={classes.input}
@@ -155,6 +224,7 @@ export class Dashboard extends Component {
 const mapStateToProps = (state) => {
   return {
     orders: state.order.orders,
+    orderOfIds: state.order.orderOfIds,
     auth: state.firebase.auth
   }
 }
@@ -162,7 +232,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     createOrder: (order) => dispatch(createOrder(order)),
-    initializeOrders: () => dispatch(initializeOrders())
+    initializeOrders: () => dispatch(initializeOrders()),
+    orderChanged: (newOrder) => dispatch(orderChanged(newOrder))
   }
 }
 
@@ -174,7 +245,4 @@ Dashboard.propTypes = {
 export default compose(
   connect(mapStateToProps, mapDispatchToProps),
   withStyles(styles),
-  firestoreConnect([
-    { collection: 'orders' }
-  ])
 )(Dashboard)

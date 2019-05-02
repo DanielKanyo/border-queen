@@ -42,12 +42,14 @@ const initState = {
 
 const initializeOrders = (state, action) => {
   const { payload } = action
+  const { orders, orderOfIds } = payload
 
   return {
     ...state,
     orders: {
-      ...payload
-    }
+      ...orders
+    },
+    orderOfIds
   }
 }
 const initializeColumns = (state, action) => {
@@ -79,7 +81,8 @@ const addOrderEntry = (state, action) => {
     orders: {
       ...state.orders,
       [id]: order
-    }
+    },
+    orderOfIds: [...state.orderOfIds, id]
   }
 }
 
@@ -101,15 +104,32 @@ const addColumnEntry = (state, action) => {
 const deleteOrderEntry = (state, action) => {
   const { payload } = action
   const { id } = payload
-  const { orders } = state
+  const { orders, orderOfIds } = state
   
+  const index = orderOfIds.indexOf(id)
+
+  if (index > -1) {
+    orderOfIds.splice(index, 1);
+  }
+
   delete orders[id]
   
   return {
     ...state,
     orders: {
       ...orders
-    }
+    },
+    orderOfIds
+  }
+}
+
+const changeOrder = (state, action) => {
+  const { payload } = action
+  const { newOrder } = payload
+
+  return {
+    ...state,
+    orderOfIds: newOrder
   }
 }
 
@@ -138,6 +158,12 @@ const orderReducer = (state = initState, action) => {
       return deleteOrderEntry(state, action)
     case 'DELETE_ORDER_ERROR':
       console.log('Delete order error', action.error)
+      return state
+
+    case 'ORDER_CHANGED':
+      return changeOrder(state, action)
+    case 'ORDER_CHANGED_ERROR':
+      console.log('Order changed error', action.error)
       return state
 
     case 'SIGNOUT_SUCCESS':
