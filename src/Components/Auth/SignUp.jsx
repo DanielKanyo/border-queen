@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
@@ -40,87 +40,73 @@ const styles = theme => ({
   }
 });
 
-export class SignUp extends Component {
+const SignUp = ({ classes, auth, authError, signUp }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
 
-  state = {
-    email: '',
-    password: '',
-    firstName: '',
-    lastName: ''
-  }
-
-  handleChange = e => {
-    this.setState({
-      [e.target.id]: e.target.value
-    });
-  }
-
-  handleSubmit = e => {
+  const handleSubmit = e => {
     e.preventDefault();
 
-    this.props.signUp(this.state)
+    signUp({ email, password, firstName, lastName });
   }
 
-  render() {
-    const { classes, auth, authError } = this.props;
-    const { email, password, firstName, lastName } = this.state;
+  if (auth.uid) return <Redirect to='/' />
 
-    if (auth.uid) return <Redirect to='/' />
-
-    return (
-      <div className={classes.root}>
-        <div>
-          <Paper className={classes.paper}>
-            <Typography variant="h5" component="h3" className={classes.title}>
+  return (
+    <div className={classes.root}>
+      <div>
+        <Paper className={classes.paper}>
+          <Typography variant="h5" component="h3" className={classes.title}>
+            Sign Up
+          </Typography>
+          <form onSubmit={handleSubmit}>
+            <TextField
+              id="firstName"
+              label="First Name"
+              className={classes.textField}
+              value={firstName}
+              onChange={e => setFirstName(e.target.value)}
+              margin="normal"
+              type="text"
+            />
+            <TextField
+              id="lastName"
+              label="Last Name"
+              className={classes.textField}
+              value={lastName}
+              onChange={e => setLastName(e.target.value)}
+              margin="normal"
+              type="text"
+            />
+            <TextField
+              id="email"
+              label="E-mail"
+              className={classes.textField}
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              margin="normal"
+              type="text"
+            />
+            <TextField
+              id="password"
+              label="Password"
+              className={classes.textField}
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              margin="normal"
+              type="password"
+            />
+            <Button variant="contained" color="primary" className={classes.button} type="submit">
               Sign Up
-            </Typography>
-            <form onSubmit={this.handleSubmit}>
-              <TextField
-                id="firstName"
-                label="First Name"
-                className={classes.textField}
-                value={firstName}
-                onChange={this.handleChange}
-                margin="normal"
-                type="text"
-              />
-              <TextField
-                id="lastName"
-                label="Last Name"
-                className={classes.textField}
-                value={lastName}
-                onChange={this.handleChange}
-                margin="normal"
-                type="text"
-              />
-              <TextField
-                id="email"
-                label="E-mail"
-                className={classes.textField}
-                value={email}
-                onChange={this.handleChange}
-                margin="normal"
-                type="text"
-              />
-              <TextField
-                id="password"
-                label="Password"
-                className={classes.textField}
-                value={password}
-                onChange={this.handleChange}
-                margin="normal"
-                type="password"
-              />
-              <Button variant="contained" color="primary" className={classes.button} type="submit">
-                Sign Up
-              </Button>
-            </form>
-            {authError && <div className={classes.errorMsg}>{authError}</div>}
-          </Paper>
-        </div>
+            </Button>
+          </form>
+          {authError && <div className={classes.errorMsg}>{authError}</div>}
+        </Paper>
       </div>
-    )
-  }
+    </div>
+  )
 }
 
 const mapStateToProps = (state) => {
