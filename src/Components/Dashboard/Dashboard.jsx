@@ -181,9 +181,11 @@ export class Dashboard extends Component {
               <div className={classes.dialogTitle}>
                 <div>Create order</div>
                 <div className={classes.settingsIcon}>
-                  <IconButton aria-label="Settings" component={Link} to={`/settings`}>
-                    <SettingsIcon />
-                  </IconButton>
+                  <Tooltip title="Set defaults" placement="left">
+                    <IconButton aria-label="Settings" component={Link} to={`/settings`}>
+                      <SettingsIcon />
+                    </IconButton>
+                  </Tooltip>
                 </div>
               </div>
             </DialogTitle>

@@ -78,7 +78,7 @@ export class OrderSummary extends Component {
           <div className="order-description">{order.description}</div>
           <div className={classes.contentAction}>
             <Typography color="primary" variant="subtitle1">
-              {moment(order.createdAt).format('MMMM DD, YYYY')}
+              {moment(order.createdAt).format('MMMM D, YYYY')}
             </Typography>
           </div>
         </Paper>
