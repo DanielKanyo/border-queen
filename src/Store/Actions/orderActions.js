@@ -102,3 +102,25 @@ export const orderChanged = (newOrder) => {
     });
   }
 }
+
+export const createCompany = (name) => {
+  return (dispatch, getState, { getFirestore }) => {
+    const firestore = getFirestore();
+    const authorId = getState().firebase.auth.uid;
+
+    const payload = { name, authorId };
+
+    firestore.collection('companies').add({
+      ...payload,
+    }).then(snapshot => {
+      const { id } = snapshot;
+
+      firestore.collection('companies').doc(id).update({ id });
+      payload.id = id;
+
+      dispatch({ type: 'CREATE_COMPANY', payload });
+    }).catch((error) => {
+      dispatch({ type: 'CREATE_COMPANY_ERROR', error });
+    });
+  }
+}

@@ -7,6 +7,8 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
+import CompanySummary from './CompanySummary'
+import { createCompany } from '../../Store/Actions/orderActions'
 
 const styles = theme => ({
   root: {
@@ -17,6 +19,7 @@ const styles = theme => ({
     ...theme.mixins.gutters(),
     paddingTop: theme.spacing.unit * 2,
     paddingBottom: theme.spacing.unit * 2,
+    marginBottom: 8
   },
   textField: {
     width: '100%',
@@ -29,12 +32,14 @@ const styles = theme => ({
   }
 });
 
-const OrderSettings = ({ classes, auth }) => {
+const OrderSettings = ({ classes, auth, createCompany }) => {
 
   const [companyName, setCompanyName] = useState('');
 
   const handleSubmit = e => {
     e.preventDefault();
+
+    if (companyName) createCompany(companyName);
   }
 
   if (!auth.uid) return <Redirect to='/signin' />
@@ -52,12 +57,20 @@ const OrderSettings = ({ classes, auth }) => {
             value={companyName}
           />
           <div className={classes.buttonContainer}>
-            <Button variant="contained" color="primary" className={classes.button} type="submit">
+            <Button
+              variant="contained"
+              color="primary"
+              className={classes.button}
+              type="submit"
+              disabled={companyName ? false : true}
+            >
               Create Company
             </Button>
           </div>
         </form>
       </Paper>
+
+      <CompanySummary />
     </div>
   )
 }
@@ -72,7 +85,13 @@ const mapStateToProps = (state) => {
   }
 }
 
+const mapDispatchToProps = (dispatch) => {
+  return {
+    createCompany: (companyName) => dispatch(createCompany(companyName))
+  }
+}
+
 export default compose(
-  connect(mapStateToProps),
+  connect(mapStateToProps, mapDispatchToProps),
   withStyles(styles),
 )(OrderSettings)
