@@ -92,7 +92,7 @@ export class Dashboard extends Component {
     this.props.orderChanged(orderOfIds);
   }
 
-  componentWillMount = () => {
+  componentDidMount = () => {
     this.props.initializeOrders();
   }
 

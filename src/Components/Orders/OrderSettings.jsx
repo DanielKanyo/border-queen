@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
@@ -7,8 +7,10 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
+import Grid from '@material-ui/core/Grid'
 import CompanySummary from './CompanySummary'
-import { createCompany } from '../../Store/Actions/orderActions'
+import { initializeCompanies, createCompany } from '../../Store/Actions/orderActions'
+import EmptyList from '../Layout/EmptyList'
 
 const styles = theme => ({
   root: {
@@ -18,8 +20,7 @@ const styles = theme => ({
   paper: {
     ...theme.mixins.gutters(),
     paddingTop: theme.spacing.unit * 2,
-    paddingBottom: theme.spacing.unit * 2,
-    marginBottom: 8
+    paddingBottom: theme.spacing.unit * 2
   },
   textField: {
     width: '100%',
@@ -32,45 +33,77 @@ const styles = theme => ({
   }
 });
 
-const OrderSettings = ({ classes, auth, createCompany }) => {
+const OrderSettings = (props) => {
 
-  const [companyName, setCompanyName] = useState('');
+  const { classes, auth, createCompany, initializeCompanies, companies } = props;
+
+  const [name, setCompanyName] = useState('');
+  const [description, setCompanyDescription] = useState('');
+
+  useEffect(() => initializeCompanies(), []);
 
   const handleSubmit = e => {
     e.preventDefault();
 
-    if (companyName) createCompany(companyName);
+    const company = {
+      name,
+      description
+    }
+
+    if (name && description) {
+      createCompany(company);
+
+      setCompanyName('');
+      setCompanyDescription('');
+    }
   }
 
   if (!auth.uid) return <Redirect to='/signin' />
 
   return (
     <div className={classes.root}>
-      <Paper className={classes.paper}>
-        <form className={classes.container} noValidate autoComplete="off" onSubmit={handleSubmit}>
-          <TextField
-            id="companyName"
-            label="Company Name"
-            placeholder="Create a company..."
-            className={classes.textField}
-            onChange={e => setCompanyName(e.target.value)}
-            value={companyName}
-          />
-          <div className={classes.buttonContainer}>
-            <Button
-              variant="contained"
-              color="primary"
-              className={classes.button}
-              type="submit"
-              disabled={companyName ? false : true}
-            >
-              Create Company
-            </Button>
-          </div>
-        </form>
-      </Paper>
-
-      <CompanySummary />
+      <Grid container spacing={8}>
+        <Grid item xs={12} sm={6}>
+          <Paper className={classes.paper}>
+            <form className={classes.container} noValidate autoComplete="off" onSubmit={handleSubmit}>
+              <TextField
+                id="companyName"
+                label="Company Name"
+                placeholder="Create a company..."
+                className={classes.textField}
+                onChange={e => setCompanyName(e.target.value)}
+                value={name}
+              />
+              <TextField
+                id="companyDescription"
+                label="Description"
+                placeholder="A few words about the company..."
+                className={classes.textField}
+                onChange={e => setCompanyDescription(e.target.value)}
+                value={description}
+              />
+              <div className={classes.buttonContainer}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className={classes.button}
+                  type="submit"
+                  disabled={name ? false : true}
+                >
+                  Create Company
+                </Button>
+              </div>
+            </form>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          {
+            companies && Object.keys(companies).length ? Object.keys(companies).map(key => {
+              return <CompanySummary key={key} company={companies[key]} />
+            }) : <EmptyList />
+          }
+        </Grid>
+      </Grid>
     </div>
   )
 }
@@ -81,13 +114,15 @@ OrderSettings.propTypes = {
 
 const mapStateToProps = (state) => {
   return {
-    auth: state.firebase.auth
+    auth: state.firebase.auth,
+    companies: state.order.companies
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    createCompany: (companyName) => dispatch(createCompany(companyName))
+    createCompany: (companyName) => dispatch(createCompany(companyName)),
+    initializeCompanies: () => dispatch(initializeCompanies())
   }
 }
 

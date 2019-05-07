@@ -103,12 +103,16 @@ export const orderChanged = (newOrder) => {
   }
 }
 
-export const createCompany = (name) => {
+export const createCompany = (company) => {
   return (dispatch, getState, { getFirestore }) => {
     const firestore = getFirestore();
     const authorId = getState().firebase.auth.uid;
 
-    const payload = { name, authorId };
+    const payload = { 
+      name: company.name,
+      description: company.description,
+      authorId 
+    };
 
     firestore.collection('companies').add({
       ...payload,
@@ -121,6 +125,34 @@ export const createCompany = (name) => {
       dispatch({ type: 'CREATE_COMPANY', payload });
     }).catch((error) => {
       dispatch({ type: 'CREATE_COMPANY_ERROR', error });
+    });
+  }
+}
+
+export const initializeCompanies = () => {
+  return (dispatch, getState, { getFirestore }) => {
+    const firestore = getFirestore();
+    const authorId = getState().firebase.auth.uid;
+
+    let companies = {};
+    let payload;
+
+    firestore.collection('companies').where('authorId', '==', authorId).get().then((companyResponse) => {
+      companyResponse.forEach((doc) => {
+        let company = doc.data();
+      
+        companies[company.id] = {
+          ...company
+        }
+      });
+
+      payload = {
+        companies: {
+          ...companies
+        }
+      }
+    }).then(() => {
+      dispatch({ type: 'INITIALIZE_COMPANIES', payload });
     });
   }
 }

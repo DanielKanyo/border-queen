@@ -1,43 +1,7 @@
 const initState = {
-  orders: {
-    // 'table1': {
-    //   id: 'table1',
-    //   title: 'Table 1',
-    //   authorId: '1234',
-    //   createdAt: new Date(),
-    //   description: 'This is my first table...',
-    //   columns: ['column1', 'column2', 'column3'],
-    //   rows: ['row1', 'row2', 'row3']
-    // }
-  },
-  columns: {
-    // 'column1': {
-    //   id: 'column1',
-    //   type: 'text'
-    // },
-    // 'column2': {
-    //   id: 'column2',
-    //   type: 'text'
-    // },
-    // 'column3': {
-    //   id: 'column3',
-    //   type: 'text'
-    // }
-  },
-  rows: {
-    // 'row1': {
-    //   id: 'row1',
-    //   values: ['text1', 'text2', 'text3']
-    // },
-    // 'row2': {
-    //   id: 'row2',
-    //   values: ['text4', 'text5', 'text6']
-    // },
-    // 'row3': {
-    //   id: 'row3',
-    //   values: ['text7', 'text8', 'text9']
-    // }
-  }
+  orders: {},
+  companies: {},
+  orderOfIds: []
 }
 
 const initializeOrders = (state, action) => {
@@ -49,24 +13,7 @@ const initializeOrders = (state, action) => {
     orders: {
       ...orders
     },
-    orderOfIds
-  }
-}
-const initializeColumns = (state, action) => {
-  const { payload } = action
-
-  return {
-    ...state,
-    columns: {
-      ...payload
-    }
-  }
-}
-
-const resetColumns = (state) => {
-  return {
-    ...state,
-    columns: {}
+    orderOfIds: [...orderOfIds]
   }
 }
 
@@ -83,21 +30,6 @@ const addOrderEntry = (state, action) => {
       [id]: order
     },
     orderOfIds: [...state.orderOfIds, id]
-  }
-}
-
-const addColumnEntry = (state, action) => {
-  const { payload } = action
-  const { id, label, type, color, ownerId } = payload
-
-  const column = { id, label, type, color, ownerId }
-
-  return {
-    ...state,
-    columns: {
-      ...state.columns,
-      [id]: column
-    }
   }
 }
 
@@ -129,25 +61,51 @@ const changeOrder = (state, action) => {
   }
 }
 
+const initializeCompanies = (state, action) => {
+  const { payload } = action
+  const { companies } = payload
+  
+  return {
+    ...state,
+    companies: {
+      ...companies
+    }
+  };
+}
+
+const addCompanyEntry = (state, action) => {
+  const { payload } = action
+  const { id, name, description, authorId } = payload
+
+  const company = { id, name, description, authorId }
+
+  return {
+    ...state,
+    companies: {
+      ...state.companies,
+      [id]: company
+    }
+  }
+}
+
 const orderReducer = (state = initState, action) => {
   switch (action.type) {
     case 'INITIALIZE_ORDERS':
       return initializeOrders(state, action)
-    case 'INITIALIZE_COLUMNS':
-      return initializeColumns(state, action)
-    case 'RESET_COLUMNS':
-      return resetColumns(state)
+
+    case 'INITIALIZE_COMPANIES':
+      return initializeCompanies(state, action)
 
     case 'CREATE_ORDER':
       return addOrderEntry(state, action)
     case 'CREATE_ORDER_ERROR':
       console.log('Add order error', action.error)
       return state
-    
-    case 'CREATE_COLUMN_SUCCESS':
-      return addColumnEntry(state, action)
-    case 'CREATE_COLUMN_ERROR':
-      console.log('Add column error', action.error)
+
+    case 'CREATE_COMPANY':
+      return addCompanyEntry(state, action)
+    case 'CREATE_COMPANY_ERROR':
+    console.log('Add company error', action.error)
       return state
 
     case 'DELETE_ORDER':

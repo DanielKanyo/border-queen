@@ -11,44 +11,30 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 const styles = theme => ({
-  root: {
-    width: '100%',
-  },
   heading: {
     fontSize: theme.typography.pxToRem(15),
     fontWeight: theme.typography.fontWeightRegular,
   },
+  expanded: {
+    margin: '8px 0'
+  }
 });
 
-const CompanySummary = ({ classes, auth }) => {
+const CompanySummary = ({ classes, auth, company }) => {
 
   if (!auth.uid) return <Redirect to='/signin' />
 
   return (
-    <div className={classes.root}>
-      <ExpansionPanel>
+    <React.Fragment>
+      <ExpansionPanel classes={{ expanded: classes.expanded }}>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography className={classes.heading}>Expansion Panel 1</Typography>
+          <Typography className={classes.heading}>{company.name}</Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
-          <Typography>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex,
-            sit amet blandit leo lobortis eget.
-          </Typography>
+          <Typography>{company.description}</Typography>
         </ExpansionPanelDetails>
       </ExpansionPanel>
-      <ExpansionPanel>
-        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography className={classes.heading}>Expansion Panel 2</Typography>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
-          <Typography>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex,
-            sit amet blandit leo lobortis eget.
-          </Typography>
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
-    </div>
+    </React.Fragment>
   )
 }
 
