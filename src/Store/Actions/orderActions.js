@@ -157,3 +157,24 @@ export const initializeCompanies = () => {
     });
   }
 }
+
+export const updateCompany = (id, newCompanyData) => {
+  return (dispatch, getState, { getFirestore }) => {
+    const firestore = getFirestore();
+
+    const payload = {
+      ...newCompanyData,
+      id
+    }
+
+    firestore.collection('companies').doc(id).update({
+      name: newCompanyData.name,
+      description: newCompanyData.description,
+      color: newCompanyData.color
+    }).then(() => {
+      dispatch({ type: 'UPDATE_COMPANY', payload });
+    }).catch(error => {
+      dispatch({ type: 'UPDATE_COMPANY_ERROR', error });
+    })
+  }
+}

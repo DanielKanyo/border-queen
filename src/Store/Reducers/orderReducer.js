@@ -88,6 +88,21 @@ const addCompanyEntry = (state, action) => {
   }
 }
 
+const updateCompanyEntry = (state, action) => {
+  const { payload } = action
+  const { id } = payload
+  
+  return {
+    ...state,
+    companies: {
+      ...state.companies,
+      [id]: {
+        ...payload
+      }
+    }
+  }
+}
+
 const orderReducer = (state = initState, action) => {
   switch (action.type) {
     case 'INITIALIZE_ORDERS':
@@ -105,7 +120,12 @@ const orderReducer = (state = initState, action) => {
     case 'CREATE_COMPANY':
       return addCompanyEntry(state, action)
     case 'CREATE_COMPANY_ERROR':
-    console.log('Add company error', action.error)
+      console.log('Add company error', action.error)
+      return state
+    case 'UPDATE_COMPANY':
+      return updateCompanyEntry(state, action)
+    case 'UPDATE_COMPANY_ERROR':
+      console.log('Update company error', action.error)
       return state
 
     case 'DELETE_ORDER':

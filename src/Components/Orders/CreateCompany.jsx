@@ -9,7 +9,7 @@ import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
 import CompanySummary from './CompanySummary'
-import { initializeCompanies, createCompany } from '../../Store/Actions/orderActions'
+import { initializeCompanies, createCompany, updateCompany } from '../../Store/Actions/orderActions'
 import EmptyList from '../Layout/EmptyList'
 import { SliderPicker } from 'react-color'
 import Typography from '@material-ui/core/Typography'
@@ -46,8 +46,7 @@ const styles = theme => ({
 });
 
 const CreateCompany = (props) => {
-
-  const { classes, auth, createCompany, initializeCompanies, companies } = props;
+  const { classes, auth, createCompany, initializeCompanies, companies, updateCompany } = props;
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -67,7 +66,7 @@ const CreateCompany = (props) => {
     }
 
     if (editMode) {
-      console.log('Update company', companyId);
+      updateCompany(companyId, company);
       setDefaults();
     } else {
       if (name && description) {
@@ -176,7 +175,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     createCompany: (companyName) => dispatch(createCompany(companyName)),
-    initializeCompanies: () => dispatch(initializeCompanies())
+    initializeCompanies: () => dispatch(initializeCompanies()),
+    updateCompany: (id, newCompanyData) => dispatch(updateCompany(id, newCompanyData))
   }
 }
 

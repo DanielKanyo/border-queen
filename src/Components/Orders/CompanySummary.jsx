@@ -28,8 +28,8 @@ const styles = theme => ({
     padding: 8
   },
   smallAvatar: {
-    width: 22,
-    height: 22,
+    width: 21,
+    height: 21,
     marginRight: 15
   }
 });
@@ -38,12 +38,15 @@ const CompanySummary = ({ classes, auth, company, setters }) => {
 
   if (!auth.uid) return <Redirect to='/signin' />
 
-  const styles = { background: company.color }
+  const styles = { 
+    background: company.color ? company.color : 'white',
+    border: company.color ? `1px solid ${company.color}` : '1px solid grey'
+  }
 
   const fillUpdateForm = () => {
     setters.setName(company.name);
     setters.setDescription(company.description);
-    setters.setColor(company.color);
+    setters.setColor(company.color ? company.color : '#000');
     setters.setId(company.id);
     setters.setEditMode(true);
   }
