@@ -58,7 +58,7 @@ const CreateCompany = (props) => {
     const company = {
       name,
       description,
-      color
+      color: color.hex
     }
 
     if (name && description) {

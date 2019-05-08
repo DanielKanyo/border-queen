@@ -9,6 +9,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import { Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
+import Avatar from '@material-ui/core/Avatar'
 
 const styles = theme => ({
   heading: {
@@ -17,6 +18,11 @@ const styles = theme => ({
   },
   expanded: {
     margin: '8px 0'
+  },
+  smallAvatar: {
+    width: 22,
+    height: 22,
+    marginRight: 15
   }
 });
 
@@ -24,10 +30,13 @@ const CompanySummary = ({ classes, auth, company }) => {
 
   if (!auth.uid) return <Redirect to='/signin' />
 
+  const styles = { background: company.color }
+
   return (
     <React.Fragment>
       <ExpansionPanel classes={{ expanded: classes.expanded }}>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+          <Avatar className={classes.smallAvatar} style={styles}></Avatar>
           <Typography className={classes.heading}>{company.name}</Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
