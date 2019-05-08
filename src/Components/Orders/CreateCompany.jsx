@@ -11,6 +11,8 @@ import Grid from '@material-ui/core/Grid'
 import CompanySummary from './CompanySummary'
 import { initializeCompanies, createCompany } from '../../Store/Actions/orderActions'
 import EmptyList from '../Layout/EmptyList'
+import { SliderPicker } from 'react-color'
+import Typography from '@material-ui/core/Typography'
 
 const styles = theme => ({
   root: {
@@ -30,15 +32,23 @@ const styles = theme => ({
   buttonContainer: {
     display: 'flex',
     justifyContent: 'flex-end'
+  },
+  colorPickerText: {
+    color: 'rgba(0, 0, 0, 0.54)'
+  },
+  colorPicker: {
+    marginTop: 12,
+    marginBottom: 24
   }
 });
 
-const OrderSettings = (props) => {
+const CreateCompany = (props) => {
 
   const { classes, auth, createCompany, initializeCompanies, companies } = props;
 
   const [name, setCompanyName] = useState('');
   const [description, setCompanyDescription] = useState('');
+  const [color, setCompanyColor] = useState('');
 
   useEffect(() => initializeCompanies(), []);
 
@@ -47,7 +57,8 @@ const OrderSettings = (props) => {
 
     const company = {
       name,
-      description
+      description,
+      color
     }
 
     if (name && description) {
@@ -69,7 +80,7 @@ const OrderSettings = (props) => {
               <TextField
                 id="companyName"
                 label="Company Name"
-                placeholder="Create a company..."
+                placeholder="Enter a name..."
                 className={classes.textField}
                 onChange={e => setCompanyName(e.target.value)}
                 value={name}
@@ -82,6 +93,13 @@ const OrderSettings = (props) => {
                 onChange={e => setCompanyDescription(e.target.value)}
                 value={description}
               />
+              <div className={classes.colorPicker}>
+                <Typography variant="subtitle1" gutterBottom className={classes.colorPickerText}>Select a color for the company...</Typography>
+                <SliderPicker
+                  color={color}
+                  onChangeComplete={color => setCompanyColor(color)}
+                />
+              </div>
               <div className={classes.buttonContainer}>
                 <Button
                   variant="contained"
@@ -108,7 +126,7 @@ const OrderSettings = (props) => {
   )
 }
 
-OrderSettings.propTypes = {
+CreateCompany.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
@@ -129,4 +147,4 @@ const mapDispatchToProps = (dispatch) => {
 export default compose(
   connect(mapStateToProps, mapDispatchToProps),
   withStyles(styles),
-)(OrderSettings)
+)(CreateCompany)

@@ -111,6 +111,7 @@ export const createCompany = (company) => {
     const payload = { 
       name: company.name,
       description: company.description,
+      color: company.color,
       authorId 
     };
 

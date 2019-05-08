@@ -6,7 +6,7 @@ import Dashboard from './Components/Dashboard/Dashboard'
 import SignIn from './Components/Auth/SignIn'
 import SignUp from './Components/Auth/SignUp'
 import EditOrder from './Components/Orders/EditOrder'
-import OrderSettings from './Components/Orders/OrderSettings'
+import CreateCompany from './Components/Orders/CreateCompany'
 
 const theme = createMuiTheme({
   typography: {
@@ -32,7 +32,7 @@ class App extends Component {
                 <Route path="/signin" component={SignIn} />
                 <Route path="/signup" component={SignUp} />
                 <Route path="/edit/:id" component={EditOrder} />
-                <Route path="/settings" component={OrderSettings} />
+                <Route path="/settings" component={CreateCompany} />
               </Switch>
             </div>
           </MuiThemeProvider>

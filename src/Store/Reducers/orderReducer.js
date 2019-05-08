@@ -75,9 +75,9 @@ const initializeCompanies = (state, action) => {
 
 const addCompanyEntry = (state, action) => {
   const { payload } = action
-  const { id, name, description, authorId } = payload
+  const { id, name, description, color, authorId } = payload
 
-  const company = { id, name, description, authorId }
+  const company = { id, name, description, color, authorId }
 
   return {
     ...state,
