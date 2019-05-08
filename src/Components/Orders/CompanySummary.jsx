@@ -34,18 +34,18 @@ const styles = theme => ({
   }
 });
 
-const CompanySummary = ({ classes, auth, company, setName, setDescription, setColor, setId, setEditMode }) => {
+const CompanySummary = ({ classes, auth, company, setters }) => {
 
   if (!auth.uid) return <Redirect to='/signin' />
 
   const styles = { background: company.color }
 
   const fillUpdateForm = () => {
-    setName(company.name);
-    setDescription(company.description);
-    setColor(company.color);
-    setId(company.id);
-    setEditMode(true);
+    setters.setName(company.name);
+    setters.setDescription(company.description);
+    setters.setColor(company.color);
+    setters.setId(company.id);
+    setters.setEditMode(true);
   }
 
   return (

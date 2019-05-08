@@ -84,6 +84,14 @@ const CreateCompany = (props) => {
 
   if (!auth.uid) return <Redirect to='/signin' />
 
+  const setters = {
+    setName,
+    setDescription,
+    setColor,
+    setId,
+    setEditMode
+  }
+
   return (
     <div className={classes.root}>
       <Grid container spacing={8}>
@@ -134,11 +142,7 @@ const CreateCompany = (props) => {
                 <CompanySummary
                   key={key}
                   company={companies[key]}
-                  setName={setName}
-                  setDescription={setDescription}
-                  setColor={setColor}
-                  setId={setId}
-                  setEditMode={setEditMode}
+                  setters={setters}
                 />
               )
             }) : <EmptyList />
