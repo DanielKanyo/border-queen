@@ -39,6 +39,9 @@ const styles = theme => ({
   colorPicker: {
     marginTop: 12,
     marginBottom: 24
+  },
+  cancelButton: {
+    marginRight: 10
   }
 });
 
@@ -65,21 +68,21 @@ const CreateCompany = (props) => {
 
     if (editMode) {
       console.log('Update company', companyId);
-
-      setName('');
-      setDescription('');
-      setColor('');
-      setId('');
-      setEditMode(false);
+      setDefaults();
     } else {
       if (name && description) {
         createCompany(company);
-
-        setName('');
-        setDescription('');
-        setColor('');
+        setDefaults();
       }
     }
+  }
+
+  const setDefaults = () => {
+    setName('');
+    setDescription('');
+    setColor('');
+    setId('');
+    setEditMode(false);
   }
 
   if (!auth.uid) return <Redirect to='/signin' />
@@ -122,6 +125,12 @@ const CreateCompany = (props) => {
                 />
               </div>
               <div className={classes.buttonContainer}>
+                {
+                  editMode ?
+                    <Button variant="contained" className={classes.cancelButton} color="secondary" onClick={() => setDefaults()}>
+                      Cancel
+                    </Button> : null
+                }
                 <Button
                   variant="contained"
                   color="primary"
