@@ -46,9 +46,11 @@ const CreateCompany = (props) => {
 
   const { classes, auth, createCompany, initializeCompanies, companies } = props;
 
-  const [name, setCompanyName] = useState('');
-  const [description, setCompanyDescription] = useState('');
-  const [color, setCompanyColor] = useState('');
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [color, setColor] = useState('');
+  const [companyId, setId] = useState('');
+  const [editMode, setEditMode] = useState(false);
 
   useEffect(() => initializeCompanies(), []);
 
@@ -58,14 +60,25 @@ const CreateCompany = (props) => {
     const company = {
       name,
       description,
-      color: color.hex
+      color: color.hex ? color.hex : null
     }
 
-    if (name && description) {
-      createCompany(company);
+    if (editMode) {
+      console.log('Update company', companyId);
 
-      setCompanyName('');
-      setCompanyDescription('');
+      setName('');
+      setDescription('');
+      setColor('');
+      setId('');
+      setEditMode(false);
+    } else {
+      if (name && description) {
+        createCompany(company);
+
+        setName('');
+        setDescription('');
+        setColor('');
+      }
     }
   }
 
@@ -82,7 +95,7 @@ const CreateCompany = (props) => {
                 label="Company Name"
                 placeholder="Enter a name..."
                 className={classes.textField}
-                onChange={e => setCompanyName(e.target.value)}
+                onChange={e => setName(e.target.value)}
                 value={name}
               />
               <TextField
@@ -90,14 +103,14 @@ const CreateCompany = (props) => {
                 label="Description"
                 placeholder="A few words about the company..."
                 className={classes.textField}
-                onChange={e => setCompanyDescription(e.target.value)}
+                onChange={e => setDescription(e.target.value)}
                 value={description}
               />
               <div className={classes.colorPicker}>
                 <Typography variant="subtitle1" gutterBottom className={classes.colorPickerText}>Select a color for the company...</Typography>
                 <SliderPicker
                   color={color}
-                  onChangeComplete={color => setCompanyColor(color)}
+                  onChangeComplete={color => setColor(color)}
                 />
               </div>
               <div className={classes.buttonContainer}>
@@ -108,7 +121,7 @@ const CreateCompany = (props) => {
                   type="submit"
                   disabled={name ? false : true}
                 >
-                  Create Company
+                  {editMode ? 'Update Company' : 'Create Company'}
                 </Button>
               </div>
             </form>
@@ -117,7 +130,17 @@ const CreateCompany = (props) => {
         <Grid item xs={12} sm={6}>
           {
             companies && Object.keys(companies).length ? Object.keys(companies).map(key => {
-              return <CompanySummary key={key} company={companies[key]} />
+              return (
+                <CompanySummary
+                  key={key}
+                  company={companies[key]}
+                  setName={setName}
+                  setDescription={setDescription}
+                  setColor={setColor}
+                  setId={setId}
+                  setEditMode={setEditMode}
+                />
+              )
             }) : <EmptyList />
           }
         </Grid>

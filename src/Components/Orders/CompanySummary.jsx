@@ -34,11 +34,19 @@ const styles = theme => ({
   }
 });
 
-const CompanySummary = ({ classes, auth, company }) => {
+const CompanySummary = ({ classes, auth, company, setName, setDescription, setColor, setId, setEditMode }) => {
 
   if (!auth.uid) return <Redirect to='/signin' />
 
   const styles = { background: company.color }
+
+  const fillUpdateForm = () => {
+    setName(company.name);
+    setDescription(company.description);
+    setColor(company.color);
+    setId(company.id);
+    setEditMode(true);
+  }
 
   return (
     <React.Fragment>
@@ -52,7 +60,7 @@ const CompanySummary = ({ classes, auth, company }) => {
         </ExpansionPanelDetails>
         <Divider />
         <ExpansionPanelActions className={classes.action}>
-          <IconButton aria-label="Edit">
+          <IconButton aria-label="Edit" onClick={() => fillUpdateForm()}>
             <EditIcon fontSize="small" />
           </IconButton>
           <IconButton aria-label="Delete">
