@@ -18,6 +18,9 @@ import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
+import Chip from '@material-ui/core/Chip'
+import IconButton from '@material-ui/core/IconButton'
+import AddIcon from '@material-ui/icons/Add'
 
 const styles = theme => ({
   root: {
@@ -47,6 +50,17 @@ const styles = theme => ({
   },
   cancelButton: {
     marginRight: 10
+  },
+  chip: {
+    marginRight: theme.spacing.unit / 2
+  },
+  addProductsContainer: {
+    position: 'relative'
+  },
+  addButton: {
+    position: 'absolute',
+    right: 0,
+    top: 'calc(50% - 21px)'
   }
 });
 
@@ -55,6 +69,8 @@ const CreateCompany = (props) => {
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [product, setProduct] = useState('');
+  const [products, setProducts] = useState([]);
   const [color, setColor] = useState('');
   const [companyId, setId] = useState('');
   const [editMode, setEditMode] = useState(false);
@@ -68,14 +84,15 @@ const CreateCompany = (props) => {
     const company = {
       name,
       description,
-      color: color.hex ? color.hex : null
+      color: color.hex ? color.hex : null,
+      products
     }
 
     if (editMode) {
       updateCompany(companyId, company);
       setDefaults();
     } else {
-      if (name && description) {
+      if (name && description && products) {
         createCompany(company);
         setDefaults();
       }
@@ -88,6 +105,8 @@ const CreateCompany = (props) => {
     setColor('');
     setId('');
     setEditMode(false);
+    setProduct('');
+    setProducts([]);
   }
 
   if (!auth.uid) return <Redirect to='/signin' />
@@ -98,7 +117,8 @@ const CreateCompany = (props) => {
     setColor,
     setId,
     setEditMode,
-    toggleDeleteDialog
+    toggleDeleteDialog,
+    setProducts
   }
 
   return (
@@ -123,6 +143,36 @@ const CreateCompany = (props) => {
                 onChange={e => setDescription(e.target.value)}
                 value={description}
               />
+              <div className={classes.addProductsContainer}>
+                <TextField
+                  id="companyProducts"
+                  label="Add Products"
+                  placeholder="Enter a product then click on the plus button..."
+                  className={classes.textField}
+                  onChange={e => setProduct(e.target.value)}
+                  value={product}
+                />
+                <IconButton
+                  className={classes.addButton}
+                  aria-label="Add"
+                  disabled={product ? false : true}
+                  onClick={() => { setProducts([...products, product]); setProduct('') }}
+                >
+                  <AddIcon />
+                </IconButton>
+              </div>
+              {
+                products.map((prod, index) => {
+                  return (
+                    <Chip
+                      className={classes.chip}
+                      key={index}
+                      label={prod}
+                      onDelete={() => setProducts([...products.slice(0, index), ...products.slice(index + 1)])}
+                    />
+                  )
+                })
+              }
               <div className={classes.colorPicker}>
                 <Typography variant="subtitle1" gutterBottom className={classes.colorPickerText}>Select a color for the company...</Typography>
                 <SliderPicker
@@ -175,8 +225,8 @@ const CreateCompany = (props) => {
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             Are you sure you want to delete your company? You will lose all saved data...
-            </DialogContentText>
-          </DialogContent>
+          </DialogContentText>
+        </DialogContent>
         <DialogActions>
           <Button onClick={() => toggleDeleteDialog(false)} color="primary">
             Cancel

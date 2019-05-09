@@ -112,8 +112,9 @@ export const createCompany = (company) => {
       name: company.name,
       description: company.description,
       color: company.color,
+      products: company.products,
       createdAt: new Date().getTime(),
-      authorId 
+      authorId
     };
 
     firestore.collection('companies').add({
@@ -171,7 +172,8 @@ export const updateCompany = (id, newCompanyData) => {
     firestore.collection('companies').doc(id).update({
       name: newCompanyData.name,
       description: newCompanyData.description,
-      color: newCompanyData.color
+      color: newCompanyData.color,
+      products: newCompanyData.products
     }).then(() => {
       dispatch({ type: 'UPDATE_COMPANY', payload });
     }).catch(error => {

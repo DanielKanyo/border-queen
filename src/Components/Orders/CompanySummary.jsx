@@ -15,6 +15,7 @@ import Divider from '@material-ui/core/Divider'
 import IconButton from '@material-ui/core/IconButton'
 import DeleteIcon from '@material-ui/icons/DeleteOutline'
 import EditIcon from '@material-ui/icons/EditOutlined'
+import Chip from '@material-ui/core/Chip'
 
 const styles = theme => ({
   heading: {
@@ -31,12 +32,21 @@ const styles = theme => ({
     width: 21,
     height: 21,
     marginRight: 15
+  },
+  chip: {
+    marginRight: theme.spacing.unit / 2
+  },
+  details: {
+    display: 'block'
+  },
+  products: {
+    marginTop: 10
   }
 });
 
 const CompanySummary = ({ classes, auth, company, setters }) => {
 
-  const { setName, setDescription, setColor, setId, setEditMode, toggleDeleteDialog } = setters;
+  const { setName, setDescription, setColor, setId, setEditMode, toggleDeleteDialog, setProducts } = setters;
 
   if (!auth.uid) return <Redirect to='/signin' />
 
@@ -51,6 +61,7 @@ const CompanySummary = ({ classes, auth, company, setters }) => {
     setColor(company.color ? company.color : '#000');
     setId(company.id);
     setEditMode(true);
+    setProducts(company.products ? company.products : []);
   }
 
   return (
@@ -60,8 +71,21 @@ const CompanySummary = ({ classes, auth, company, setters }) => {
           <Avatar className={classes.smallAvatar} style={styles}></Avatar>
           <Typography className={classes.heading}>{company.name}</Typography>
         </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
+        <ExpansionPanelDetails className={classes.details}>
           <Typography>{company.description}</Typography>
+          <div className={classes.products}>
+            {
+              company.products && company.products.map((prod, index) => {
+                return (
+                  <Chip
+                    className={classes.chip}
+                    key={index}
+                    label={prod}
+                  />
+                )
+              })
+            }
+          </div>
         </ExpansionPanelDetails>
         <Divider />
         <ExpansionPanelActions className={classes.action}>
