@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
@@ -20,21 +20,19 @@ const styles = theme => ({
   }
 });
 
-export class EditOrder extends Component {
-  render() {
-    const { classes, auth } = this.props;
-    const { id } = this.props.match.params;
+const EditOrder = (props) => {
+  const { classes, auth } = props;
+  const { id } = props.match.params;
 
-    if (!auth.uid) return <Redirect to='/signin' />
+  if (!auth.uid) return <Redirect to='/signin' />
 
-    return (
-      <div className={classes.root}>
-        <Paper className={classes.paper}>
-          <Typography variant="h5">Edit order - {id}</Typography>
-        </Paper>
-      </div>
-    )
-  }
+  return (
+    <div className={classes.root}>
+      <Paper className={classes.paper}>
+        <Typography variant="h5">Edit order - {id}</Typography>
+      </Paper>
+    </div>
+  )
 }
 
 EditOrder.propTypes = {
@@ -45,7 +43,7 @@ const mapStateToProps = (state, ownProps) => {
   const id = ownProps.match.params.id;
   const orders = state.firestore.data.orders;
   const order = orders ? orders[id] : null;
-  
+
   return {
     order,
     auth: state.firebase.auth
@@ -53,7 +51,7 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 export default compose(
-  connect(mapStateToProps), 
+  connect(mapStateToProps),
   withStyles(styles),
   firestoreConnect([
     { collection: 'orders' }
