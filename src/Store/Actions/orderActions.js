@@ -139,7 +139,7 @@ export const initializeCompanies = () => {
     let companies = {};
     let payload;
 
-    firestore.collection('companies').where('authorId', '==', authorId).get().then((companyResponse) => {
+    firestore.collection('companies').where('authorId', '==', authorId).orderBy('createdAt').get().then((companyResponse) => {
       companyResponse.forEach((doc) => {
         let company = doc.data();
       
