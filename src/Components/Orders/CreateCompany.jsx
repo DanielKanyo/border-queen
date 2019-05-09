@@ -9,10 +9,15 @@ import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
 import CompanySummary from './CompanySummary'
-import { initializeCompanies, createCompany, updateCompany } from '../../Store/Actions/orderActions'
+import { initializeCompanies, createCompany, updateCompany, deleteCompany } from '../../Store/Actions/orderActions'
 import EmptyList from '../Layout/EmptyList'
 import { SliderPicker } from 'react-color'
 import Typography from '@material-ui/core/Typography'
+import Dialog from '@material-ui/core/Dialog'
+import DialogActions from '@material-ui/core/DialogActions'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogContentText from '@material-ui/core/DialogContentText'
+import DialogTitle from '@material-ui/core/DialogTitle'
 
 const styles = theme => ({
   root: {
@@ -46,13 +51,14 @@ const styles = theme => ({
 });
 
 const CreateCompany = (props) => {
-  const { classes, auth, createCompany, initializeCompanies, companies, updateCompany } = props;
+  const { classes, auth, createCompany, initializeCompanies, companies, updateCompany, deleteCompany } = props;
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [color, setColor] = useState('');
   const [companyId, setId] = useState('');
   const [editMode, setEditMode] = useState(false);
+  const [deleteDialog, toggleDeleteDialog] = useState(false);
 
   useEffect(() => initializeCompanies(), []);
 
@@ -91,7 +97,8 @@ const CreateCompany = (props) => {
     setDescription,
     setColor,
     setId,
-    setEditMode
+    setEditMode,
+    toggleDeleteDialog
   }
 
   return (
@@ -157,6 +164,28 @@ const CreateCompany = (props) => {
           }
         </Grid>
       </Grid>
+
+      <Dialog
+        open={deleteDialog}
+        onClose={() => toggleDeleteDialog(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">Delete company</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure you want to delete your company? You will lose all saved data...
+            </DialogContentText>
+          </DialogContent>
+        <DialogActions>
+          <Button onClick={() => toggleDeleteDialog(false)} color="primary">
+            Cancel
+            </Button>
+          <Button onClick={() => { deleteCompany(companyId); toggleDeleteDialog(false) }} color="primary" autoFocus>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   )
 }
@@ -176,7 +205,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     createCompany: (companyName) => dispatch(createCompany(companyName)),
     initializeCompanies: () => dispatch(initializeCompanies()),
-    updateCompany: (id, newCompanyData) => dispatch(updateCompany(id, newCompanyData))
+    updateCompany: (id, newCompanyData) => dispatch(updateCompany(id, newCompanyData)),
+    deleteCompany: (id) => dispatch(deleteCompany(id))
   }
 }
 

@@ -178,3 +178,13 @@ export const updateCompany = (id, newCompanyData) => {
     })
   }
 }
+
+export const deleteCompany = (id) => {
+  return (dispatch, getState, { getFirestore }) => {
+    const firestore = getFirestore();
+
+    const payload = { id }
+
+    dispatch({ type: 'DELETE_COMPANY', payload });
+  }
+}
