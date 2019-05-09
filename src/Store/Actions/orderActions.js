@@ -112,6 +112,7 @@ export const createCompany = (company) => {
       name: company.name,
       description: company.description,
       color: company.color,
+      createdAt: new Date().getTime(),
       authorId 
     };
 
