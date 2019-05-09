@@ -185,6 +185,10 @@ export const deleteCompany = (id) => {
 
     const payload = { id }
 
-    dispatch({ type: 'DELETE_COMPANY', payload });
+    firestore.collection("companies").doc(id).delete().then(() => {
+      dispatch({ type: 'DELETE_COMPANY', payload });
+    }).catch((error) => {
+      dispatch({ type: 'DELETE_COMPANY_ERROR', error });
+    });
   }
 }

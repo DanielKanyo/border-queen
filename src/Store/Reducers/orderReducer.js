@@ -103,6 +103,21 @@ const updateCompanyEntry = (state, action) => {
   }
 }
 
+const deleteCompanyEntry = (state, action) => {
+  const { payload } = action
+  const { id } = payload
+  const { companies } = state
+
+  delete companies[id]
+
+  return {
+    ...state,
+    companies: {
+      ...companies
+    }
+  }
+}
+
 const orderReducer = (state = initState, action) => {
   switch (action.type) {
     case 'INITIALIZE_ORDERS':
@@ -116,6 +131,16 @@ const orderReducer = (state = initState, action) => {
     case 'CREATE_ORDER_ERROR':
       console.log('Add order error', action.error)
       return state
+    case 'DELETE_ORDER':
+      return deleteOrderEntry(state, action)
+    case 'DELETE_ORDER_ERROR':
+      console.log('Delete order error', action.error)
+      return state
+    case 'ORDER_CHANGED':
+      return changeOrder(state, action)
+    case 'ORDER_CHANGED_ERROR':
+      console.log('Order changed error', action.error)
+      return state
 
     case 'CREATE_COMPANY':
       return addCompanyEntry(state, action)
@@ -127,17 +152,10 @@ const orderReducer = (state = initState, action) => {
     case 'UPDATE_COMPANY_ERROR':
       console.log('Update company error', action.error)
       return state
-
-    case 'DELETE_ORDER':
-      return deleteOrderEntry(state, action)
-    case 'DELETE_ORDER_ERROR':
-      console.log('Delete order error', action.error)
-      return state
-
-    case 'ORDER_CHANGED':
-      return changeOrder(state, action)
-    case 'ORDER_CHANGED_ERROR':
-      console.log('Order changed error', action.error)
+    case 'DELETE_COMPANY':
+      return deleteCompanyEntry(state, action)
+    case 'DELETE_COMPANY_ERROR':
+      console.log('Delete company error', action.error)
       return state
 
     case 'SIGNOUT_SUCCESS':
