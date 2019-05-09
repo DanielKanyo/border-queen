@@ -15,10 +15,11 @@ import TextField from '@material-ui/core/TextField'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
+import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { initializeOrders, createOrder, orderChanged } from '../../Store/Actions/orderActions'
+import { initializeOrders, createOrder, orderChanged, deleteOrder } from '../../Store/Actions/orderActions'
 import { Redirect } from 'react-router-dom'
 import OrderSummary from '../Orders/OrderSummary'
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
@@ -71,11 +72,13 @@ const getItemStyle = (isDragging, draggableStyle) => ({
 });
 
 const Dashboard = (props) => {
-  const { classes, orders, auth, orderOfIds, createOrder, orderChanged, initializeOrders } = props;
+  const { classes, orders, auth, orderOfIds, createOrder, orderChanged, initializeOrders, deleteOrder } = props;
 
-  const [open, toggleDialog] = useState(false);
+  const [createDialog, toggleCreateDialog] = useState(false);
+  const [deleteDialog, toggleDeleteDialog] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [orderId, setOrderId] = useState('');
 
   useEffect(() => initializeOrders(), []);
 
@@ -98,7 +101,6 @@ const Dashboard = (props) => {
 
     createOrder({ title, description });
   };
-
 
   if (!auth.uid) return <Redirect to='/signin' />
 
@@ -128,7 +130,7 @@ const Dashboard = (props) => {
                                 provided.draggableProps.style
                               )}
                             >
-                              <OrderSummary order={orders[key]} key={key} />
+                              <OrderSummary order={orders[key]} key={key} toggleDeleteDialog={toggleDeleteDialog} setOrderId={setOrderId} />
                             </div>
                           )}
                         </Draggable>
@@ -146,14 +148,14 @@ const Dashboard = (props) => {
       </Grid>
 
       <Tooltip title="New Order" aria-label="New" placement="left">
-        <Fab color="secondary" aria-label="New order" className={classes.fab} onClick={() => toggleDialog(true)}>
+        <Fab color="secondary" aria-label="New order" className={classes.fab} onClick={() => toggleCreateDialog(true)}>
           <AddIcon />
         </Fab>
       </Tooltip>
 
       <Dialog
-        open={open}
-        onClose={() => toggleDialog(false)}
+        open={createDialog}
+        onClose={() => toggleCreateDialog(false)}
         aria-labelledby="form-dialog-title"
       >
         <form onSubmit={handleSubmit}>
@@ -193,10 +195,32 @@ const Dashboard = (props) => {
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => toggleDialog(false)} color="primary">Cancel</Button>
-            <Button onClick={() => toggleDialog(false)} color="primary" type="submit">Save</Button>
+            <Button onClick={() => toggleCreateDialog(false)} color="primary">Cancel</Button>
+            <Button onClick={() => toggleCreateDialog(false)} color="primary" type="submit">Save</Button>
           </DialogActions>
         </form>
+      </Dialog>
+
+      <Dialog
+        open={deleteDialog}
+        onClose={() => toggleDeleteDialog(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">Delete order</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure you want to delete your order? You will lose all saved data...
+            </DialogContentText>
+          </DialogContent>
+        <DialogActions>
+          <Button onClick={() => toggleDeleteDialog(false)} color="primary">
+            Cancel
+            </Button>
+          <Button onClick={() => { deleteOrder(orderId); toggleDeleteDialog(false) }} color="primary" autoFocus>
+            Delete
+          </Button>
+        </DialogActions>
       </Dialog>
     </div>
   )
@@ -214,7 +238,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     createOrder: (order) => dispatch(createOrder(order)),
     initializeOrders: () => dispatch(initializeOrders()),
-    orderChanged: (newOrder) => dispatch(orderChanged(newOrder))
+    orderChanged: (newOrder) => dispatch(orderChanged(newOrder)),
+    deleteOrder: (id) => dispatch(deleteOrder(id))
   }
 }
 
