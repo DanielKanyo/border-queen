@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { useState, useEffect } from 'react'
 import Grid from '@material-ui/core/Grid'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
@@ -70,157 +70,136 @@ const getItemStyle = (isDragging, draggableStyle) => ({
   ...draggableStyle
 });
 
-export class Dashboard extends Component {
+const Dashboard = (props) => {
+  const { classes, orders, auth, orderOfIds, createOrder, orderChanged, initializeOrders } = props;
 
-  state = {
-    open: false,
-    title: '',
-    description: ''
-  }
+  const [open, toggleDialog] = useState(false);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
 
-  onDragEnd = result => {
+  useEffect(() => initializeOrders(), []);
+
+  const onDragEnd = result => {
     if (!result.destination) {
       return;
     }
 
-    const orderOfIds = reorder(
-      this.props.orderOfIds,
+    const newOrderOfIds = reorder(
+      orderOfIds,
       result.source.index,
       result.destination.index
     );
 
-    this.props.orderChanged(orderOfIds);
+    orderChanged(newOrderOfIds);
   }
 
-  componentDidMount = () => {
-    this.props.initializeOrders();
-  }
-
-  handleClickOpenDialog = () => {
-    this.setState({ open: true });
-  };
-
-  handleCloseDialog = () => {
-    this.setState({ open: false });
-  };
-
-  handleChange = e => {
-    this.setState({
-      [e.target.id]: e.target.value
-    });
-  };
-
-  handleSubmit = e => {
+  const handleSubmit = e => {
     e.preventDefault();
 
-    this.props.createOrder(this.state);
+    createOrder({ title, description });
   };
 
-  render() {
-    const { classes, orders, auth, orderOfIds } = this.props;
-    const { title, description } = this.state;
 
-    if (!auth.uid) return <Redirect to='/signin' />
+  if (!auth.uid) return <Redirect to='/signin' />
 
-    return (
-      <div className={classes.root}>
-        <Grid container spacing={8} className={classes.grid}>
-          <Grid item xs={12} sm={8}>
-            <Paper elevation={1} className={classes.paper}>Orders</Paper>
-            {
-              Object.keys(orders).length && orderOfIds.length ?
-                <DragDropContext onDragEnd={this.onDragEnd}>
-                  <Droppable droppableId="droppable">
-                    {(provided, snapshot) => (
-                      <div
-                        {...provided.droppableProps}
-                        ref={provided.innerRef}
-                      >
-                        {orderOfIds.map((key, index) => {
-                          return <Draggable key={key} draggableId={key} index={index}>
-                            {(provided, snapshot) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                style={getItemStyle(
-                                  snapshot.isDragging,
-                                  provided.draggableProps.style
-                                )}
-                              >
-                                <OrderSummary order={orders[key]} key={key} />
-                              </div>
-                            )}
-                          </Draggable>
-                        })}
-                        {provided.placeholder}
-                      </div>
-                    )}
-                  </Droppable>
-                </DragDropContext> : <EmptyList />
-            }
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <Notifications />
-          </Grid>
+  return (
+    <div className={classes.root}>
+      <Grid container spacing={8} className={classes.grid}>
+        <Grid item xs={12} sm={8}>
+          <Paper elevation={1} className={classes.paper}>Orders</Paper>
+          {
+            Object.keys(orders).length && orderOfIds.length ?
+              <DragDropContext onDragEnd={onDragEnd}>
+                <Droppable droppableId="droppable">
+                  {(provided, snapshot) => (
+                    <div
+                      {...provided.droppableProps}
+                      ref={provided.innerRef}
+                    >
+                      {orderOfIds.map((key, index) => {
+                        return <Draggable key={key} draggableId={key} index={index}>
+                          {(provided, snapshot) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              style={getItemStyle(
+                                snapshot.isDragging,
+                                provided.draggableProps.style
+                              )}
+                            >
+                              <OrderSummary order={orders[key]} key={key} />
+                            </div>
+                          )}
+                        </Draggable>
+                      })}
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              </DragDropContext> : <EmptyList />
+          }
         </Grid>
+        <Grid item xs={12} sm={4}>
+          <Notifications />
+        </Grid>
+      </Grid>
 
-        <Tooltip title="New Order" aria-label="New" placement="left">
-          <Fab color="secondary" aria-label="New order" className={classes.fab} onClick={this.handleClickOpenDialog}>
-            <AddIcon />
-          </Fab>
-        </Tooltip>
+      <Tooltip title="New Order" aria-label="New" placement="left">
+        <Fab color="secondary" aria-label="New order" className={classes.fab} onClick={() => toggleDialog(true)}>
+          <AddIcon />
+        </Fab>
+      </Tooltip>
 
-        <Dialog
-          open={this.state.open}
-          onClose={this.handleCloseDialog}
-          aria-labelledby="form-dialog-title"
-        >
-          <form onSubmit={this.handleSubmit}>
-            <DialogTitle id="form-dialog-title">
-              <div className={classes.dialogTitle}>
-                <div>Create order</div>
-                <div className={classes.settingsIcon}>
-                  <Tooltip title="Set defaults" placement="left">
-                    <IconButton aria-label="Settings" component={Link} to={`/settings`}>
-                      <SettingsIcon />
-                    </IconButton>
-                  </Tooltip>
-                </div>
+      <Dialog
+        open={open}
+        onClose={() => toggleDialog(false)}
+        aria-labelledby="form-dialog-title"
+      >
+        <form onSubmit={handleSubmit}>
+          <DialogTitle id="form-dialog-title">
+            <div className={classes.dialogTitle}>
+              <div>Create order</div>
+              <div className={classes.settingsIcon}>
+                <Tooltip title="Set defaults" placement="left">
+                  <IconButton aria-label="Settings" component={Link} to={`/settings`}>
+                    <SettingsIcon />
+                  </IconButton>
+                </Tooltip>
               </div>
-            </DialogTitle>
-            <DialogContent>
-              <TextField
-                className={classes.input}
-                value={title}
-                autoFocus
-                margin="dense"
-                id="title"
-                label="Title"
-                type="text"
-                fullWidth
-                onChange={this.handleChange}
-              />
-              <TextField
-                className={classes.input}
-                value={description}
-                margin="dense"
-                id="description"
-                label="Description"
-                type="text"
-                fullWidth
-                onChange={this.handleChange}
-              />
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={this.handleCloseDialog} color="primary">Cancel</Button>
-              <Button onClick={this.handleCloseDialog} color="primary" type="submit">Save</Button>
-            </DialogActions>
-          </form>
-        </Dialog>
-      </div>
-    )
-  }
+            </div>
+          </DialogTitle>
+          <DialogContent>
+            <TextField
+              className={classes.input}
+              value={title}
+              autoFocus
+              margin="dense"
+              id="title"
+              label="Title"
+              type="text"
+              fullWidth
+              onChange={e => setTitle(e.target.value)}
+            />
+            <TextField
+              className={classes.input}
+              value={description}
+              margin="dense"
+              id="description"
+              label="Description"
+              type="text"
+              fullWidth
+              onChange={e => setDescription(e.target.value)}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => toggleDialog(false)} color="primary">Cancel</Button>
+            <Button onClick={() => toggleDialog(false)} color="primary" type="submit">Save</Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+    </div>
+  )
 }
 
 const mapStateToProps = (state) => {
