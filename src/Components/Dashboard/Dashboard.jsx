@@ -19,7 +19,17 @@ import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { initializeOrders, createOrder, orderChanged, deleteOrder } from '../../Store/Actions/orderActions'
+import Input from '@material-ui/core/Input'
+import NativeSelect from '@material-ui/core/NativeSelect'
+import FormControl from '@material-ui/core/FormControl'
+import InputLabel from '@material-ui/core/InputLabel'
+import {
+  initializeOrders,
+  createOrder,
+  orderChanged,
+  deleteOrder,
+  initializeCompanies
+} from '../../Store/Actions/orderActions'
 import { Redirect } from 'react-router-dom'
 import OrderSummary from '../Orders/OrderSummary'
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
@@ -54,7 +64,12 @@ const styles = theme => ({
   },
   settingsIcon: {
     margin: '-10px -8px 0 0'
-  }
+  },
+  formControl: {
+    marginTop: 8,
+    marginBottom: 4,
+    width: '100%',
+  },
 });
 
 // a little function to help us with reordering the result
@@ -72,15 +87,27 @@ const getItemStyle = (isDragging, draggableStyle) => ({
 });
 
 const Dashboard = (props) => {
-  const { classes, orders, auth, orderOfIds, createOrder, orderChanged, initializeOrders, deleteOrder } = props;
+  const {
+    classes,
+    orders,
+    auth,
+    orderOfIds,
+    createOrder,
+    orderChanged,
+    initializeOrders,
+    deleteOrder,
+    initializeCompanies,
+    companies
+  } = props;
 
   const [createDialog, toggleCreateDialog] = useState(false);
   const [deleteDialog, toggleDeleteDialog] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [orderId, setOrderId] = useState('');
+  const [selectedCompany, setSelectedCompany] = useState('');
 
-  useEffect(() => initializeOrders(), []);
+  useEffect(() => { initializeOrders(); initializeCompanies() }, []);
 
   const onDragEnd = result => {
     if (!result.destination) {
@@ -178,17 +205,35 @@ const Dashboard = (props) => {
               autoFocus
               margin="dense"
               id="title"
-              label="Title"
+              label="Add order title..."
               type="text"
               fullWidth
               onChange={e => setTitle(e.target.value)}
             />
+            {
+              Object.keys(companies).length ?
+                <FormControl className={classes.formControl}>
+                  <InputLabel htmlFor="company-native-select">Select a company...</InputLabel>
+                  <NativeSelect
+                    value={selectedCompany}
+                    onChange={(e) => setSelectedCompany(e.target.value)}
+                    input={<Input name="company" id="company-native-select" />}
+                  >
+                    <option value="" />
+                    {
+                      Object.keys(companies).map(key => {
+                        return <option key={key} value={companies[key].name}>{companies[key].name}</option>
+                      })
+                    }
+                  </NativeSelect>
+                </FormControl> : null
+            }
             <TextField
               className={classes.input}
               value={description}
               margin="dense"
               id="description"
-              label="Description"
+              label="Add description"
               type="text"
               fullWidth
               onChange={e => setDescription(e.target.value)}
@@ -212,7 +257,7 @@ const Dashboard = (props) => {
           <DialogContentText id="alert-dialog-description">
             Are you sure you want to delete your order? You will lose all saved data...
             </DialogContentText>
-          </DialogContent>
+        </DialogContent>
         <DialogActions>
           <Button onClick={() => toggleDeleteDialog(false)} color="primary">
             Cancel
@@ -230,6 +275,7 @@ const mapStateToProps = (state) => {
   return {
     orders: state.order.orders,
     orderOfIds: state.order.orderOfIds,
+    companies: state.order.companies,
     auth: state.firebase.auth
   }
 }
@@ -239,7 +285,8 @@ const mapDispatchToProps = (dispatch) => {
     createOrder: (order) => dispatch(createOrder(order)),
     initializeOrders: () => dispatch(initializeOrders()),
     orderChanged: (newOrder) => dispatch(orderChanged(newOrder)),
-    deleteOrder: (id) => dispatch(deleteOrder(id))
+    deleteOrder: (id) => dispatch(deleteOrder(id)),
+    initializeCompanies: () => dispatch(initializeCompanies()),
   }
 }
 
