@@ -34,13 +34,14 @@ const styles = theme => ({
     marginRight: 15
   },
   chip: {
-    marginRight: theme.spacing.unit / 2
+    marginRight: theme.spacing.unit / 2,
+    marginBottom: theme.spacing.unit / 2,
   },
   details: {
     display: 'block'
   },
   products: {
-    marginTop: 10
+    marginTop: 20
   }
 });
 
