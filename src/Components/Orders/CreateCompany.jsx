@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
@@ -9,7 +9,7 @@ import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
 import CompanySummary from './CompanySummary'
-import { createCompany, updateCompany, deleteCompany } from '../../Store/Actions/orderActions'
+import { createCompany, updateCompany, deleteCompany, initializeCompanies } from '../../Store/Actions/orderActions'
 import EmptyList from '../Layout/EmptyList'
 import { SliderPicker } from 'react-color'
 import Typography from '@material-ui/core/Typography'
@@ -75,6 +75,9 @@ const CreateCompany = (props) => {
   const [companyId, setId] = useState('');
   const [editMode, setEditMode] = useState(false);
   const [deleteDialog, toggleDeleteDialog] = useState(false);
+
+
+  useEffect(() => { initializeCompanies() }, []);
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -253,7 +256,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     createCompany: (companyName) => dispatch(createCompany(companyName)),
     updateCompany: (id, newCompanyData) => dispatch(updateCompany(id, newCompanyData)),
-    deleteCompany: (id) => dispatch(deleteCompany(id))
+    deleteCompany: (id) => dispatch(deleteCompany(id)),
+    initializeCompanies: () => dispatch(initializeCompanies())
   }
 }
 
