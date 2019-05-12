@@ -11,7 +11,8 @@ import moment from 'moment'
 
 const styles = ({
   paper: {
-    padding: '8px 8px 8px 20px'
+    padding: '8px 8px 8px 20px',
+    marginBottom: 8
   },
   header: {
     display: 'flex',
@@ -31,11 +32,17 @@ const styles = ({
   }
 });
 
-const OrderSummary = ({ classes, order, toggleDeleteDialog, setOrderId }) => {
+const OrderSummary = ({ classes, order, toggleDeleteDialog, setOrderId, company }) => {
+  const isDefault = company ? true : false;
+
+  const paperStyle = {
+    backgroundColor: company && company.color ? company.color : 'white',
+  }
+
   return (
-    <Paper className={`${classes.paper} order-summary`}>
+    <Paper className={classes.paper} style={paperStyle}>
       <div className={classes.header}>
-        <div className={classes.headerTitle}><Typography variant="h5">{order.title}</Typography></div>
+        <div className={classes.headerTitle}><Typography variant="h5">{isDefault ? company.name : order.title}</Typography></div>
         <div className="order-header-action">
           <IconButton aria-label="Delete" onClick={() => { toggleDeleteDialog(true); setOrderId(order.id) }}>
             <DeleteIcon />
@@ -47,7 +54,7 @@ const OrderSummary = ({ classes, order, toggleDeleteDialog, setOrderId }) => {
       </div>
       <div className="order-description">{order.description}</div>
       <div className={classes.contentAction}>
-        <Typography color="primary" variant="subtitle1">
+        <Typography variant="subtitle1">
           {moment(order.createdAt).format('MMMM D, YYYY')}
         </Typography>
       </div>

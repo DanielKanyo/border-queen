@@ -10,6 +10,7 @@ import Paper from '@material-ui/core/Paper'
 import SettingsIcon from '@material-ui/icons/SettingsOutlined'
 import Button from '@material-ui/core/Button'
 import IconButton from '@material-ui/core/IconButton'
+import Divider from '@material-ui/core/Divider'
 import Tooltip from '@material-ui/core/Tooltip'
 import TextField from '@material-ui/core/TextField'
 import Dialog from '@material-ui/core/Dialog'
@@ -70,6 +71,22 @@ const styles = theme => ({
     marginBottom: 4,
     width: '100%',
   },
+  choose: {
+    color: 'rgba(0, 0, 0, 0.3)',
+    display: 'flex',
+    marginTop: 12,
+    flexDirection: 'column',
+    alignItems: 'center'
+  },
+  chooseDivider: {
+    width: '100%'
+  },
+  orText: {
+    width: 36,
+    background: 'white',
+    marginTop: -11,
+    textAlign: 'center'
+  }
 });
 
 // a little function to help us with reordering the result
@@ -97,7 +114,9 @@ const Dashboard = (props) => {
     initializeOrders,
     deleteOrder,
     initializeCompanies,
-    companies
+    companies,
+    orderInitDone,
+    companyInitDone
   } = props;
 
   const [createDialog, toggleCreateDialog] = useState(false);
@@ -105,7 +124,7 @@ const Dashboard = (props) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [orderId, setOrderId] = useState('');
-  const [selectedCompany, setSelectedCompany] = useState('');
+  const [selectedCompanyKey, setSelectedCompanyKey] = useState('');
 
   useEffect(() => { initializeOrders(); initializeCompanies() }, []);
 
@@ -126,8 +145,14 @@ const Dashboard = (props) => {
   const handleSubmit = e => {
     e.preventDefault();
 
-    createOrder({ title, description });
+    if ((title || selectedCompanyKey) && description) {
+      const value = title ? title : selectedCompanyKey;
+
+      createOrder({ value, description });
+    }
   };
+
+  const initReady = orderInitDone && companyInitDone;
 
   if (!auth.uid) return <Redirect to='/signin' />
 
@@ -137,7 +162,7 @@ const Dashboard = (props) => {
         <Grid item xs={12} sm={8}>
           <Paper elevation={1} className={classes.paper}>Orders</Paper>
           {
-            Object.keys(orders).length && orderOfIds.length ?
+            initReady && Object.keys(orders).length && orderOfIds.length ?
               <DragDropContext onDragEnd={onDragEnd}>
                 <Droppable droppableId="droppable">
                   {(provided, snapshot) => (
@@ -157,7 +182,13 @@ const Dashboard = (props) => {
                                 provided.draggableProps.style
                               )}
                             >
-                              <OrderSummary order={orders[key]} key={key} toggleDeleteDialog={toggleDeleteDialog} setOrderId={setOrderId} />
+                              <OrderSummary 
+                                order={orders[key]} 
+                                key={key} 
+                                toggleDeleteDialog={toggleDeleteDialog} 
+                                setOrderId={setOrderId}
+                                company={companies[orders[key].title]}
+                              />
                             </div>
                           )}
                         </Draggable>
@@ -209,24 +240,31 @@ const Dashboard = (props) => {
               type="text"
               fullWidth
               onChange={e => setTitle(e.target.value)}
+              disabled={selectedCompanyKey ? true : false}
             />
             {
               Object.keys(companies).length ?
-                <FormControl className={classes.formControl}>
-                  <InputLabel htmlFor="company-native-select">Select a company...</InputLabel>
-                  <NativeSelect
-                    value={selectedCompany}
-                    onChange={(e) => setSelectedCompany(e.target.value)}
-                    input={<Input name="company" id="company-native-select" />}
-                  >
-                    <option value="" />
-                    {
-                      Object.keys(companies).map(key => {
-                        return <option key={key} value={companies[key].name}>{companies[key].name}</option>
-                      })
-                    }
-                  </NativeSelect>
-                </FormControl> : null
+                <React.Fragment>
+                  <div className={classes.choose}>
+                    <Divider className={classes.chooseDivider} />
+                    <div className={classes.orText}>or</div>
+                  </div>
+                  <FormControl className={classes.formControl}>
+                    <InputLabel htmlFor="company-native-select">Select a company...</InputLabel>
+                    <NativeSelect
+                      value={selectedCompanyKey}
+                      onChange={e => { setSelectedCompanyKey(e.target.value); setTitle('') }}
+                      input={<Input name="company" id="company-native-select" />}
+                    >
+                      <option value="" />
+                      {
+                        Object.keys(companies).map(key => {
+                          return <option key={key} value={key}>{companies[key].name}</option>
+                        })
+                      }
+                    </NativeSelect>
+                  </FormControl>
+                </React.Fragment> : null
             }
             <TextField
               className={classes.input}
@@ -276,6 +314,8 @@ const mapStateToProps = (state) => {
     orders: state.order.orders,
     orderOfIds: state.order.orderOfIds,
     companies: state.order.companies,
+    orderInitDone: state.order.orderInitDone,
+    companyInitDone: state.order.companyInitDone,
     auth: state.firebase.auth
   }
 }

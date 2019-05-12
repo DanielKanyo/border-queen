@@ -42,7 +42,7 @@ export const createOrder = (order) => {
     const authorId = getState().firebase.auth.uid;
 
     const payload = {
-      title: order.title,
+      title: order.value,
       description: order.description,
       createdAt: new Date().getTime(),
       authorId

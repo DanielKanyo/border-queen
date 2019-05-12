@@ -1,7 +1,9 @@
 const initState = {
   orders: {},
   companies: {},
-  orderOfIds: []
+  orderOfIds: [],
+  orderInitDone: false,
+  companyInitDone: false
 }
 
 const initializeOrders = (state, action) => {
@@ -13,7 +15,8 @@ const initializeOrders = (state, action) => {
     orders: {
       ...orders
     },
-    orderOfIds: [...orderOfIds]
+    orderOfIds: [...orderOfIds],
+    orderInitDone: true
   }
 }
 
@@ -69,7 +72,8 @@ const initializeCompanies = (state, action) => {
     ...state,
     companies: {
       ...companies
-    }
+    },
+    companyInitDone: true
   };
 }
 
