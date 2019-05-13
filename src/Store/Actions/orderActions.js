@@ -40,12 +40,17 @@ export const createOrder = (order) => {
     // make async call to database
     const firestore = getFirestore();
     const authorId = getState().firebase.auth.uid;
+    const { updateCompanyInUseProp } = order;
 
     const payload = {
       title: order.value,
       description: order.description,
       createdAt: new Date().getTime(),
       authorId
+    }
+
+    if (updateCompanyInUseProp) {
+      firestore.collection('companies').doc(order.value).update({ inUse: true });
     }
 
     firestore.collection('orders').add({
@@ -67,12 +72,16 @@ export const createOrder = (order) => {
   }
 }
 
-export const deleteOrder = (id) => {
+export const deleteOrder = (id, companyKey) => {
   return (dispatch, getState, { getFirestore }) => {
     // make async call to database
     const firestore = getFirestore();
     const authorId = getState().firebase.auth.uid;
     const payload = { id };
+
+    if (companyKey) {
+      firestore.collection('companies').doc(companyKey).update({ inUse: false });
+    }
 
     firestore.collection("orders").doc(id).delete().then(() => {
       
@@ -114,6 +123,7 @@ export const createCompany = (company) => {
       color: company.color,
       products: company.products,
       createdAt: new Date().getTime(),
+      inUse: company.inUse,
       authorId
     };
 

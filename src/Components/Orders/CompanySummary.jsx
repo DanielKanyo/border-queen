@@ -93,7 +93,11 @@ const CompanySummary = ({ classes, auth, company, setters }) => {
           <IconButton aria-label="Edit" onClick={() => fillUpdateForm()}>
             <EditIcon fontSize="small" />
           </IconButton>
-          <IconButton aria-label="Delete" onClick={() => { setId(company.id); toggleDeleteDialog(true) }}>
+          <IconButton 
+            aria-label="Delete" 
+            onClick={() => { setId(company.id); toggleDeleteDialog(true) }}
+            disabled={company && company.inUse ? true : false}
+          >
             <DeleteIcon fontSize="small" />
           </IconButton>
         </ExpansionPanelActions>

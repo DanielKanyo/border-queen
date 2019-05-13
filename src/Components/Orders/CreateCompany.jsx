@@ -65,7 +65,7 @@ const styles = theme => ({
 });
 
 const CreateCompany = (props) => {
-  const { classes, auth, createCompany, companies, updateCompany, deleteCompany } = props;
+  const { classes, auth, createCompany, companies, updateCompany, deleteCompany, initializeCompanies } = props;
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -86,7 +86,8 @@ const CreateCompany = (props) => {
       name,
       description,
       color: color.hex ? color.hex : null,
-      products
+      products,
+      inUse: false
     }
 
     if (editMode) {

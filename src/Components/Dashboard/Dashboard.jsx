@@ -146,9 +146,16 @@ const Dashboard = (props) => {
     e.preventDefault();
 
     if ((title || selectedCompanyKey) && description) {
-      const value = title ? title : selectedCompanyKey;
+      let value, updateCompanyInUseProp;
 
-      createOrder({ value, description });
+      if (title) {
+        value = title;
+      } else {
+        value = selectedCompanyKey;
+        updateCompanyInUseProp = true;
+      }
+
+      createOrder({ value, description, updateCompanyInUseProp });
     }
   };
 
@@ -188,6 +195,7 @@ const Dashboard = (props) => {
                                 toggleDeleteDialog={toggleDeleteDialog} 
                                 setOrderId={setOrderId}
                                 company={companies[orders[key].title]}
+                                setSelectedCompanyKey={setSelectedCompanyKey}
                               />
                             </div>
                           )}
@@ -300,7 +308,7 @@ const Dashboard = (props) => {
           <Button onClick={() => toggleDeleteDialog(false)} color="primary">
             Cancel
             </Button>
-          <Button onClick={() => { deleteOrder(orderId); toggleDeleteDialog(false) }} color="primary" autoFocus>
+          <Button onClick={() => { deleteOrder(orderId, selectedCompanyKey); toggleDeleteDialog(false) }} color="primary" autoFocus>
             Delete
           </Button>
         </DialogActions>
@@ -325,7 +333,7 @@ const mapDispatchToProps = (dispatch) => {
     createOrder: (order) => dispatch(createOrder(order)),
     initializeOrders: () => dispatch(initializeOrders()),
     orderChanged: (newOrder) => dispatch(orderChanged(newOrder)),
-    deleteOrder: (id) => dispatch(deleteOrder(id)),
+    deleteOrder: (id, companyKey) => dispatch(deleteOrder(id, companyKey)),
     initializeCompanies: () => dispatch(initializeCompanies()),
   }
 }
