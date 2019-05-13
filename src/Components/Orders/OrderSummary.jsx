@@ -8,6 +8,7 @@ import EditIcon from '@material-ui/icons/EditOutlined'
 import DeleteIcon from '@material-ui/icons/DeleteOutline'
 import { Link } from 'react-router-dom'
 import moment from 'moment'
+import { lightOrDark } from '../../Constants/Utils/Utils'
 
 const styles = ({
   paper: {
@@ -32,29 +33,39 @@ const styles = ({
   }
 });
 
+const colorDefinition = (color) => {
+  return lightOrDark(color);
+}
+
 const OrderSummary = ({ classes, order, toggleDeleteDialog, setOrderId, company }) => {
   const isDefault = company ? true : false;
+  const lightOrDark = company && company.color ? colorDefinition(company.color) : 'light';
+  const color = lightOrDark === 'dark' ? 'white' : 'rgba(0, 0, 0, 0.87)';
 
   const paperStyle = {
     backgroundColor: company && company.color ? company.color : 'white',
-  }
+    color
+  };
+
+  const textStyle = { color };
+  const iconStyle = { color: lightOrDark === 'dark' ? 'rgba(255, 255, 255, 0.74)' : 'rgba(0, 0, 0, 0.54)' };
 
   return (
     <Paper className={classes.paper} style={paperStyle}>
       <div className={classes.header}>
-        <div className={classes.headerTitle}><Typography variant="h5">{isDefault ? company.name : order.title}</Typography></div>
+        <div className={classes.headerTitle}><Typography style={textStyle} variant="h5">{isDefault ? company.name : order.title}</Typography></div>
         <div className="order-header-action">
-          <IconButton aria-label="Delete" onClick={() => { toggleDeleteDialog(true); setOrderId(order.id) }}>
+          <IconButton aria-label="Delete" onClick={() => { toggleDeleteDialog(true); setOrderId(order.id) }} style={iconStyle}>
             <DeleteIcon />
           </IconButton>
-          <IconButton aria-label="Open" component={Link} to={`/edit/${order.id}`}>
+          <IconButton aria-label="Open" component={Link} to={`/edit/${order.id}`} style={iconStyle}>
             <EditIcon />
           </IconButton>
         </div>
       </div>
       <div className="order-description">{order.description}</div>
       <div className={classes.contentAction}>
-        <Typography variant="subtitle1">
+        <Typography style={textStyle} variant="subtitle1">
           {moment(order.createdAt).format('MMMM D, YYYY')}
         </Typography>
       </div>
