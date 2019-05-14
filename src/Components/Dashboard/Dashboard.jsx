@@ -163,6 +163,12 @@ const Dashboard = (props) => {
 
   if (!auth.uid) return <Redirect to='/signin' />
 
+  const setters = {
+    setOrderId,
+    setSelectedCompanyKey,
+    toggleDeleteDialog
+  }
+
   return (
     <div className={classes.root}>
       <Grid container spacing={8} className={classes.grid}>
@@ -192,10 +198,8 @@ const Dashboard = (props) => {
                               <OrderSummary 
                                 order={orders[key]} 
                                 key={key} 
-                                toggleDeleteDialog={toggleDeleteDialog} 
-                                setOrderId={setOrderId}
                                 company={companies[orders[key].title]}
-                                setSelectedCompanyKey={setSelectedCompanyKey}
+                                setters={setters}
                               />
                             </div>
                           )}
@@ -307,7 +311,7 @@ const Dashboard = (props) => {
         <DialogActions>
           <Button onClick={() => toggleDeleteDialog(false)} color="primary">
             Cancel
-            </Button>
+          </Button>
           <Button onClick={() => { deleteOrder(orderId, selectedCompanyKey); toggleDeleteDialog(false) }} color="primary" autoFocus>
             Delete
           </Button>

@@ -37,7 +37,7 @@ const colorDefinition = (color) => {
   return lightOrDark(color);
 }
 
-const OrderSummary = ({ classes, order, toggleDeleteDialog, setOrderId, company, setSelectedCompanyKey }) => {
+const OrderSummary = ({ classes, order, company, setters }) => {
   const isDefault = company ? true : false;
   const lightOrDark = company && company.color ? colorDefinition(company.color) : 'light';
   const color = lightOrDark === 'dark' ? 'white' : 'rgba(0, 0, 0, 0.87)';
@@ -57,7 +57,7 @@ const OrderSummary = ({ classes, order, toggleDeleteDialog, setOrderId, company,
         <div className="order-header-action">
           <IconButton 
             aria-label="Delete" 
-            onClick={() => { toggleDeleteDialog(true); setOrderId(order.id); setSelectedCompanyKey(isDefault ? order.title : null) }} 
+            onClick={() => { setters.toggleDeleteDialog(true); setters.setOrderId(order.id); setters.setSelectedCompanyKey(isDefault ? order.title : null) }} 
             style={iconStyle}
           >
             <DeleteIcon />
