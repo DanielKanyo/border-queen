@@ -16,6 +16,7 @@ import IconButton from '@material-ui/core/IconButton'
 import DeleteIcon from '@material-ui/icons/DeleteOutline'
 import EditIcon from '@material-ui/icons/EditOutlined'
 import Chip from '@material-ui/core/Chip'
+import WarningIcon from '@material-ui/icons/ReportProblemOutlined'
 
 const styles = theme => ({
   heading: {
@@ -26,7 +27,8 @@ const styles = theme => ({
     margin: '8px 0'
   },
   action: {
-    padding: 8
+    padding: 8,
+    justifyContent: 'space-between'
   },
   smallAvatar: {
     width: 21,
@@ -42,6 +44,16 @@ const styles = theme => ({
   },
   products: {
     marginTop: 20
+  },
+  info: {
+    display: 'flex',
+    alignItems: 'center',
+    color: '#c6c6c6',
+    fontSize: 13
+  },
+  infoText: {
+    color: '#a8a8a8',
+    marginLeft: 8
   }
 });
 
@@ -90,16 +102,26 @@ const CompanySummary = ({ classes, auth, company, setters }) => {
         </ExpansionPanelDetails>
         <Divider />
         <ExpansionPanelActions className={classes.action}>
-          <IconButton aria-label="Edit" onClick={() => fillUpdateForm()}>
-            <EditIcon fontSize="small" />
-          </IconButton>
-          <IconButton 
-            aria-label="Delete" 
-            onClick={() => { setId(company.id); toggleDeleteDialog(true) }}
-            disabled={company && company.inUse ? true : false}
-          >
-            <DeleteIcon fontSize="small" />
-          </IconButton>
+          {
+            company && company.inUse ? (
+              <div className={classes.info}>
+                <div><WarningIcon /></div>
+                <div className={classes.infoText}>Company in use...</div>
+              </div>
+            ) : null
+          }
+          <div>
+            <IconButton aria-label="Edit" onClick={() => fillUpdateForm()}>
+              <EditIcon fontSize="small" />
+            </IconButton>
+            <IconButton
+              aria-label="Delete"
+              onClick={() => { setId(company.id); toggleDeleteDialog(true) }}
+              disabled={company && company.inUse ? true : false}
+            >
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </div>
         </ExpansionPanelActions>
       </ExpansionPanel>
     </React.Fragment>
