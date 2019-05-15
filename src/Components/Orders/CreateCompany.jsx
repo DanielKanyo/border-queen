@@ -11,7 +11,7 @@ import Grid from '@material-ui/core/Grid'
 import CompanySummary from './CompanySummary'
 import { createCompany, updateCompany, deleteCompany, initializeCompanies } from '../../Store/Actions/orderActions'
 import EmptyList from '../Layout/EmptyList'
-import { SliderPicker } from 'react-color'
+import { TwitterPicker } from 'react-color'
 import Typography from '@material-ui/core/Typography'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
@@ -177,7 +177,8 @@ const CreateCompany = (props) => {
               }
               <div className={classes.colorPicker}>
                 <Typography variant="subtitle1" gutterBottom className={classes.colorPickerText}>Select a color for the company...</Typography>
-                <SliderPicker
+                <TwitterPicker
+                  width='100%'
                   color={color}
                   onChangeComplete={color => setColor(color)}
                 />

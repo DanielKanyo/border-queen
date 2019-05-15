@@ -48,7 +48,7 @@ const OrderSummary = ({ classes, order, company, setters }) => {
   };
 
   const textStyle = { color };
-  const iconStyle = { color: lightOrDark === 'dark' ? 'rgba(255, 255, 255, 0.74)' : 'rgba(0, 0, 0, 0.54)' };
+  const iconStyle = { color: lightOrDark === 'dark' ? 'rgba(255, 255, 255, 0.84)' : 'rgba(0, 0, 0, 0.54)' };
 
   return (
     <Paper className={classes.paper} style={paperStyle}>
