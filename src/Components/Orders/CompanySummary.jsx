@@ -102,14 +102,16 @@ const CompanySummary = ({ classes, auth, company, setters }) => {
         </ExpansionPanelDetails>
         <Divider />
         <ExpansionPanelActions className={classes.action}>
-          {
-            company && company.inUse ? (
-              <div className={classes.info}>
-                <div><WarningIcon /></div>
-                <div className={classes.infoText}>Company in use...</div>
-              </div>
-            ) : null
-          }
+          <div>
+            {
+              company && company.inUse ? (
+                <div className={classes.info}>
+                  <div><WarningIcon /></div>
+                  <div className={classes.infoText}>Company in use...</div>
+                </div>
+              ) : null
+            }
+          </div>
           <div>
             <IconButton aria-label="Edit" onClick={() => fillUpdateForm()}>
               <EditIcon fontSize="small" />
