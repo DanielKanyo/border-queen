@@ -59,7 +59,7 @@ const styles = theme => ({
 
 const CompanySummary = ({ classes, auth, company, setters }) => {
 
-  const { setName, setDescription, setColor, setId, setEditMode, toggleDeleteDialog, setProducts } = setters;
+  const { setName, setDescription, setColor, setId, setEditMode, toggleDeleteDialog, setProducts, setInUse } = setters;
 
   if (!auth.uid) return <Redirect to='/signin' />
 
@@ -75,6 +75,7 @@ const CompanySummary = ({ classes, auth, company, setters }) => {
     setId(company.id);
     setEditMode(true);
     setProducts(company.products ? company.products : []);
+    setInUse(company.inUse ? company.inUse : false);
   }
 
   return (

@@ -75,7 +75,7 @@ const CreateCompany = (props) => {
   const [companyId, setId] = useState('');
   const [editMode, setEditMode] = useState(false);
   const [deleteDialog, toggleDeleteDialog] = useState(false);
-
+  const [inUse, setInUse] = useState(false);
 
   useEffect(() => { initializeCompanies() }, []);
 
@@ -87,7 +87,7 @@ const CreateCompany = (props) => {
       description,
       color: color.hex ? color.hex : null,
       products,
-      inUse: false
+      inUse
     }
 
     if (editMode) {
@@ -120,7 +120,8 @@ const CreateCompany = (props) => {
     setId,
     setEditMode,
     toggleDeleteDialog,
-    setProducts
+    setProducts,
+    setInUse
   }
 
   return (
