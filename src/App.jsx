@@ -10,8 +10,8 @@ import CreateCompany from './Components/Orders/CreateCompany'
 
 const theme = createMuiTheme({
   typography: {
-		useNextVariants: true,
-	},
+    useNextVariants: true,
+  },
   palette: {
     primary: {
       main: '#7b1fa2',

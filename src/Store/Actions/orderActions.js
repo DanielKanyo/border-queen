@@ -2,6 +2,9 @@ export const initializeOrders = () => {
   return (dispatch, getState, { getFirestore }) => {
     const firestore = getFirestore();
     const authorId = getState().firebase.auth.uid;
+    const { orderInitDone } = getState().order;
+    
+    if (orderInitDone) return;
 
     let orders = {};
     let payload;
@@ -146,6 +149,9 @@ export const initializeCompanies = () => {
   return (dispatch, getState, { getFirestore }) => {
     const firestore = getFirestore();
     const authorId = getState().firebase.auth.uid;
+    const { companyInitDone } = getState().order;
+
+    if (companyInitDone) return;
 
     let companies = {};
     let payload;
