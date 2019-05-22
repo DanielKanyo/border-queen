@@ -418,7 +418,7 @@ class EditOrder extends Component {
                   onChangeRowsPerPage={this.handleChangeRowsPerPage}
                 />
               </Paper>
-            ) : (<CreateTable />)
+            ) : <CreateTable company={isDefault ? company : null} />
           }
         </div>
       );
