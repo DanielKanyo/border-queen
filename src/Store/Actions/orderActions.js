@@ -211,3 +211,27 @@ export const deleteCompany = (id) => {
     });
   }
 }
+
+export const initializeOrderTable = (orderId) => {
+  return (dispatch, getState, { getFirestore }) => {
+    const firestore = getFirestore();
+    const { tableInitDone } = getState().order;
+
+    /** TODO: set tableInitDone to false when editOrder component unmount */
+    if (tableInitDone) return;
+
+    const tablesRef = firestore.collection("tables");
+
+    let payload = {};
+
+    tablesRef.get().then((docSnapshot) => {
+        if (docSnapshot.exists) {
+          console.log('exists');
+        } else {
+          dispatch({ type: 'INITIALIZE_TABLE', payload });
+        }
+    }).catch((error) => {
+      dispatch({ type: 'INITIALIZE_TABLE_ERROR', error });
+    });
+  }
+}

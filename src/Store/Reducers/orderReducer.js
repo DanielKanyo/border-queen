@@ -1,9 +1,11 @@
 const initState = {
   orders: {},
   companies: {},
+  table: {},
   orderOfIds: [],
   orderInitDone: false,
-  companyInitDone: false
+  companyInitDone: false,
+  tableInitDone: false
 }
 
 const initializeOrders = (state, action) => {
@@ -122,14 +124,32 @@ const deleteCompanyEntry = (state, action) => {
   }
 }
 
+const initializeTable = (state, action) => {
+  const { payload } = action
+  
+  return {
+    ...state,
+    table: payload,
+    tableInitDone: true
+  };
+}
+
 const orderReducer = (state = initState, action) => {
   switch (action.type) {
+    /** Init */
     case 'INITIALIZE_ORDERS':
       return initializeOrders(state, action)
 
     case 'INITIALIZE_COMPANIES':
       return initializeCompanies(state, action)
 
+    case 'INITIALIZE_TABLE':
+      return initializeTable(state, action)
+    case 'INITIALIZE_TABLE_ERROR':
+      console.log('Init table error', action.error)
+      return state
+
+    /** Order */
     case 'CREATE_ORDER':
       return addOrderEntry(state, action)
     case 'CREATE_ORDER_ERROR':
@@ -146,6 +166,7 @@ const orderReducer = (state = initState, action) => {
       console.log('Order changed error', action.error)
       return state
 
+    /** Company */
     case 'CREATE_COMPANY':
       return addCompanyEntry(state, action)
     case 'CREATE_COMPANY_ERROR':
@@ -162,6 +183,7 @@ const orderReducer = (state = initState, action) => {
       console.log('Delete company error', action.error)
       return state
 
+    /** Auth */
     case 'SIGNOUT_SUCCESS':
       return initState
     
