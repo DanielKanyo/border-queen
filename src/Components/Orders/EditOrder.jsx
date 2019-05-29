@@ -22,10 +22,12 @@ import { Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import LinearProgress from '@material-ui/core/LinearProgress'
+import CreateTable from './CreateTable'
 
 import {
   initializeOrders,
-  initializeCompanies
+  initializeCompanies,
+  initializeOrderTable
 } from '../../Store/Actions/orderActions'
 
 let counter = 0;
@@ -58,7 +60,7 @@ function getSorting(order, orderBy) {
   return order === 'desc' ? (a, b) => desc(a, b, orderBy) : (a, b) => -desc(a, b, orderBy);
 }
 
-const rows = [
+const columns = [
   { id: 'name', numeric: false, disablePadding: true, label: 'Dessert (100g serving)' },
   { id: 'calories', numeric: true, disablePadding: false, label: 'Calories' },
   { id: 'fat', numeric: true, disablePadding: false, label: 'Fat (g)' },
@@ -84,7 +86,7 @@ class EnhancedTableHead extends Component {
               onChange={onSelectAllClick}
             />
           </TableCell>
-          {rows.map(
+          {columns.map(
             row => (
               <TableCell
                 key={row.id}
@@ -259,8 +261,11 @@ class EditOrder extends Component {
   };
 
   componentDidMount = () => {
+    const { id } = this.props.match.params;
+
     this.props.initializeOrders();
     this.props.initializeCompanies();
+    this.props.initializeOrderTable(id);
   }
 
   handleRequestSort = (event, property) => {
@@ -318,14 +323,15 @@ class EditOrder extends Component {
       auth,
       orderInitDone,
       companyInitDone,
+      tableInitDone,
       orderObject,
       companies,
+      table
     } = this.props;
 
     if (!auth.uid) return <Redirect to='/signin' />
 
-    const initReady = orderInitDone && companyInitDone;
-    const { id } = this.props.match.params;
+    const initReady = orderInitDone && companyInitDone && tableInitDone;
 
     if (initReady) {
       const { data, order, orderBy, selected, rowsPerPage, page } = this.state;
@@ -339,80 +345,81 @@ class EditOrder extends Component {
         border: isDefault ? `1px solid ${company.color}` : '1px solid grey'
       }
 
+      const tableLength = Object.keys(table).length;
+
       return (
         <div className={classes.root}>
-          <Paper>
-            <EnhancedTableToolbar
-              numSelected={selected.length}
-              tableTitle={isDefault ? company.name : orderObject.title}
-              circleStyle={style}
-              description={orderObject.description}
-            />
-            <div className={classes.tableWrapper}>
-              <Table className={classes.table} aria-labelledby="tableTitle">
-                <EnhancedTableHead
+          {
+            tableLength ? (
+              <Paper>
+                <EnhancedTableToolbar
                   numSelected={selected.length}
-                  order={order}
-                  orderBy={orderBy}
-                  onSelectAllClick={this.handleSelectAllClick}
-                  onRequestSort={this.handleRequestSort}
-                  rowCount={data.length}
+                  tableTitle={isDefault ? company.name : orderObject.title}
+                  circleStyle={style}
+                  description={orderObject.description}
                 />
-                <TableBody>
-                  {stableSort(data, getSorting(order, orderBy))
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map(n => {
-                      const isSelected = this.isSelected(n.id);
-                      return (
-                        <TableRow
-                          hover
-                          onClick={event => this.handleClick(event, n.id)}
-                          role="checkbox"
-                          aria-checked={isSelected}
-                          tabIndex={-1}
-                          key={n.id}
-                          selected={isSelected}
-                        >
-                          <TableCell padding="checkbox">
-                            <Checkbox checked={isSelected} />
-                          </TableCell>
-                          <TableCell component="th" scope="row" padding="none">
-                            {n.name}
-                          </TableCell>
-                          <TableCell align="right">{n.calories}</TableCell>
-                          <TableCell align="right">{n.fat}</TableCell>
-                          <TableCell align="right">{n.carbs}</TableCell>
-                          <TableCell align="right">{n.protein}</TableCell>
+                <div className={classes.tableWrapper}>
+                  <Table className={classes.table} aria-labelledby="tableTitle">
+                    <EnhancedTableHead
+                      numSelected={selected.length}
+                      order={order}
+                      orderBy={orderBy}
+                      onSelectAllClick={this.handleSelectAllClick}
+                      onRequestSort={this.handleRequestSort}
+                      rowCount={data.length}
+                    />
+                    <TableBody>
+                      {stableSort(data, getSorting(order, orderBy))
+                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                        .map(n => {
+                          const isSelected = this.isSelected(n.id);
+                          return (
+                            <TableRow
+                              hover
+                              onClick={event => this.handleClick(event, n.id)}
+                              role="checkbox"
+                              aria-checked={isSelected}
+                              tabIndex={-1}
+                              key={n.id}
+                              selected={isSelected}
+                            >
+                              <TableCell padding="checkbox">
+                                <Checkbox checked={isSelected} />
+                              </TableCell>
+                              <TableCell component="th" scope="row" padding="none">{n.name}</TableCell>
+                              <TableCell align="right">{n.calories}</TableCell>
+                              <TableCell align="right">{n.fat}</TableCell>
+                              <TableCell align="right">{n.carbs}</TableCell>
+                              <TableCell align="right">{n.protein}</TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      {emptyRows > 0 && (
+                        <TableRow style={{ height: 49 * emptyRows }}>
+                          <TableCell colSpan={6} />
                         </TableRow>
-                      );
-                    })}
-                  {emptyRows > 0 && (
-                    <TableRow style={{ height: 49 * emptyRows }}>
-                      <TableCell colSpan={6} />
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25]}
-              component="div"
-              count={data.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              SelectProps={{
-                native: true,
-              }}
-              backIconButtonProps={{
-                'aria-label': 'Previous Page',
-              }}
-              nextIconButtonProps={{
-                'aria-label': 'Next Page',
-              }}
-              onChangePage={this.handleChangePage}
-              onChangeRowsPerPage={this.handleChangeRowsPerPage}
-            />
-          </Paper>
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+                <TablePagination
+                  rowsPerPageOptions={[]}
+                  component="div"
+                  count={data.length}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  backIconButtonProps={{
+                    'aria-label': 'Previous Page',
+                  }}
+                  nextIconButtonProps={{
+                    'aria-label': 'Next Page',
+                  }}
+                  onChangePage={this.handleChangePage}
+                  onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                />
+              </Paper>
+            ) : <CreateTable company={isDefault ? company : null} />
+          }
         </div>
       );
     } else {
@@ -435,6 +442,8 @@ const mapStateToProps = (state, ownProps) => {
     companies: state.order.companies,
     orderInitDone: state.order.orderInitDone,
     companyInitDone: state.order.companyInitDone,
+    tableInitDone: state.order.tableInitDone,
+    table: state.order.table,
     auth: state.firebase.auth
   }
 }
@@ -443,6 +452,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     initializeOrders: () => dispatch(initializeOrders()),
     initializeCompanies: () => dispatch(initializeCompanies()),
+    initializeOrderTable: id => dispatch(initializeOrderTable(id))
   }
 }
 
