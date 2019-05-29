@@ -1,5 +1,5 @@
 import React from 'react'
-import { NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
@@ -27,8 +27,8 @@ const SignedInLinks = ({ classes, signOut, loggedInUser }) => {
   return (
     <React.Fragment>
       <Button onClick={signOut} className={classes.button} color="inherit">Log Out</Button>
-      <Button component={NavLink} to="/" className={classes.button} color="inherit">Dashboard</Button>
-      <Avatar component={NavLink} to="/" className={classes.avatar}>{initials}</Avatar>
+      <Button component={Link} to="/" className={classes.button} color="inherit">Dashboard</Button>
+      <Avatar component={Link} to="/" className={classes.avatar}>{initials}</Avatar>
     </React.Fragment>
   )
 }

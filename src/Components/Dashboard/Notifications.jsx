@@ -5,7 +5,7 @@ import Paper from '@material-ui/core/Paper'
 
 const styles = theme => ({
   paper: {
-    padding: theme.spacing.unit * 2,
+    padding: theme.spacing(2),
     textAlign: 'center',
     marginBottom: 16
   },

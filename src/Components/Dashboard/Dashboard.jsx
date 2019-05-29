@@ -44,12 +44,12 @@ const styles = theme => ({
   },
   paper: {
     marginBottom: 8,
-    padding: theme.spacing.unit * 2,
+    padding: theme.spacing(2),
     background: '#7b1fa2',
     color: 'white'
   },
   fab: {
-    margin: theme.spacing.unit * 2,
+    margin: theme.spacing(2),
     position: 'fixed',
     right: 0,
     bottom: 0
@@ -99,7 +99,7 @@ const reorder = (list, startIndex, endIndex) => {
 };
 
 const getItemStyle = (isDragging, draggableStyle) => ({
-  margin: `0 0 8px 0`,
+  margin: `0 0 4px 0`,
   ...draggableStyle
 });
 
@@ -171,7 +171,7 @@ const Dashboard = (props) => {
 
   return (
     <div className={classes.root}>
-      <Grid container spacing={8} className={classes.grid}>
+      <Grid container spacing={1} className={classes.grid}>
         <Grid item xs={12} sm={8}>
           <Paper elevation={1} className={classes.paper}>Orders</Paper>
           {
@@ -200,6 +200,7 @@ const Dashboard = (props) => {
                                 key={key} 
                                 company={companies[orders[key].title]}
                                 setters={setters}
+                                last={Object.keys(orders).length - 1 === index}
                               />
                             </div>
                           )}

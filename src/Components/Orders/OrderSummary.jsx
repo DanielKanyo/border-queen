@@ -15,6 +15,10 @@ const styles = ({
     padding: '8px 8px 8px 20px',
     marginBottom: 8
   },
+  paperLast: {
+    padding: '8px 8px 8px 20px',
+    marginBottom: 0
+  },
   header: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -37,7 +41,7 @@ const colorDefinition = (color) => {
   return lightOrDark(color);
 }
 
-const OrderSummary = ({ classes, order, company, setters }) => {
+const OrderSummary = ({ classes, order, company, setters, last }) => {
   const isDefault = company ? true : false;
   const lightOrDark = company && company.color ? colorDefinition(company.color) : 'light';
   const color = lightOrDark === 'dark' ? 'white' : 'rgba(0, 0, 0, 0.87)';
@@ -51,7 +55,7 @@ const OrderSummary = ({ classes, order, company, setters }) => {
   const iconStyle = { color: lightOrDark === 'dark' ? 'rgba(255, 255, 255, 0.84)' : 'rgba(0, 0, 0, 0.54)' };
 
   return (
-    <Paper className={classes.paper} style={paperStyle}>
+    <Paper className={last ? classes.paperLast : classes.paper} style={paperStyle}>
       <div className={classes.header}>
         <div className={classes.headerTitle}><Typography style={textStyle} variant="h5">{isDefault ? company.name : order.title}</Typography></div>
         <div className="order-header-action">
