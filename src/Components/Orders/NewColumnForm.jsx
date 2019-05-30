@@ -41,10 +41,7 @@ const styles = theme => ({
 });
 
 const NewColumnForm = (props) => {
-  const { classes, lable, type, ddValues, inputDisabled } = props;
-
-  console.log(ddValues);
-
+  const { classes, lable, type, ddValues, formDisabled } = props;
 
   return (
     <React.Fragment>
@@ -55,7 +52,7 @@ const NewColumnForm = (props) => {
           className={classes.textField}
           value={lable}
           margin="normal"
-          disabled={inputDisabled}
+          disabled={formDisabled}
         />
         <FormControl className={classes.formControl}>
           <InputLabel className={classes.ddDisabledLableColor} htmlFor="type-native-select">Age</InputLabel>
@@ -66,7 +63,7 @@ const NewColumnForm = (props) => {
               name: 'type',
               id: 'type-native-select',
             }}
-            disabled={inputDisabled}
+            disabled={formDisabled}
           >
             <option value={'select'}>Select</option>
           </Select>
@@ -80,9 +77,9 @@ const NewColumnForm = (props) => {
                 className={classes.textField}
                 value=""
                 margin="normal"
-                disabled={inputDisabled}
+                disabled={formDisabled}
               />
-              <IconButton aria-label="Add" className={classes.addIcon} size="small" disabled={inputDisabled}>
+              <IconButton aria-label="Add" className={classes.addIcon} size="small" disabled={formDisabled}>
                 <AddIcon />
               </IconButton>
             </div>

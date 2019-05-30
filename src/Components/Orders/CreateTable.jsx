@@ -35,9 +35,16 @@ const styles = theme => ({
 });
 
 const CreateTable = (props) => {
-  const [createDialog, toggleCreateDialog] = useState(false);
-
   const { classes, company } = props;
+
+  const [createDialog, toggleCreateDialog] = useState(false);
+  const [columns, editColumns] = useState([{
+    id: 0,
+    lable: 'Products',
+    type: 'Select',
+    ddValues: company.products ? company.products : [],
+    formDisabled: true
+  }]);
 
   return (
     <React.Fragment>
@@ -59,12 +66,17 @@ const CreateTable = (props) => {
 
           {
             company && company.products ? (
-              <NewColumnForm
-                lable="Products"
-                type="Select"
-                ddValues={company.products}
-                inputDisabled={true} 
-              />
+              columns.map(column => {
+                return <NewColumnForm
+                  key={column.id}
+                  columnId={column.id}
+                  lable={column.lable}
+                  type={column.type}
+                  ddValues={column.ddValues}
+                  formDisabled={column.formDisabled}
+                  editColumns={editColumns}
+                />
+              })
             ) : null
           }
 
