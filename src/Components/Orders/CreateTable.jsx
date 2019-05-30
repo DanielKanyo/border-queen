@@ -7,7 +7,7 @@ import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
-import TextField from '@material-ui/core/TextField'
+import NewColumnForm from './NewColumnForm'
 
 const styles = theme => ({
   button: {
@@ -15,8 +15,23 @@ const styles = theme => ({
     width: '100%'
   },
   textField: {
-    width: '100%',
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1),
+    width: '100%'
   },
+  dialogText: {
+    marginBottom: 4
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    width: '100%'
+  },
+  columnInput: {
+    display: 'flex'
+  },
+  ddLableColor: {
+    color: 'rgba(0, 0, 0, 0.38);'
+  }
 });
 
 const CreateTable = (props) => {
@@ -38,18 +53,17 @@ const CreateTable = (props) => {
       >
         <DialogTitle id="scroll-dialog-title">Define Table Columns</DialogTitle>
         <DialogContent>
-          <DialogContentText>
+          <DialogContentText className={classes.dialogText}>
             Here you can specify what columns will have the table and each column type.
           </DialogContentText>
 
           {
             company && company.products ? (
-              <TextField
-                id="products"
-                label="Label"
-                className={classes.textField}
-                value='Products'
-                margin="normal"
+              <NewColumnForm
+                lable="Products"
+                type="Select"
+                ddValues={company.products}
+                inputDisabled={true} 
               />
             ) : null
           }
