@@ -14,37 +14,15 @@ const styles = theme => ({
     marginBottom: 8,
     width: '100%'
   },
-  textField: {
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1),
-    width: '100%'
-  },
   dialogText: {
     marginBottom: 4
   },
-  formControl: {
-    margin: theme.spacing(1),
-    width: '100%'
-  },
-  columnInput: {
-    display: 'flex'
-  },
-  ddLableColor: {
-    color: 'rgba(0, 0, 0, 0.38);'
-  }
 });
 
 const CreateTable = (props) => {
   const { classes, company } = props;
 
   const [createDialog, toggleCreateDialog] = useState(false);
-  const [columns, editColumns] = useState([{
-    id: 0,
-    lable: 'Products',
-    type: 'Select',
-    ddValues: company && company.products ? company.products : [],
-    formDisabled: true
-  }]);
 
   return (
     <React.Fragment>
@@ -63,23 +41,7 @@ const CreateTable = (props) => {
           <DialogContentText className={classes.dialogText}>
             Here you can specify what columns will have the table and each column type.
           </DialogContentText>
-
-          {
-            company && company.products ? (
-              columns.map(column => {
-                return <NewColumnForm
-                  key={column.id}
-                  columnId={column.id}
-                  lable={column.lable}
-                  type={column.type}
-                  ddValues={column.ddValues}
-                  formDisabled={column.formDisabled}
-                  editColumns={editColumns}
-                />
-              })
-            ) : null
-          }
-
+          <NewColumnForm />
         </DialogContent>
         <DialogActions>
           <Button onClick={() => toggleCreateDialog(false)} color="primary">
