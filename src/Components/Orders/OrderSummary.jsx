@@ -6,6 +6,7 @@ import Typography from '@material-ui/core/Typography'
 import IconButton from '@material-ui/core/IconButton'
 import EditIcon from '@material-ui/icons/EditOutlined'
 import DeleteIcon from '@material-ui/icons/DeleteOutline'
+import SettingsIcon from '@material-ui/icons/SettingsOutlined'
 import { Link } from 'react-router-dom'
 import moment from 'moment'
 import { lightOrDark } from '../../Constants/Utils/Utils'
@@ -59,15 +60,18 @@ const OrderSummary = ({ classes, order, company, setters, last }) => {
       <div className={classes.header}>
         <div className={classes.headerTitle}><Typography style={textStyle} variant="h5">{isDefault ? company.name : order.title}</Typography></div>
         <div className="order-header-action">
-          <IconButton 
-            aria-label="Delete" 
-            onClick={() => { setters.toggleDeleteDialog(true); setters.setOrderId(order.id); setters.setSelectedCompanyKey(isDefault ? order.title : null) }} 
+          <IconButton
+            aria-label="Delete"
+            onClick={() => { setters.toggleDeleteDialog(true); setters.setOrderId(order.id); setters.setSelectedCompanyKey(isDefault ? order.title : null) }}
             style={iconStyle}
           >
             <DeleteIcon />
           </IconButton>
-          <IconButton aria-label="Open" component={Link} to={`/edit/${order.id}`} style={iconStyle}>
+          <IconButton aria-label="editOrder" component={Link} to={`/edit/${order.id}`} style={iconStyle}>
             <EditIcon />
+          </IconButton>
+          <IconButton aria-label="columns" component={Link} to={`/columns/${order.id}`} style={iconStyle}>
+            <SettingsIcon />
           </IconButton>
         </div>
       </div>

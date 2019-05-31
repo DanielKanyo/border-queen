@@ -22,7 +22,6 @@ import { Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import LinearProgress from '@material-ui/core/LinearProgress'
-import CreateTable from './CreateTable'
 
 import {
   initializeOrders,
@@ -128,7 +127,7 @@ EnhancedTableHead.propTypes = {
 
 const toolbarStyles = theme => ({
   root: {
-    paddingRight: theme.spacing,
+    paddingRight: theme.spacing(),
   },
   highlight:
     theme.palette.type === 'light'
@@ -326,7 +325,7 @@ class EditOrder extends Component {
       tableInitDone,
       orderObject,
       companies,
-      table
+      // table
     } = this.props;
 
     if (!auth.uid) return <Redirect to='/signin' />
@@ -345,81 +344,75 @@ class EditOrder extends Component {
         border: isDefault ? `1px solid ${company.color}` : '1px solid grey'
       }
 
-      const tableLength = Object.keys(table).length;
-
       return (
         <div className={classes.root}>
-          {
-            tableLength ? (
-              <Paper>
-                <EnhancedTableToolbar
+          <Paper>
+            <EnhancedTableToolbar
+              numSelected={selected.length}
+              tableTitle={isDefault ? company.name : orderObject.title}
+              circleStyle={style}
+              description={orderObject.description}
+            />
+            <div className={classes.tableWrapper}>
+              <Table className={classes.table} aria-labelledby="tableTitle">
+                <EnhancedTableHead
                   numSelected={selected.length}
-                  tableTitle={isDefault ? company.name : orderObject.title}
-                  circleStyle={style}
-                  description={orderObject.description}
+                  order={order}
+                  orderBy={orderBy}
+                  onSelectAllClick={this.handleSelectAllClick}
+                  onRequestSort={this.handleRequestSort}
+                  rowCount={data.length}
                 />
-                <div className={classes.tableWrapper}>
-                  <Table className={classes.table} aria-labelledby="tableTitle">
-                    <EnhancedTableHead
-                      numSelected={selected.length}
-                      order={order}
-                      orderBy={orderBy}
-                      onSelectAllClick={this.handleSelectAllClick}
-                      onRequestSort={this.handleRequestSort}
-                      rowCount={data.length}
-                    />
-                    <TableBody>
-                      {stableSort(data, getSorting(order, orderBy))
-                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                        .map(n => {
-                          const isSelected = this.isSelected(n.id);
-                          return (
-                            <TableRow
-                              hover
-                              onClick={event => this.handleClick(event, n.id)}
-                              role="checkbox"
-                              aria-checked={isSelected}
-                              tabIndex={-1}
-                              key={n.id}
-                              selected={isSelected}
-                            >
-                              <TableCell padding="checkbox">
-                                <Checkbox checked={isSelected} />
-                              </TableCell>
-                              <TableCell component="th" scope="row" padding="none">{n.name}</TableCell>
-                              <TableCell align="right">{n.calories}</TableCell>
-                              <TableCell align="right">{n.fat}</TableCell>
-                              <TableCell align="right">{n.carbs}</TableCell>
-                              <TableCell align="right">{n.protein}</TableCell>
-                            </TableRow>
-                          );
-                        })}
-                      {emptyRows > 0 && (
-                        <TableRow style={{ height: 49 * emptyRows }}>
-                          <TableCell colSpan={6} />
+                <TableBody>
+                  {stableSort(data, getSorting(order, orderBy))
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map(n => {
+                      const isSelected = this.isSelected(n.id);
+                      return (
+                        <TableRow
+                          hover
+                          onClick={event => this.handleClick(event, n.id)}
+                          role="checkbox"
+                          aria-checked={isSelected}
+                          tabIndex={-1}
+                          key={n.id}
+                          selected={isSelected}
+                        >
+                          <TableCell padding="checkbox">
+                            <Checkbox checked={isSelected} />
+                          </TableCell>
+                          <TableCell component="th" scope="row" padding="none">{n.name}</TableCell>
+                          <TableCell align="right">{n.calories}</TableCell>
+                          <TableCell align="right">{n.fat}</TableCell>
+                          <TableCell align="right">{n.carbs}</TableCell>
+                          <TableCell align="right">{n.protein}</TableCell>
                         </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
-                <TablePagination
-                  rowsPerPageOptions={[]}
-                  component="div"
-                  count={data.length}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  backIconButtonProps={{
-                    'aria-label': 'Previous Page',
-                  }}
-                  nextIconButtonProps={{
-                    'aria-label': 'Next Page',
-                  }}
-                  onChangePage={this.handleChangePage}
-                  onChangeRowsPerPage={this.handleChangeRowsPerPage}
-                />
-              </Paper>
-            ) : <CreateTable company={isDefault ? company : null} />
-          }
+                      );
+                    })}
+                  {emptyRows > 0 && (
+                    <TableRow style={{ height: 49 * emptyRows }}>
+                      <TableCell colSpan={6} />
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+            <TablePagination
+              rowsPerPageOptions={[]}
+              component="div"
+              count={data.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              backIconButtonProps={{
+                'aria-label': 'Previous Page',
+              }}
+              nextIconButtonProps={{
+                'aria-label': 'Next Page',
+              }}
+              onChangePage={this.handleChangePage}
+              onChangeRowsPerPage={this.handleChangeRowsPerPage}
+            />
+          </Paper>
         </div>
       );
     } else {

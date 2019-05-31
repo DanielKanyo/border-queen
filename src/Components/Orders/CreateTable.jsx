@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
@@ -8,6 +8,10 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import NewColumnForm from './NewColumnForm'
+import { connect } from 'react-redux'
+import { compose } from 'redux'
+
+import { initializeTableColumns } from '../../Store/Actions/orderActions'
 
 const styles = theme => ({
   button: {
@@ -17,17 +21,33 @@ const styles = theme => ({
   dialogText: {
     marginBottom: 4
   },
+  root: {
+    paddingLeft: 8,
+    paddingRight: 8
+  }
 });
 
 const CreateTable = (props) => {
-  const { classes, company } = props;
+  const {
+    classes,
+    initializeTableColumns,
+    columns,
+    tableColumnsInitDone
+  } = props;
+
+  const { id } = props.match.params;
+
+  // TODO: clear table columns after component did unmount
+  console.log(columns, tableColumnsInitDone);
+
+  useEffect(() => { initializeTableColumns(id) }, []);
 
   const [createDialog, toggleCreateDialog] = useState(false);
 
   return (
-    <React.Fragment>
+    <div className={classes.root}>
       <Button variant="contained" color="secondary" className={classes.button} onClick={() => toggleCreateDialog(true)}>
-        Create Table
+        Create Column
       </Button>
 
       <Dialog
@@ -39,7 +59,7 @@ const CreateTable = (props) => {
         <DialogTitle id="scroll-dialog-title">Define Table Columns</DialogTitle>
         <DialogContent>
           <DialogContentText className={classes.dialogText}>
-            Here you can specify what columns will have the table and each column type.
+            Here you can set the name and type of the column.
           </DialogContentText>
           <NewColumnForm />
         </DialogContent>
@@ -52,7 +72,7 @@ const CreateTable = (props) => {
           </Button>
         </DialogActions>
       </Dialog>
-    </React.Fragment>
+    </div>
   )
 }
 
@@ -60,4 +80,20 @@ CreateTable.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(CreateTable)
+const mapStateToProps = (state) => {
+  return {
+    columns: state.order.columns,
+    tableColumnsInitDone: state.order.tableColumnsInitDone
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    initializeTableColumns: id => dispatch(initializeTableColumns(id))
+  }
+}
+
+export default compose(
+  connect(mapStateToProps, mapDispatchToProps),
+  withStyles(styles)
+)(CreateTable)

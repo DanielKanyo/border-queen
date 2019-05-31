@@ -2,10 +2,12 @@ const initState = {
   orders: {},
   companies: {},
   table: {},
+  columns: {},
   orderOfIds: [],
   orderInitDone: false,
   companyInitDone: false,
-  tableInitDone: false
+  tableInitDone: false,
+  tableColumnsInitDone: false
 }
 
 const initializeOrders = (state, action) => {
@@ -134,6 +136,17 @@ const initializeTable = (state, action) => {
   };
 }
 
+const initializeTableColumns = (state, action) => {
+  const { payload } = action
+  const { columns } = payload
+
+  return {
+    ...state,
+    columns: columns,
+    tableColumnsInitDone: true
+  };
+}
+
 const orderReducer = (state = initState, action) => {
   switch (action.type) {
     /** Init */
@@ -147,6 +160,12 @@ const orderReducer = (state = initState, action) => {
       return initializeTable(state, action)
     case 'INITIALIZE_TABLE_ERROR':
       console.log('Init table error', action.error)
+      return state
+    
+    case 'INITIALIZE_COLUMNS':
+        return initializeTableColumns(state, action);
+    case 'INITIALIZE_COLUMNS_ERROR':
+      console.log('Init columns error', action.error)
       return state
 
     /** Order */

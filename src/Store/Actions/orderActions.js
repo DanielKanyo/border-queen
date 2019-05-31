@@ -217,7 +217,6 @@ export const initializeOrderTable = (orderId) => {
     const firestore = getFirestore();
     const { tableInitDone } = getState().order;
 
-    /** TODO: set tableInitDone to false when editOrder component unmount */
     if (tableInitDone) return;
 
     const tablesRef = firestore.collection("tables");
@@ -232,6 +231,47 @@ export const initializeOrderTable = (orderId) => {
         }
     }).catch((error) => {
       dispatch({ type: 'INITIALIZE_TABLE_ERROR', error });
+    });
+  }
+}
+
+// TODO: maybe this action is not needed anymore - columns, rows
+export const initializeTableColumns = (orderId) => {
+  return (dispatch, getState, { getFirestore }) => {
+    const firestore = getFirestore();
+    const { tableColumnsInitDone } = getState().order;
+
+    if (tableColumnsInitDone) return;
+
+    const tableColumnsRef = firestore.collection("columns");
+
+    let payload = {};
+    let columns = {};
+
+    tableColumnsRef.get().then((docSnapshot) => {
+      if (!docSnapshot.empty) {
+        tableColumnsRef.where('ownerId', '==', orderId).get().then((columnsResponse) => {
+          columnsResponse.forEach((doc) => {
+            let column = doc.data();
+
+            columns[column.id] = {
+              ...column
+            }
+          });
+
+          payload = {
+            columns: {
+              ...columns
+            }
+          }
+        }).then(() => {
+          dispatch({ type: 'INITIALIZE_COLUMNS', payload });
+        })
+      } else {
+        dispatch({ type: 'INITIALIZE_COLUMNS', payload });
+      }
+    }).catch((error) => {
+      dispatch({ type: 'INITIALIZE_COLUMNS_ERROR', error });
     });
   }
 }
