@@ -42,7 +42,7 @@ const CreateTable = (props) => {
     id: 0,
     lable: 'Products',
     type: 'Select',
-    ddValues: company.products ? company.products : [],
+    ddValues: company && company.products ? company.products : [],
     formDisabled: true
   }]);
 
