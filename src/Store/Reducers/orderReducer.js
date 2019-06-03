@@ -147,6 +147,14 @@ const initializeTableColumns = (state, action) => {
   };
 }
 
+const discardTableColumns = (state) => {
+  return {
+    ...state,
+    columns: {},
+    tableColumnsInitDone: false
+  }
+}
+
 const orderReducer = (state = initState, action) => {
   switch (action.type) {
     /** Init */
@@ -163,10 +171,12 @@ const orderReducer = (state = initState, action) => {
       return state
     
     case 'INITIALIZE_COLUMNS':
-        return initializeTableColumns(state, action);
+        return initializeTableColumns(state, action)
     case 'INITIALIZE_COLUMNS_ERROR':
       console.log('Init columns error', action.error)
       return state
+    case 'DISCARD_COLUMNS':
+      return discardTableColumns(state)
 
     /** Order */
     case 'CREATE_ORDER':

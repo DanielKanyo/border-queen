@@ -212,6 +212,7 @@ export const deleteCompany = (id) => {
   }
 }
 
+// TODO: maybe this action is not needed anymore - columns, rows
 export const initializeOrderTable = (orderId) => {
   return (dispatch, getState, { getFirestore }) => {
     const firestore = getFirestore();
@@ -235,7 +236,12 @@ export const initializeOrderTable = (orderId) => {
   }
 }
 
-// TODO: maybe this action is not needed anymore - columns, rows
+export const discardTableColumns = () => {
+  return (dispatch) => {
+    dispatch({ type: 'DISCARD_COLUMNS' });
+  }
+}
+
 export const initializeTableColumns = (orderId) => {
   return (dispatch, getState, { getFirestore }) => {
     const firestore = getFirestore();

@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
-import ExpansionPanel from '@material-ui/core/ExpansionPanel'
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails'
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary'
 import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions'
@@ -17,14 +16,21 @@ import DeleteIcon from '@material-ui/icons/DeleteOutline'
 import EditIcon from '@material-ui/icons/EditOutlined'
 import Chip from '@material-ui/core/Chip'
 import WarningIcon from '@material-ui/icons/ReportProblemOutlined'
+import MuiExpansionPanel from '@material-ui/core/ExpansionPanel';
+
+const ExpansionPanel = withStyles({
+  root: {
+    '&$expanded': {
+      margin: '8px 0',
+    },
+  },
+  expanded: {},
+})(MuiExpansionPanel);
 
 const styles = theme => ({
   heading: {
     fontSize: theme.typography.pxToRem(15),
     fontWeight: theme.typography.fontWeightRegular,
-  },
-  expanded: {
-    margin: '8px 0'
   },
   action: {
     padding: 8,
@@ -36,8 +42,8 @@ const styles = theme => ({
     marginRight: 15
   },
   chip: {
-    marginRight: theme.spacing / 2,
-    marginBottom: theme.spacing / 2,
+    marginRight: 4,
+    marginBottom: 4,
   },
   details: {
     display: 'block'
@@ -80,7 +86,7 @@ const CompanySummary = ({ classes, auth, company, setters }) => {
 
   return (
     <React.Fragment>
-      <ExpansionPanel classes={{ expanded: classes.expanded }}>
+      <ExpansionPanel>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
           <Avatar className={classes.smallAvatar} style={styles}></Avatar>
           <Typography className={classes.heading}>{company.name}</Typography>
