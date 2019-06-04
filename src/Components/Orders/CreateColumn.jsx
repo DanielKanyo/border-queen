@@ -11,6 +11,7 @@ import NewColumnForm from './NewColumnForm'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import Paper from '@material-ui/core/Paper'
+import LinearProgress from '@material-ui/core/LinearProgress'
 
 import {
   initializeTableColumns,
@@ -77,8 +78,7 @@ const CreateTable = (props) => {
 
     if (isDefault) company = companies[order.title];
 
-    console.log(company);
-    
+    console.log(company, columns);
     
     return (
       <div className={classes.root}>
@@ -116,7 +116,7 @@ const CreateTable = (props) => {
       </div>
     )
   } else {
-    return null;
+    return <div className={classes.root}><LinearProgress color="primary" /></div>
   }
 }
 
