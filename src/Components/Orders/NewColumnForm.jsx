@@ -7,6 +7,7 @@ import FormControl from '@material-ui/core/FormControl'
 import Select from '@material-ui/core/Select'
 import IconButton from '@material-ui/core/IconButton'
 import AddIcon from '@material-ui/icons/Add'
+import Chip from '@material-ui/core/Chip'
 
 const styles = theme => ({
   textField: {
@@ -26,14 +27,20 @@ const styles = theme => ({
     position: 'absolute',
     right: 0,
     bottom: 9
+  },
+  chip: {
+    marginRight: 4,
+    marginBottom: 4
   }
 });
 
 const NewColumnForm = (props) => {
   const { classes } = props;
 
-  const [lable, changeLable] = useState('');
-  const [type, changeType] = useState('');
+  const [label, setLabel] = useState('');
+  const [type, setType] = useState('text');
+  const [selectValue, setSelectValue] = useState('');
+  const [items, setItems] = useState([]);
 
   return (
     <React.Fragment>
@@ -42,15 +49,15 @@ const NewColumnForm = (props) => {
           id="products"
           label="Label"
           className={classes.textField}
-          value={lable}
-          onChange={e => changeLable(e.target.value)}
+          value={label}
+          onChange={e => setLabel(e.target.value)}
           margin="normal"
         />
         <FormControl className={classes.formControl}>
           <InputLabel htmlFor="type-native-select">Type</InputLabel>
           <Select
             native
-            onChange={e => changeType(e.target.value)}
+            onChange={e => setType(e.target.value)}
             value={type}
             inputProps={{
               name: 'type',
@@ -71,14 +78,35 @@ const NewColumnForm = (props) => {
                 id="dropdownAdd"
                 label="Add values"
                 className={classes.textField}
-                value=""
+                value={selectValue}
                 margin="normal"
+                onChange={e => setSelectValue(e.target.value)}
               />
-              <IconButton aria-label="Add" className={classes.addIcon} size="small">
+              <IconButton 
+                aria-label="Add"
+                className={classes.addIcon}
+                size="small"
+                disabled={selectValue ? false : true}
+                onClick={() => {setItems([...items, selectValue]); setSelectValue('')}}
+              >
                 <AddIcon />
               </IconButton>
             </div>
           )
+        }
+        {
+          items.length ? (
+            items.map((item, i) => {
+              return (
+                <Chip
+                  key={i}
+                  label={item}
+                  className={classes.chip}
+                  onDelete={() => setItems([...items.slice(0, i), ...items.slice(i + 1)])}
+                />
+              )
+            })
+          ) : null
         }
 
       </div>

@@ -12,6 +12,7 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import Paper from '@material-ui/core/Paper'
 import LinearProgress from '@material-ui/core/LinearProgress'
+import ColumnSummary from './ColumnListItem'
 
 import {
   initializeTableColumns,
@@ -35,7 +36,13 @@ const styles = theme => ({
     padding: '8px 8px 8px 24px',
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center'
+    alignItems: 'center',
+    marginBottom: 8
+  },
+  columnListContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'stretch',
   }
 });
 
@@ -78,8 +85,6 @@ const CreateTable = (props) => {
 
     if (isDefault) company = companies[order.title];
 
-    console.log(company, columns);
-    
     return (
       <div className={classes.root}>
         <Paper className={classes.paper}>
@@ -90,6 +95,15 @@ const CreateTable = (props) => {
             </Button>
           </div>
         </Paper>
+
+        <div className={classes.columnListContainer}>
+          { isDefault && company.products.length && <ColumnSummary label="Products" /> }
+          {
+            Object.keys(columns).length ? Object.keys(columns).map(key => {
+              return <ColumnSummary label={columns[key].label} key={key} columnId={columns[key].id} />
+            }) : null
+          }
+        </div>
 
         <Dialog
           open={createDialog}
