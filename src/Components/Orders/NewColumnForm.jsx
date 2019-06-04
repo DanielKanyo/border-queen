@@ -66,6 +66,7 @@ const NewColumnForm = (props) => {
           >
             <option value={''} />
             <option value={'text'}>Text</option>
+            <option value={'number'}>Number</option>
             <option value={'select'}>Select</option>
             <option value={'date'}>Date</option>
             <option value={'time'}>Time</option>
