@@ -69,7 +69,11 @@ const OrderSummary = ({ classes, order, company, setters, last }) => {
           >
             <DeleteIcon />
           </IconButton>
-          <IconButton aria-label="unfinished" style={iconStyle}>
+          <IconButton
+            aria-label="unfinished"
+            style={iconStyle}
+            onClick={() => setters.toggleOrderFinishedState(order.id, order.finished)}
+          >
             {order.finished ? <CheckCircleIcon /> : <CheckCircleOutlineIcon />}
           </IconButton>
           <IconButton aria-label="editOrder" component={Link} to={`/edit/${order.id}`} style={iconStyle}>

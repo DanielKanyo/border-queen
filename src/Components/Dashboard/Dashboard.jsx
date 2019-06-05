@@ -29,7 +29,8 @@ import {
   createOrder,
   orderChanged,
   deleteOrder,
-  initializeCompanies
+  initializeCompanies,
+  toggleOrderFinishedState
 } from '../../Store/Actions/orderActions'
 import { Redirect } from 'react-router-dom'
 import OrderSummary from '../Orders/OrderSummary'
@@ -116,7 +117,8 @@ const Dashboard = (props) => {
     initializeCompanies,
     companies,
     orderInitDone,
-    companyInitDone
+    companyInitDone,
+    toggleOrderFinishedState
   } = props;
 
   const [createDialog, toggleCreateDialog] = useState(false);
@@ -166,7 +168,8 @@ const Dashboard = (props) => {
   const setters = {
     setOrderId,
     setSelectedCompanyKey,
-    toggleDeleteDialog
+    toggleDeleteDialog,
+    toggleOrderFinishedState
   }
 
   return (
@@ -340,6 +343,7 @@ const mapDispatchToProps = (dispatch) => {
     orderChanged: (newOrder) => dispatch(orderChanged(newOrder)),
     deleteOrder: (id, companyKey) => dispatch(deleteOrder(id, companyKey)),
     initializeCompanies: () => dispatch(initializeCompanies()),
+    toggleOrderFinishedState: (orderId, status) => dispatch(toggleOrderFinishedState(orderId, status))
   }
 }
 

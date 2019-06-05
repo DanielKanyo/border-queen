@@ -155,6 +155,25 @@ const discardTableColumns = (state) => {
   }
 }
 
+const toggleOrderFinishedState = (state, action) => {
+  const { payload } = action
+  const { orderId, status } = payload
+  const { orders } = state
+
+  const order = orders[orderId]
+
+  return {
+    ...state,
+    orders: {
+      ...orders,
+      [orderId]: {
+        ...order,
+        finished: status
+      }
+    }
+  }
+}
+
 const orderReducer = (state = initState, action) => {
   switch (action.type) {
     /** Init */
@@ -194,6 +213,8 @@ const orderReducer = (state = initState, action) => {
     case 'ORDER_CHANGED_ERROR':
       console.log('Order changed error', action.error)
       return state
+    case 'TOGGLE_ORDER_STATE':
+      return toggleOrderFinishedState(state, action)
 
     /** Company */
     case 'CREATE_COMPANY':
