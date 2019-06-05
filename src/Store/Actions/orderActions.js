@@ -49,6 +49,7 @@ export const createOrder = (order) => {
       title: order.value,
       description: order.description,
       createdAt: new Date().getTime(),
+      finished: false,
       authorId
     }
 
@@ -274,6 +275,10 @@ export const initializeTableColumns = (orderId) => {
           dispatch({ type: 'INITIALIZE_COLUMNS', payload });
         })
       } else {
+        payload = { 
+          columns: {} 
+        }
+        
         dispatch({ type: 'INITIALIZE_COLUMNS', payload });
       }
     }).catch((error) => {

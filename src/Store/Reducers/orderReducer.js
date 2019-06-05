@@ -26,9 +26,9 @@ const initializeOrders = (state, action) => {
 
 const addOrderEntry = (state, action) => {
   const { payload } = action
-  const { id, title, description, createdAt, authorId } = payload
+  const { id, title, description, createdAt, finished, authorId } = payload
 
-  const order = { id, title, description, createdAt, authorId }
+  const order = { id, title, description, createdAt, finished, authorId }
 
   return {
     ...state,

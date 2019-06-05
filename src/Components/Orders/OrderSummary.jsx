@@ -8,7 +8,7 @@ import EditIcon from '@material-ui/icons/EditOutlined'
 import DeleteIcon from '@material-ui/icons/DeleteOutline'
 import SettingsIcon from '@material-ui/icons/SettingsOutlined'
 import CheckCircleIcon from '@material-ui/icons/CheckCircle'
-import CheckCircleOutline from '@material-ui/icons/CheckCircleOutline'
+import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline'
 import { Link } from 'react-router-dom'
 import moment from 'moment'
 import { lightOrDark } from '../../Constants/Utils/Utils'
@@ -70,7 +70,7 @@ const OrderSummary = ({ classes, order, company, setters, last }) => {
             <DeleteIcon />
           </IconButton>
           <IconButton aria-label="unfinished" style={iconStyle}>
-            <CheckCircleOutline />
+            {order.finished ? <CheckCircleIcon /> : <CheckCircleOutlineIcon />}
           </IconButton>
           <IconButton aria-label="editOrder" component={Link} to={`/edit/${order.id}`} style={iconStyle}>
             <EditIcon />
