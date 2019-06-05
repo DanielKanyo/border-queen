@@ -52,7 +52,8 @@ const styles = theme => ({
     marginRight: 10
   },
   chip: {
-    marginRight: theme.spacing / 2
+    marginRight: 6,
+    marginBottom: 6
   },
   addProductsContainer: {
     position: 'relative'

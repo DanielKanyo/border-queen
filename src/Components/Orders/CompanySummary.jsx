@@ -42,8 +42,8 @@ const styles = theme => ({
     marginRight: 15
   },
   chip: {
-    marginRight: 4,
-    marginBottom: 4,
+    marginRight: 6,
+    marginBottom: 6,
   },
   details: {
     display: 'block'
