@@ -118,11 +118,14 @@ export const orderChanged = (newOrder) => {
 
 export const toggleOrderFinishedState = (orderId, status) => {
   return (dispatch, getState, { getFirestore }) => {
+    const firestore = getFirestore();
     const payload = { orderId, status: !status };
 
-    // TODO: update status in db also
-
-    dispatch({ type: 'TOGGLE_ORDER_STATE', payload });
+    firestore.collection('orders').doc(orderId).update({
+      finished: !status
+    }).then(() => {
+      dispatch({ type: 'TOGGLE_ORDER_STATE', payload });
+    });
   }
 }
 

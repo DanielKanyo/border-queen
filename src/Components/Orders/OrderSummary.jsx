@@ -70,7 +70,7 @@ const OrderSummary = ({ classes, order, company, setters, last }) => {
             <DeleteIcon />
           </IconButton>
           <IconButton
-            aria-label="unfinished"
+            aria-label={order.finished ? 'finished' : 'unfinished'}
             style={iconStyle}
             onClick={() => setters.toggleOrderFinishedState(order.id, order.finished)}
           >

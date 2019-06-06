@@ -24,6 +24,9 @@ import Input from '@material-ui/core/Input'
 import NativeSelect from '@material-ui/core/NativeSelect'
 import FormControl from '@material-ui/core/FormControl'
 import InputLabel from '@material-ui/core/InputLabel'
+import CheckCircleIcon from '@material-ui/icons/CheckCircle'
+import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline'
+import PanoramaFishEyeIcon from '@material-ui/icons/PanoramaFishEye'
 import {
   initializeOrders,
   createOrder,
@@ -37,6 +40,12 @@ import OrderSummary from '../Orders/OrderSummary'
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
 import EmptyList from '../Layout/EmptyList'
 
+const FILTER_OPTIONS = {
+  OPEN: 'open',
+  DONE: 'done',
+  ALL: 'all'
+}
+
 const styles = theme => ({
   root: {
     flexGrow: 1,
@@ -45,9 +54,13 @@ const styles = theme => ({
   },
   paper: {
     marginBottom: 8,
-    padding: theme.spacing(2),
+    padding: 5,
+    paddingLeft: 16,
     background: '#7b1fa2',
-    color: 'white'
+    color: 'white',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
   fab: {
     margin: theme.spacing(2),
@@ -87,6 +100,12 @@ const styles = theme => ({
     background: 'white',
     marginTop: -11,
     textAlign: 'center'
+  },
+  filterIconActive: {
+    color: 'rgba(255, 255, 255, 0.84)'
+  },
+  filterIcon: {
+    color: 'rgba(0, 0, 0, 0.24)'
   }
 });
 
@@ -103,6 +122,34 @@ const getItemStyle = (isDragging, draggableStyle) => ({
   margin: `0 0 8px 0`,
   ...draggableStyle
 });
+
+// TODO
+const filterOrders = (orders, activeFilter) => {
+  let allowedKeys = [];
+
+  for(let key in orders) {
+    if (activeFilter === FILTER_OPTIONS.ALL) {
+      allowedKeys.push(key);
+    } else if (activeFilter === FILTER_OPTIONS.DONE) {
+      if (orders[key].finished) {
+        allowedKeys.push(key);
+      }
+    } else {
+      if (!orders[key].finished) {
+        allowedKeys.push(key);
+      }
+    }
+  }
+
+  const filteredOrders = Object.keys(orders)
+    .filter(key => allowedKeys.includes(key))
+    .reduce((obj, key) => {
+      obj[key] = orders[key];
+      return obj;
+    }, {});
+
+  return filteredOrders;
+}
 
 const Dashboard = (props) => {
   const {
@@ -127,6 +174,7 @@ const Dashboard = (props) => {
   const [description, setDescription] = useState('');
   const [orderId, setOrderId] = useState('');
   const [selectedCompanyKey, setSelectedCompanyKey] = useState('');
+  const [activeFilter, setActiveFilter] = useState('all')
 
   useEffect(() => { initializeOrders(); initializeCompanies() }, []);
 
@@ -172,11 +220,47 @@ const Dashboard = (props) => {
     toggleOrderFinishedState
   }
 
+  // TODO
+  let filteredOrders = {};
+
+  if (initReady) {
+    filteredOrders = filterOrders(orders, activeFilter);
+  }
+
+  console.log(filteredOrders);  
+
   return (
     <div className={classes.root}>
       <Grid container spacing={1} className={classes.grid}>
         <Grid item xs={12} sm={8}>
-          <Paper elevation={1} className={classes.paper}>Orders</Paper>
+          <Paper elevation={1} className={classes.paper}>
+            <div>
+              Orders
+            </div>
+            <div>
+              <IconButton
+                aria-label="finished"
+                className={activeFilter === FILTER_OPTIONS.DONE ? classes.filterIconActive : classes.filterIcon}
+                onClick={() => setActiveFilter(FILTER_OPTIONS.DONE)}
+              >
+                <CheckCircleIcon />
+              </IconButton>
+              <IconButton
+                aria-label="unfinished"
+                className={activeFilter === FILTER_OPTIONS.OPEN ? classes.filterIconActive : classes.filterIcon}
+                onClick={() => setActiveFilter(FILTER_OPTIONS.OPEN)}
+              >
+                <CheckCircleOutlineIcon />
+              </IconButton>
+              <IconButton
+                aria-label="no-filter"
+                className={activeFilter === FILTER_OPTIONS.ALL ? classes.filterIconActive : classes.filterIcon}
+                onClick={() => setActiveFilter(FILTER_OPTIONS.ALL)}
+              >
+                <PanoramaFishEyeIcon />
+              </IconButton>
+            </div>
+          </Paper>
           {
             initReady && Object.keys(orders).length && orderOfIds.length ?
               <DragDropContext onDragEnd={onDragEnd}>
@@ -186,7 +270,7 @@ const Dashboard = (props) => {
                       {...provided.droppableProps}
                       ref={provided.innerRef}
                     >
-                      {orderOfIds.map((key, index) => {
+                      {Object.keys(orders).map((key, index) => {
                         return <Draggable key={key} draggableId={key} index={index}>
                           {(provided, snapshot) => (
                             <div
@@ -198,9 +282,9 @@ const Dashboard = (props) => {
                                 provided.draggableProps.style
                               )}
                             >
-                              <OrderSummary 
-                                order={orders[key]} 
-                                key={key} 
+                              <OrderSummary
+                                order={orders[key]}
+                                key={key}
                                 company={companies[orders[key].title]}
                                 setters={setters}
                                 last={Object.keys(orders).length - 1 === index}
