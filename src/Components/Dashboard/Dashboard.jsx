@@ -26,7 +26,7 @@ import FormControl from '@material-ui/core/FormControl'
 import InputLabel from '@material-ui/core/InputLabel'
 import CheckCircleIcon from '@material-ui/icons/CheckCircle'
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline'
-import PanoramaFishEyeIcon from '@material-ui/icons/PanoramaFishEye'
+import LensIcon from '@material-ui/icons/Lens'
 import {
   initializeOrders,
   createOrder,
@@ -123,11 +123,10 @@ const getItemStyle = (isDragging, draggableStyle) => ({
   ...draggableStyle
 });
 
-// TODO
 const filterOrders = (orders, activeFilter) => {
   let allowedKeys = [];
 
-  for(let key in orders) {
+  for (let key in orders) {
     if (activeFilter === FILTER_OPTIONS.ALL) {
       allowedKeys.push(key);
     } else if (activeFilter === FILTER_OPTIONS.DONE) {
@@ -141,14 +140,7 @@ const filterOrders = (orders, activeFilter) => {
     }
   }
 
-  const filteredOrders = Object.keys(orders)
-    .filter(key => allowedKeys.includes(key))
-    .reduce((obj, key) => {
-      obj[key] = orders[key];
-      return obj;
-    }, {});
-
-  return filteredOrders;
+  return allowedKeys;
 }
 
 const Dashboard = (props) => {
@@ -220,14 +212,9 @@ const Dashboard = (props) => {
     toggleOrderFinishedState
   }
 
-  // TODO
-  let filteredOrders = {};
+  let allowedKeys;
 
-  if (initReady) {
-    filteredOrders = filterOrders(orders, activeFilter);
-  }
-
-  console.log(filteredOrders);  
+  if (initReady) allowedKeys = filterOrders(orders, activeFilter);
 
   return (
     <div className={classes.root}>
@@ -238,27 +225,33 @@ const Dashboard = (props) => {
               Orders
             </div>
             <div>
-              <IconButton
-                aria-label="finished"
-                className={activeFilter === FILTER_OPTIONS.DONE ? classes.filterIconActive : classes.filterIcon}
-                onClick={() => setActiveFilter(FILTER_OPTIONS.DONE)}
-              >
-                <CheckCircleIcon />
-              </IconButton>
-              <IconButton
-                aria-label="unfinished"
-                className={activeFilter === FILTER_OPTIONS.OPEN ? classes.filterIconActive : classes.filterIcon}
-                onClick={() => setActiveFilter(FILTER_OPTIONS.OPEN)}
-              >
-                <CheckCircleOutlineIcon />
-              </IconButton>
-              <IconButton
-                aria-label="no-filter"
-                className={activeFilter === FILTER_OPTIONS.ALL ? classes.filterIconActive : classes.filterIcon}
-                onClick={() => setActiveFilter(FILTER_OPTIONS.ALL)}
-              >
-                <PanoramaFishEyeIcon />
-              </IconButton>
+              <Tooltip title="Finished" placement="left">
+                <IconButton
+                  aria-label="finished"
+                  className={activeFilter === FILTER_OPTIONS.DONE ? classes.filterIconActive : classes.filterIcon}
+                  onClick={() => setActiveFilter(FILTER_OPTIONS.DONE)}
+                >
+                  <CheckCircleIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Unfinished" placement="left">
+                <IconButton
+                  aria-label="unfinished"
+                  className={activeFilter === FILTER_OPTIONS.OPEN ? classes.filterIconActive : classes.filterIcon}
+                  onClick={() => setActiveFilter(FILTER_OPTIONS.OPEN)}
+                >
+                  <CheckCircleOutlineIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="All" placement="left">
+                <IconButton
+                  aria-label="no-filter"
+                  className={activeFilter === FILTER_OPTIONS.ALL ? classes.filterIconActive : classes.filterIcon}
+                  onClick={() => setActiveFilter(FILTER_OPTIONS.ALL)}
+                >
+                  <LensIcon />
+                </IconButton>
+              </Tooltip>
             </div>
           </Paper>
           {
@@ -270,28 +263,33 @@ const Dashboard = (props) => {
                       {...provided.droppableProps}
                       ref={provided.innerRef}
                     >
-                      {Object.keys(orders).map((key, index) => {
-                        return <Draggable key={key} draggableId={key} index={index}>
-                          {(provided, snapshot) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                              style={getItemStyle(
-                                snapshot.isDragging,
-                                provided.draggableProps.style
-                              )}
-                            >
-                              <OrderSummary
-                                order={orders[key]}
-                                key={key}
-                                company={companies[orders[key].title]}
-                                setters={setters}
-                                last={Object.keys(orders).length - 1 === index}
-                              />
-                            </div>
-                          )}
-                        </Draggable>
+                      {orderOfIds.map((key, index) => {
+                        if (allowedKeys.includes(key)) {
+                          // TODO: display a message that the dragging is disabled if the filter is active
+                          return <Draggable key={key} draggableId={key} index={index} isDragDisabled={activeFilter !== FILTER_OPTIONS.ALL}>
+                            {(provided, snapshot) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                                style={getItemStyle(
+                                  snapshot.isDragging,
+                                  provided.draggableProps.style
+                                )}
+                              >
+                                <OrderSummary
+                                  order={orders[key]}
+                                  key={key}
+                                  company={companies[orders[key].title]}
+                                  setters={setters}
+                                  last={Object.keys(orders).length - 1 === index}
+                                />
+                              </div>
+                            )}
+                          </Draggable>
+                        } else {
+                          return null;
+                        }
                       })}
                       {provided.placeholder}
                     </div>
