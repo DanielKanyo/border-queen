@@ -14,9 +14,7 @@ const styles = ({
 
 const EmptyList = ({ classes }) => {
   return (
-    <div className={classes.paper}>
-      List is empty...
-    </div>
+    <div className={classes.paper}>List is empty...</div>
   )
 }
 
@@ -24,4 +22,4 @@ EmptyList.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default  withStyles(styles)(EmptyList)
+export default withStyles(styles)(EmptyList)
