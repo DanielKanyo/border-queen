@@ -226,30 +226,6 @@ export const deleteCompany = (id) => {
   }
 }
 
-// TODO: maybe this action is not needed anymore - columns, rows
-export const initializeOrderTable = (orderId) => {
-  return (dispatch, getState, { getFirestore }) => {
-    const firestore = getFirestore();
-    const { tableInitDone } = getState().order;
-
-    if (tableInitDone) return;
-
-    const tablesRef = firestore.collection("tables");
-
-    let payload = {};
-
-    tablesRef.get().then((docSnapshot) => {
-        if (docSnapshot.exists) {
-          console.log('exists');
-        } else {
-          dispatch({ type: 'INITIALIZE_TABLE', payload });
-        }
-    }).catch((error) => {
-      dispatch({ type: 'INITIALIZE_TABLE_ERROR', error });
-    });
-  }
-}
-
 export const discardTableColumns = () => {
   return (dispatch) => {
     dispatch({ type: 'DISCARD_COLUMNS' });
@@ -296,6 +272,32 @@ export const initializeTableColumns = (orderId) => {
       }
     }).catch((error) => {
       dispatch({ type: 'INITIALIZE_COLUMNS_ERROR', error });
+    });
+  }
+}
+
+export const createTableColumn = (orderId, columnData) => {
+  return (dispatch, getState, { getFirestore }) => {
+    const firestore = getFirestore();
+
+    const payload = {
+      label: columnData.label,
+      type: columnData.type,
+      items: columnData.items,
+      ownerId: orderId
+    }
+
+    firestore.collection('columns').add({
+      ...payload,
+    }).then(snapshot => {
+      const { id } = snapshot;
+
+      firestore.collection('columns').doc(id).update({ id });
+      payload.id = id;
+
+      dispatch({ type: 'CREATE_COLUMN', payload });
+    }).catch((error) => {
+      dispatch({ type: 'CREATE_COLUMN_ERROR', error });
     });
   }
 }

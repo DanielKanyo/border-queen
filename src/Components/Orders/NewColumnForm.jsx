@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
@@ -35,12 +35,14 @@ const styles = theme => ({
 });
 
 const NewColumnForm = (props) => {
-  const { classes } = props;
-
-  const [label, setLabel] = useState('');
-  const [type, setType] = useState('text');
-  const [selectValue, setSelectValue] = useState('');
-  const [items, setItems] = useState([]);
+  const { 
+    classes,
+    label,
+    type,
+    selectValue,
+    items,
+    setters
+  } = props;
 
   return (
     <React.Fragment>
@@ -50,14 +52,14 @@ const NewColumnForm = (props) => {
           label="Label"
           className={classes.textField}
           value={label}
-          onChange={e => setLabel(e.target.value)}
+          onChange={e => setters.setLabel(e.target.value)}
           margin="normal"
         />
         <FormControl className={classes.formControl}>
           <InputLabel htmlFor="type-native-select">Type</InputLabel>
           <Select
             native
-            onChange={e => setType(e.target.value)}
+            onChange={e => setters.setType(e.target.value)}
             value={type}
             inputProps={{
               name: 'type',
@@ -81,14 +83,14 @@ const NewColumnForm = (props) => {
                 className={classes.textField}
                 value={selectValue}
                 margin="normal"
-                onChange={e => setSelectValue(e.target.value)}
+                onChange={e => setters.setSelectValue(e.target.value)}
               />
-              <IconButton 
+              <IconButton
                 aria-label="Add"
                 className={classes.addIcon}
                 size="small"
                 disabled={selectValue ? false : true}
-                onClick={() => {setItems([...items, selectValue]); setSelectValue('')}}
+                onClick={() => { setters.setItems([...items, selectValue]); setters.setSelectValue('') }}
               >
                 <AddIcon />
               </IconButton>
@@ -103,7 +105,7 @@ const NewColumnForm = (props) => {
                   key={i}
                   label={item}
                   className={classes.chip}
-                  onDelete={() => setItems([...items.slice(0, i), ...items.slice(i + 1)])}
+                  onDelete={() => setters.setItems([...items.slice(0, i), ...items.slice(i + 1)])}
                 />
               )
             })

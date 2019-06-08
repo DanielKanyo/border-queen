@@ -25,8 +25,7 @@ import LinearProgress from '@material-ui/core/LinearProgress'
 
 import {
   initializeOrders,
-  initializeCompanies,
-  initializeOrderTable
+  initializeCompanies
 } from '../../Store/Actions/orderActions'
 
 let counter = 0;
@@ -260,11 +259,8 @@ class EditOrder extends Component {
   };
 
   componentDidMount = () => {
-    const { id } = this.props.match.params;
-
     this.props.initializeOrders();
     this.props.initializeCompanies();
-    this.props.initializeOrderTable(id);
   }
 
   handleRequestSort = (event, property) => {
@@ -322,7 +318,6 @@ class EditOrder extends Component {
       auth,
       orderInitDone,
       companyInitDone,
-      tableInitDone,
       orderObject,
       companies,
       // table
@@ -330,7 +325,7 @@ class EditOrder extends Component {
 
     if (!auth.uid) return <Redirect to='/signin' />
 
-    const initReady = orderInitDone && companyInitDone && tableInitDone;
+    const initReady = orderInitDone && companyInitDone;
 
     if (initReady) {
       const { data, order, orderBy, selected, rowsPerPage, page } = this.state;
@@ -435,7 +430,6 @@ const mapStateToProps = (state, ownProps) => {
     companies: state.order.companies,
     orderInitDone: state.order.orderInitDone,
     companyInitDone: state.order.companyInitDone,
-    tableInitDone: state.order.tableInitDone,
     table: state.order.table,
     auth: state.firebase.auth
   }
@@ -444,8 +438,7 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     initializeOrders: () => dispatch(initializeOrders()),
-    initializeCompanies: () => dispatch(initializeCompanies()),
-    initializeOrderTable: id => dispatch(initializeOrderTable(id))
+    initializeCompanies: () => dispatch(initializeCompanies())
   }
 }
 

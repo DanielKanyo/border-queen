@@ -6,7 +6,6 @@ const initState = {
   orderOfIds: [],
   orderInitDone: false,
   companyInitDone: false,
-  tableInitDone: false,
   tableColumnsInitDone: false
 }
 
@@ -126,16 +125,6 @@ const deleteCompanyEntry = (state, action) => {
   }
 }
 
-const initializeTable = (state, action) => {
-  const { payload } = action
-  
-  return {
-    ...state,
-    table: payload,
-    tableInitDone: true
-  };
-}
-
 const initializeTableColumns = (state, action) => {
   const { payload } = action
   const { columns } = payload
@@ -174,6 +163,21 @@ const toggleOrderFinishedState = (state, action) => {
   }
 }
 
+const addColumnEntry = (state, action) => {
+  const { payload } = action
+  const { id, label, type, items, ownerId } = payload
+
+  const column = { id, label, type, items, ownerId }
+
+  return {
+    ...state,
+    columns: {
+      ...state.columns,
+      [id]: column
+    }
+  }
+}
+
 const orderReducer = (state = initState, action) => {
   switch (action.type) {
     /** Init */
@@ -182,18 +186,13 @@ const orderReducer = (state = initState, action) => {
 
     case 'INITIALIZE_COMPANIES':
       return initializeCompanies(state, action)
-
-    case 'INITIALIZE_TABLE':
-      return initializeTable(state, action)
-    case 'INITIALIZE_TABLE_ERROR':
-      console.log('Init table error', action.error)
-      return state
     
     case 'INITIALIZE_COLUMNS':
         return initializeTableColumns(state, action)
     case 'INITIALIZE_COLUMNS_ERROR':
       console.log('Init columns error', action.error)
       return state
+
     case 'DISCARD_COLUMNS':
       return discardTableColumns(state)
 
@@ -231,6 +230,13 @@ const orderReducer = (state = initState, action) => {
       return deleteCompanyEntry(state, action)
     case 'DELETE_COMPANY_ERROR':
       console.log('Delete company error', action.error)
+      return state
+
+    /** Column */
+    case 'CREATE_COLUMN':
+      return addColumnEntry(state, action)
+    case 'CREATE_COLUMN_ERROR':
+      console.log('Add column error', action.error)
       return state
 
     /** Auth */

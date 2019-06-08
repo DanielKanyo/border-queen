@@ -18,7 +18,8 @@ import {
   initializeTableColumns,
   discardTableColumns,
   initializeOrders,
-  initializeCompanies
+  initializeCompanies,
+  createTableColumn
 } from '../../Store/Actions/orderActions'
 
 const styles = theme => ({
@@ -58,7 +59,8 @@ const CreateTable = (props) => {
     tableColumnsInitDone,
     initializeCompanies,
     companyInitDone,
-    companies
+    companies,
+    createTableColumn
   } = props;
 
   const { id } = props.match.params;
@@ -74,12 +76,19 @@ const CreateTable = (props) => {
   }, []);
 
   const [createDialog, toggleCreateDialog] = useState(false);
+  const [label, setLabel] = useState('');
+  const [type, setType] = useState('text');
+  const [selectValue, setSelectValue] = useState('');
+  const [items, setItems] = useState([]);
 
   const initReady = orderInitDone && tableColumnsInitDone && companyInitDone;
 
   if (initReady) {
     const order = orders[id];
     const isDefault = companies[order.title] ? true : false;
+
+    const setters = { setLabel, setType, setSelectValue, setItems };
+    const columnData = { label, type, items};
 
     let company;
 
@@ -97,7 +106,7 @@ const CreateTable = (props) => {
         </Paper>
 
         <div className={classes.columnListContainer}>
-          { isDefault && company.products.length && <ColumnSummary label="Products" /> }
+          {isDefault && company.products.length && <ColumnSummary label="Products" />}
           {
             Object.keys(columns).length ? Object.keys(columns).map(key => {
               return <ColumnSummary label={columns[key].label} key={key} columnId={columns[key].id} />
@@ -116,13 +125,22 @@ const CreateTable = (props) => {
             <DialogContentText className={classes.dialogText}>
               Here you can set the name and type of the column.
             </DialogContentText>
-            <NewColumnForm />
+            <NewColumnForm
+              setters={setters}
+              label={label}
+              type={type}
+              selectValue={selectValue}
+              items={items}
+            />
           </DialogContent>
           <DialogActions>
             <Button onClick={() => toggleCreateDialog(false)} color="primary">
               Cancel
             </Button>
-            <Button onClick={() => toggleCreateDialog(false)} color="primary">
+            <Button
+              onClick={() => {toggleCreateDialog(false); createTableColumn(id, columnData)}}
+              color="primary"
+            >
               Save
             </Button>
           </DialogActions>
@@ -155,6 +173,7 @@ const mapDispatchToProps = (dispatch) => {
     discardTableColumns: () => dispatch(discardTableColumns()),
     initializeOrders: () => dispatch(initializeOrders()),
     initializeCompanies: () => dispatch(initializeCompanies()),
+    createTableColumn: (id, data) => dispatch(createTableColumn(id, data))
   }
 }
 
