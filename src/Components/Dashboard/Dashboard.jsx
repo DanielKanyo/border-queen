@@ -437,4 +437,4 @@ Dashboard.propTypes = {
 export default compose(
   connect(mapStateToProps, mapDispatchToProps),
   withStyles(styles),
-)(Dashboard)
+)(React.memo(Dashboard))

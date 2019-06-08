@@ -50,4 +50,4 @@ const mapStateToProps = (state) => {
   }
 }
 
-export default compose(connect(mapStateToProps), withStyles(styles))(Navbar)
+export default compose(connect(mapStateToProps), withStyles(styles))(React.memo(Navbar))
