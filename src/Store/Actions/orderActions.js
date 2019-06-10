@@ -284,7 +284,8 @@ export const createTableColumn = (orderId, columnData) => {
       label: columnData.label,
       type: columnData.type,
       items: columnData.items,
-      ownerId: orderId
+      ownerId: orderId,
+      createdAt: new Date().getTime()
     }
 
     firestore.collection('columns').add({
