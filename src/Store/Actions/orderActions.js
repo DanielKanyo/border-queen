@@ -246,7 +246,7 @@ export const initializeTableColumns = (orderId) => {
 
     tableColumnsRef.get().then((docSnapshot) => {
       if (!docSnapshot.empty) {
-        tableColumnsRef.where('ownerId', '==', orderId).get().then((columnsResponse) => {
+        tableColumnsRef.where('ownerId', '==', orderId).orderBy('createdAt').get().then((columnsResponse) => {
           columnsResponse.forEach((doc) => {
             let column = doc.data();
 
