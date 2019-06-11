@@ -6,6 +6,7 @@ import Paper from '@material-ui/core/Paper'
 const styles = theme => ({
   root: {
     flex: 1,
+    overflow: 'hidden',
     padding: 16,
     textAlign: 'center',
     marginRight: 8,
@@ -21,21 +22,39 @@ const styles = theme => ({
   label: {
     textOverflow: 'ellipsis',
     overflow: 'hidden'
+  },
+  activeColumn: {
+    transition: 'background .2s',
+    background: '#7b1fa2',
+    color: 'white',
+    '&:hover': {
+      background: '#68158c',
+      cursor: 'pointer'
+    }
   }
 });
 
-const ColumnSummary = (props) => {
-  const { classes, label } = props;
+const ColumnListItem = (props) => {
+  const {
+    classes,
+    label,
+    columnId,
+    toggleColumnSummary,
+    activeColumn
+  } = props;
 
   return (
-    <Paper className={classes.root + ' column-summary'}>
+    <Paper
+      className={`${classes.root} ${activeColumn ? classes.activeColumn : null}`}
+      onClick={() => toggleColumnSummary(columnId)}
+    >
       <div className={classes.label}>{label}</div>
     </Paper>
   )
 }
 
-ColumnSummary.propTypes = {
+ColumnListItem.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(ColumnSummary)
+export default withStyles(styles)(ColumnListItem)

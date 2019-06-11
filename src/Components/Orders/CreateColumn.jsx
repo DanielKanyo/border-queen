@@ -12,7 +12,8 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import Paper from '@material-ui/core/Paper'
 import LinearProgress from '@material-ui/core/LinearProgress'
-import ColumnSummary from './ColumnListItem'
+import ColumnListItem from './ColumnListItem'
+import ColumnSummary from './ColumnSummary'
 
 import {
   initializeTableColumns,
@@ -44,6 +45,7 @@ const styles = theme => ({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'stretch',
+    marginBottom: 8
   }
 });
 
@@ -81,6 +83,21 @@ const CreateTable = (props) => {
   const [selectValue, setSelectValue] = useState('');
   const [items, setItems] = useState([]);
 
+  const [isColumnSummaryVisible, setColumnSummaryVisiblity] = useState(false);
+  const [selectedColumnId, setSelectedColumnId] = useState('');
+  const [prevSelectedColumnId, setPrevSelectedColumnId] = useState('');
+
+  const toggleColumnSummary = (columnId) => {
+    if (columnId !== prevSelectedColumnId) {
+      setPrevSelectedColumnId(columnId);
+      setSelectedColumnId(columnId);
+      setColumnSummaryVisiblity(true);
+    } else {
+      setSelectedColumnId(columnId);
+      setColumnSummaryVisiblity(!isColumnSummaryVisible);
+    }
+  }
+
   const initReady = orderInitDone && tableColumnsInitDone && companyInitDone;
 
   if (initReady) {
@@ -88,7 +105,7 @@ const CreateTable = (props) => {
     const isDefault = companies[order.title] ? true : false;
 
     const setters = { setLabel, setType, setSelectValue, setItems };
-    const columnData = { label, type, items};
+    const columnData = { label, type, items };
 
     let company;
 
@@ -106,13 +123,42 @@ const CreateTable = (props) => {
         </Paper>
 
         <div className={classes.columnListContainer}>
-          {isDefault && company.products.length && <ColumnSummary label="Products" />}
+          {
+            isDefault && company.products.length && (
+              <ColumnListItem
+                label="Products"
+                type="Select"
+                values={company.products}
+                toggleColumnSummary={toggleColumnSummary}
+                activeColumn={isColumnSummaryVisible && selectedColumnId === undefined}
+              />
+            )
+          }
           {
             Object.keys(columns).length ? Object.keys(columns).map(key => {
-              return <ColumnSummary label={columns[key].label} key={key} columnId={columns[key].id} />
+              return (
+                <ColumnListItem
+                  label={columns[key].label}
+                  key={key}
+                  columnId={columns[key].id}
+                  toggleColumnSummary={toggleColumnSummary}
+                  activeColumn={isColumnSummaryVisible && columns[key].id === selectedColumnId}
+                />
+              )
             }) : null
           }
         </div>
+
+        {
+          isColumnSummaryVisible && (
+            <ColumnSummary
+              className={classes.root}
+              label={columns[selectedColumnId] ? columns[selectedColumnId].label : 'Products'}
+              type={columns[selectedColumnId] ? columns[selectedColumnId].type : 'Select'}
+              selectValues={columns[selectedColumnId] ? columns[selectedColumnId].items : company.products.length ? company.products : null}
+            />
+          )
+        }
 
         <Dialog
           open={createDialog}
@@ -138,7 +184,7 @@ const CreateTable = (props) => {
               Cancel
             </Button>
             <Button
-              onClick={() => {toggleCreateDialog(false); createTableColumn(id, columnData)}}
+              onClick={() => { toggleCreateDialog(false); createTableColumn(id, columnData) }}
               color="primary"
             >
               Save
