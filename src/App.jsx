@@ -7,7 +7,7 @@ import SignIn from './Components/Auth/SignIn'
 import SignUp from './Components/Auth/SignUp'
 import EditOrder from './Components/Orders/EditOrder'
 import CreateCompany from './Components/Orders/CreateCompany'
-import CreateColumn from './Components/Orders/CreateColumn'
+import CreateColumn from './Components/Orders/Column/CreateColumn'
 
 const theme = createMuiTheme({
   typography: {

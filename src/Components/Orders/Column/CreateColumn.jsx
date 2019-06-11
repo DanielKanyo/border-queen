@@ -21,7 +21,7 @@ import {
   initializeOrders,
   initializeCompanies,
   createTableColumn
-} from '../../Store/Actions/orderActions'
+} from '../../../Store/Actions/orderActions'
 
 const styles = theme => ({
   button: {
