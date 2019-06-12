@@ -302,3 +302,17 @@ export const createTableColumn = (orderId, columnData) => {
     });
   }
 }
+
+export const deleteTableColumn = (columnId) => {
+  return (dispatch, getState, { getFirestore }) => {
+    const firestore = getFirestore();
+    
+    const payload = { columnId };
+
+    firestore.collection("columns").doc(columnId).delete().then(() => {
+      dispatch({ type: 'DELETE_COLUMN', payload });
+    }).catch((error) => {
+      dispatch({ type: 'DELETE_COLUMN_ERROR', error });
+    });
+  }
+}

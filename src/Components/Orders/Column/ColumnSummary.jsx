@@ -55,7 +55,8 @@ const styles = theme => ({
 });
 
 const ColumnSummary = (props) => {
-  const { classes, label, type, selectValues, isDefault } = props;
+  const { classes, label, type, selectValues, isDefault, setters, columnId } = props;
+  const { toggleDeleteDialog, setColumnIdToDelete, setColumnLabelToDelete } = setters;
 
   return (
     <Paper>
@@ -119,13 +120,28 @@ const ColumnSummary = (props) => {
       </div>
       <Divider />
       <div className={classes.actionContainer}>
-        <Button variant="contained" color="secondary" className={classes.button} disabled={isDefault}>
+        <Button
+          variant="contained"
+          color="secondary"
+          className={classes.button}
+          disabled={isDefault}
+          onClick={() => { toggleDeleteDialog(true); setColumnIdToDelete(columnId); setColumnLabelToDelete(label) }}
+        >
           Delete
         </Button>
-        <Button variant="contained" color="primary" className={classes.button}>
+        <Button
+          variant="contained"
+          color="primary"
+          className={classes.button}
+        >
           Disable
         </Button>
-        <Button variant="contained" color="primary" className={classes.button} disabled={isDefault}>
+        <Button
+          variant="contained"
+          color="primary"
+          className={classes.button}
+          disabled={isDefault}
+        >
           Edit
         </Button>
       </div>

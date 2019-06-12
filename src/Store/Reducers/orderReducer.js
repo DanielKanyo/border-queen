@@ -178,6 +178,21 @@ const addColumnEntry = (state, action) => {
   }
 }
 
+const deleteColumnEntry = (state, action) => {
+  const { payload } = action
+  const { columnId } = payload
+  const { columns } = state
+
+  delete columns[columnId]
+
+  return {
+    ...state,
+    columns: {
+      ...columns
+    }
+  }
+}
+
 const orderReducer = (state = initState, action) => {
   switch (action.type) {
     /** Init */
@@ -237,6 +252,11 @@ const orderReducer = (state = initState, action) => {
       return addColumnEntry(state, action)
     case 'CREATE_COLUMN_ERROR':
       console.log('Add column error', action.error)
+      return state
+    case 'DELETE_COLUMN':
+      return deleteColumnEntry(state, action)
+    case 'DELETE_COLUMN_ERROR':
+      console.log('Delete column error', action.error)
       return state
 
     /** Auth */

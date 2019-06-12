@@ -20,7 +20,8 @@ import {
   discardTableColumns,
   initializeOrders,
   initializeCompanies,
-  createTableColumn
+  createTableColumn,
+  deleteTableColumn
 } from '../../../Store/Actions/orderActions'
 
 const styles = theme => ({
@@ -62,7 +63,8 @@ const CreateTable = (props) => {
     initializeCompanies,
     companyInitDone,
     companies,
-    createTableColumn
+    createTableColumn,
+    deleteTableColumn
   } = props;
 
   const { id } = props.match.params;
@@ -78,6 +80,8 @@ const CreateTable = (props) => {
   }, []);
 
   const [createDialog, toggleCreateDialog] = useState(false);
+  const [deleteDialog, toggleDeleteDialog] = useState(false);
+
   const [label, setLabel] = useState('');
   const [type, setType] = useState('text');
   const [selectValue, setSelectValue] = useState('');
@@ -86,6 +90,9 @@ const CreateTable = (props) => {
   const [isColumnSummaryVisible, setColumnSummaryVisiblity] = useState(false);
   const [selectedColumnId, setSelectedColumnId] = useState('');
   const [prevSelectedColumnId, setPrevSelectedColumnId] = useState('');
+
+  const [columnIdToDelete, setColumnIdToDelete] = useState('');
+  const [columnLabelToDelete, setColumnLabelToDelete] = useState('');
 
   const toggleColumnSummary = (columnId) => {
     if (columnId !== prevSelectedColumnId) {
@@ -104,7 +111,9 @@ const CreateTable = (props) => {
     const order = orders[id];
     const isDefault = companies[order.title] ? true : false;
 
-    const setters = { setLabel, setType, setSelectValue, setItems };
+    const settersForCreateDialog = { setLabel, setType, setSelectValue, setItems };
+    const settersForDeleteDialog = { toggleDeleteDialog, setColumnIdToDelete, setColumnLabelToDelete };
+
     const columnData = { label, type, items };
 
     let company;
@@ -152,11 +161,13 @@ const CreateTable = (props) => {
         {
           isColumnSummaryVisible && (
             <ColumnSummary
+              columnId={selectedColumnId}
               className={classes.root}
               label={columns[selectedColumnId] ? columns[selectedColumnId].label : 'Products'}
               type={columns[selectedColumnId] ? columns[selectedColumnId].type : 'select'}
               selectValues={columns[selectedColumnId] ? columns[selectedColumnId].items : company.products.length ? company.products : null}
               isDefault={columns[selectedColumnId] ? false : true}
+              setters={settersForDeleteDialog}
             />
           )
         }
@@ -173,7 +184,7 @@ const CreateTable = (props) => {
               Here you can set the name and type of the column.
             </DialogContentText>
             <NewColumnForm
-              setters={setters}
+              setters={settersForCreateDialog}
               label={label}
               type={type}
               selectValue={selectValue}
@@ -192,6 +203,37 @@ const CreateTable = (props) => {
             </Button>
           </DialogActions>
         </Dialog>
+
+        <Dialog
+          open={deleteDialog}
+          onClose={() => toggleDeleteDialog(false)}
+          aria-labelledby="delete-dialog-title"
+          aria-describedby="delete-dialog-description"
+        >
+          <DialogTitle id="delete-dialog-title">Are you sure?</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="delete-dialog-description">
+              Are you sure you want to delete column "{columnLabelToDelete}"?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => toggleDeleteDialog(false)} color="primary">
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                toggleDeleteDialog(false);
+                deleteTableColumn(columnIdToDelete);
+                toggleColumnSummary(columnIdToDelete)
+              }}
+              color="primary"
+              autoFocus
+            >
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
+
       </div>
     )
   } else {
@@ -220,7 +262,8 @@ const mapDispatchToProps = (dispatch) => {
     discardTableColumns: () => dispatch(discardTableColumns()),
     initializeOrders: () => dispatch(initializeOrders()),
     initializeCompanies: () => dispatch(initializeCompanies()),
-    createTableColumn: (id, data) => dispatch(createTableColumn(id, data))
+    createTableColumn: (id, data) => dispatch(createTableColumn(id, data)),
+    deleteTableColumn: id => dispatch(deleteTableColumn(id))
   }
 }
 
