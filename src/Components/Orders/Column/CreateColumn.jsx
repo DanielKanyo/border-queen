@@ -156,6 +156,7 @@ const CreateTable = (props) => {
               label={columns[selectedColumnId] ? columns[selectedColumnId].label : 'Products'}
               type={columns[selectedColumnId] ? columns[selectedColumnId].type : 'select'}
               selectValues={columns[selectedColumnId] ? columns[selectedColumnId].items : company.products.length ? company.products : null}
+              isDefault={columns[selectedColumnId] ? false : true}
             />
           )
         }

@@ -5,6 +5,7 @@ import Paper from '@material-ui/core/Paper'
 import Chip from '@material-ui/core/Chip'
 import TextField from '@material-ui/core/TextField'
 import Divider from '@material-ui/core/Divider'
+import Button from '@material-ui/core/Button'
 
 const styles = theme => ({
   columns: {
@@ -31,7 +32,7 @@ const styles = theme => ({
     }
   },
   chip: {
-    margin: '0 3px'
+    margin: '4px 4px 0 0',
   },
   textFieldContainer: {
     display: 'flex',
@@ -40,17 +41,21 @@ const styles = theme => ({
   textField: {
     margin: 0,
     maxWidth: 300,
-    width: 300
+    width: '100%'
   },
   actionContainer: {
-    padding: '20px 30px',
+    padding: 4,
     display: 'flex',
     justifyContent: 'flex-end'
-  }
+  },
+  button: {
+    margin: theme.spacing(1),
+    marginLeft: 4
+  },
 });
 
 const ColumnSummary = (props) => {
-  const { classes, label, type, selectValues } = props;
+  const { classes, label, type, selectValues, isDefault } = props;
 
   return (
     <Paper>
@@ -114,7 +119,15 @@ const ColumnSummary = (props) => {
       </div>
       <Divider />
       <div className={classes.actionContainer}>
-        Actions
+        <Button variant="contained" color="secondary" className={classes.button} disabled={isDefault}>
+          Delete
+        </Button>
+        <Button variant="contained" color="primary" className={classes.button}>
+          Disable
+        </Button>
+        <Button variant="contained" color="primary" className={classes.button} disabled={isDefault}>
+          Edit
+        </Button>
       </div>
     </Paper>
   )
