@@ -74,7 +74,7 @@ const ColumnSummary = (props) => {
         <div className={classes.title}>Sample</div>
         <div className={classes.textFieldContainer}>
           {
-            type === 'Select' ? (
+            type === 'select' ? (
               <TextField
                 id="select-sample"
                 select

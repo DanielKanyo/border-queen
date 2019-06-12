@@ -154,7 +154,7 @@ const CreateTable = (props) => {
             <ColumnSummary
               className={classes.root}
               label={columns[selectedColumnId] ? columns[selectedColumnId].label : 'Products'}
-              type={columns[selectedColumnId] ? columns[selectedColumnId].type : 'Select'}
+              type={columns[selectedColumnId] ? columns[selectedColumnId].type : 'select'}
               selectValues={columns[selectedColumnId] ? columns[selectedColumnId].items : company.products.length ? company.products : null}
             />
           )
