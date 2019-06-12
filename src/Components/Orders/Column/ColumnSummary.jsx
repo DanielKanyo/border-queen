@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
 import Chip from '@material-ui/core/Chip'
+import TextField from '@material-ui/core/TextField'
 
 const styles = theme => ({
   root: {
@@ -12,19 +13,33 @@ const styles = theme => ({
     textAlign: 'center'
   },
   title: {
-    marginBottom: 16,
+    marginBottom: 18,
     fontSize: 14,
-    color: 'grey'
+    color: 'grey',
+    textAlign: 'left'
   },
   column: {
-    borderRight: '1px solid #d3d3d3',
+    padding: '0 25px 12px 25px',
+    borderRight: '1px solid #e8e8e8',
     width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
     '&:last-of-type': {
       borderRight: 0,
     }
   },
   chip: {
     margin: '0 3px'
+  },
+  textFieldContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+  },
+  textField: {
+    margin: 0,
+    maxWidth: 300,
+    width: 300
   }
 });
 
@@ -55,6 +70,40 @@ const ColumnSummary = (props) => {
           </div>
         ) : null
       }
+      <div className={classes.column}>
+        <div className={classes.title}>Sample</div>
+        <div className={classes.textFieldContainer}>
+          {
+            type === 'Select' ? (
+              <TextField
+                id="select-sample"
+                select
+                placeholder="Sample..."
+                label="Select"
+                className={classes.textField}
+                SelectProps={{
+                  native: true
+                }}
+                margin="normal"
+              >
+                {selectValues.map((val, i) => (
+                  <option key={i} value={val}>
+                    {val}
+                  </option>
+                ))}
+              </TextField>
+            ) : (
+                <TextField
+                  id="sample"
+                  placeholder="Sample..."
+                  className={classes.textField}
+                  margin="normal"
+                  type={type}
+                />
+              )
+          }
+        </div>
+      </div>
     </Paper>
   )
 }
