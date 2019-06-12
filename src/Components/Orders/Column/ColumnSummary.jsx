@@ -4,13 +4,14 @@ import { withStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
 import Chip from '@material-ui/core/Chip'
 import TextField from '@material-ui/core/TextField'
+import Divider from '@material-ui/core/Divider'
 
 const styles = theme => ({
-  root: {
-    padding: '20px 55px',
+  columns: {
     display: 'flex',
     justifyContent: 'space-between',
-    textAlign: 'center'
+    textAlign: 'center',
+    padding: '20px 55px',
   },
   title: {
     marginBottom: 18,
@@ -40,6 +41,11 @@ const styles = theme => ({
     margin: 0,
     maxWidth: 300,
     width: 300
+  },
+  actionContainer: {
+    padding: '20px 30px',
+    display: 'flex',
+    justifyContent: 'flex-end'
   }
 });
 
@@ -47,62 +53,68 @@ const ColumnSummary = (props) => {
   const { classes, label, type, selectValues } = props;
 
   return (
-    <Paper className={classes.root}>
-      <div className={classes.column}>
-        <div className={classes.title}>Label</div>
-        <div>{label}</div>
-      </div>
-      <div className={classes.column}>
-        <div className={classes.title}>Type</div>
-        <div>{type}</div>
-      </div>
-      {
-        selectValues.length ? (
-          <div className={classes.column}>
-            <div className={classes.title}>Select values</div>
-            <div>
-              {
-                selectValues.map((val, index) => {
-                  return <Chip key={index} label={val} className={classes.chip} />
-                })
-              }
-            </div>
-          </div>
-        ) : null
-      }
-      <div className={classes.column}>
-        <div className={classes.title}>Sample</div>
-        <div className={classes.textFieldContainer}>
-          {
-            type === 'select' ? (
-              <TextField
-                id="select-sample"
-                select
-                placeholder="Sample..."
-                label="Select"
-                className={classes.textField}
-                SelectProps={{
-                  native: true
-                }}
-                margin="normal"
-              >
-                {selectValues.map((val, i) => (
-                  <option key={i} value={val}>
-                    {val}
-                  </option>
-                ))}
-              </TextField>
-            ) : (
-                <TextField
-                  id="sample"
-                  placeholder="Sample..."
-                  className={classes.textField}
-                  margin="normal"
-                  type={type}
-                />
-              )
-          }
+    <Paper>
+      <div className={classes.columns}>
+        <div className={classes.column}>
+          <div className={classes.title}>Label</div>
+          <div>{label}</div>
         </div>
+        <div className={classes.column}>
+          <div className={classes.title}>Type</div>
+          <div>{type}</div>
+        </div>
+        {
+          selectValues.length ? (
+            <div className={classes.column}>
+              <div className={classes.title}>Select values</div>
+              <div>
+                {
+                  selectValues.map((val, index) => {
+                    return <Chip key={index} label={val} className={classes.chip} />
+                  })
+                }
+              </div>
+            </div>
+          ) : null
+        }
+        <div className={classes.column}>
+          <div className={classes.title}>Sample</div>
+          <div className={classes.textFieldContainer}>
+            {
+              type === 'select' ? (
+                <TextField
+                  id="select-sample"
+                  select
+                  placeholder="Sample..."
+                  label="Select"
+                  className={classes.textField}
+                  SelectProps={{
+                    native: true
+                  }}
+                  margin="normal"
+                >
+                  {selectValues.map((val, i) => (
+                    <option key={i} value={val}>
+                      {val}
+                    </option>
+                  ))}
+                </TextField>
+              ) : (
+                  <TextField
+                    id="sample"
+                    placeholder="Sample..."
+                    className={classes.textField}
+                    margin="normal"
+                    type={type}
+                  />
+                )
+            }
+          </div>
+        </div>
+      </div>
+      <Divider />
+      <div className={classes.actionContainer}>
+        Actions
       </div>
     </Paper>
   )
