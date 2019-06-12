@@ -6,7 +6,7 @@ import Dashboard from './Components/Dashboard/Dashboard'
 import SignIn from './Components/Auth/SignIn'
 import SignUp from './Components/Auth/SignUp'
 import EditOrder from './Components/Orders/EditOrder'
-import CreateCompany from './Components/Orders/CreateCompany'
+import CreateCompany from './Components/Orders/Company/CreateCompany'
 import CreateColumn from './Components/Orders/Column/CreateColumn'
 
 const theme = createMuiTheme({
