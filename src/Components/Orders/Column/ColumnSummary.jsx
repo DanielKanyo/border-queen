@@ -7,6 +7,10 @@ import TextField from '@material-ui/core/TextField'
 import Divider from '@material-ui/core/Divider'
 import Button from '@material-ui/core/Button'
 
+import { connect } from 'react-redux'
+import { compose } from 'redux'
+import { disableTableColumn, disableCompany } from '../../../Store/Actions/orderActions'
+
 const styles = theme => ({
   columns: {
     display: 'flex',
@@ -55,7 +59,30 @@ const styles = theme => ({
 });
 
 const ColumnSummary = (props) => {
-  const { classes, label, type, selectValues, isDefault, setters, columnId } = props;
+  const {
+    classes,
+    label,
+    type,
+    selectValues,
+    isDefault,
+    setters,
+    columnId,
+    companyId,
+    disableTableColumn,
+    disableCompany,
+    columnDisabled
+  } = props;
+
+  const disable = () => {
+    const disabled = !columnDisabled;
+
+    if (columnId) {
+      disableTableColumn(columnId, disabled);
+    } else if (companyId) {
+      disableCompany(companyId, disabled);
+    }
+  }
+
   const { toggleDeleteDialog, setColumnIdToDelete, setColumnLabelToDelete } = setters;
 
   return (
@@ -133,8 +160,9 @@ const ColumnSummary = (props) => {
           variant="contained"
           color="primary"
           className={classes.button}
+          onClick={() => disable()}
         >
-          Disable
+          {columnDisabled ? 'Enable' : 'Disable'}
         </Button>
         <Button
           variant="contained"
@@ -153,4 +181,14 @@ ColumnSummary.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(ColumnSummary)
+const mapDispatchToProps = (dispatch) => {
+  return {
+    disableTableColumn: (id, disabled) => dispatch(disableTableColumn(id, disabled)),
+    disableCompany: (id, disabled) => dispatch(disableCompany(id, disabled))
+  }
+}
+
+export default compose(
+  connect(null, mapDispatchToProps),
+  withStyles(styles)
+)(ColumnSummary)

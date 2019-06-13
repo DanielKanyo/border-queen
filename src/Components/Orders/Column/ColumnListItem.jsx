@@ -31,6 +31,9 @@ const styles = theme => ({
       background: '#68158c',
       cursor: 'pointer'
     }
+  },
+  columnDisabled: {
+    opacity: .6
   }
 });
 
@@ -40,12 +43,14 @@ const ColumnListItem = (props) => {
     label,
     columnId,
     toggleColumnSummary,
-    activeColumn
+    activeColumn,
+    columnDisabled,
+    // isDefault
   } = props;
 
   return (
     <Paper
-      className={`${classes.root} ${activeColumn ? classes.activeColumn : null}`}
+      className={`${classes.root} ${activeColumn ? classes.activeColumn : null} ${columnDisabled ? classes.columnDisabled : null}`}
       onClick={() => toggleColumnSummary(columnId)}
     >
       <div className={classes.label}>{label}</div>

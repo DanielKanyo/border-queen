@@ -25,9 +25,9 @@ const initializeOrders = (state, action) => {
 
 const addOrderEntry = (state, action) => {
   const { payload } = action
-  const { id, title, description, createdAt, finished, authorId } = payload
+  const { id, title, description, createdAt, finished, authorId, disabledColumns } = payload
 
-  const order = { id, title, description, createdAt, finished, authorId }
+  const order = { id, title, description, createdAt, finished, authorId, disabledColumns }
 
   return {
     ...state,
@@ -82,9 +82,9 @@ const initializeCompanies = (state, action) => {
 
 const addCompanyEntry = (state, action) => {
   const { payload } = action
-  const { id, name, description, color, authorId, createdAt, products } = payload
+  const { id, name, description, color, authorId, createdAt, products, productsDisabled } = payload
 
-  const company = { id, name, description, color, authorId, createdAt, products }
+  const company = { id, name, description, color, authorId, createdAt, products, productsDisabled }
 
   return {
     ...state,
@@ -165,9 +165,9 @@ const toggleOrderFinishedState = (state, action) => {
 
 const addColumnEntry = (state, action) => {
   const { payload } = action
-  const { id, label, type, items, ownerId } = payload
+  const { id, label, type, items, ownerId, columnDisabled, createdAt } = payload
 
-  const column = { id, label, type, items, ownerId }
+  const column = { id, label, type, items, ownerId, columnDisabled, createdAt }
 
   return {
     ...state,
@@ -189,6 +189,24 @@ const deleteColumnEntry = (state, action) => {
     ...state,
     columns: {
       ...columns
+    }
+  }
+}
+
+const disableColumnEntry = (state, action) => {
+  const { payload } = action
+  const { columnId, disabled } = payload
+
+  const { columns } = state
+
+  return {
+    ...state,
+    columns: {
+      ...columns,
+      [columnId]: {
+        ...columns[columnId],
+        columnDisabled: disabled
+      }
     }
   }
 }
@@ -257,6 +275,11 @@ const orderReducer = (state = initState, action) => {
       return deleteColumnEntry(state, action)
     case 'DELETE_COLUMN_ERROR':
       console.log('Delete column error', action.error)
+      return state
+    case 'DISABLE_COLUMN':
+      return disableColumnEntry(state, action)
+    case 'DISABLE_COLUMN_ERROR':
+      console.log('Disable column error', action.error)
       return state
 
     /** Auth */

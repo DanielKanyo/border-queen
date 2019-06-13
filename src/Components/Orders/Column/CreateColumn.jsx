@@ -111,8 +111,12 @@ const CreateTable = (props) => {
     const order = orders[id];
     const isDefault = companies[order.title] ? true : false;
 
-    const settersForCreateDialog = { setLabel, setType, setSelectValue, setItems };
-    const settersForDeleteDialog = { toggleDeleteDialog, setColumnIdToDelete, setColumnLabelToDelete };
+    const settersForNewColumnForm = { setLabel, setType, setSelectValue, setItems };
+    const settersForColumnSummary = { 
+      toggleDeleteDialog,
+      setColumnIdToDelete,
+      setColumnLabelToDelete
+    };
 
     const columnData = { label, type, items };
 
@@ -140,6 +144,8 @@ const CreateTable = (props) => {
                 values={company.products}
                 toggleColumnSummary={toggleColumnSummary}
                 activeColumn={isColumnSummaryVisible && selectedColumnId === undefined}
+                columnDisabled={company.productsDisabled}
+                isDefault={true}
               />
             )
           }
@@ -152,6 +158,8 @@ const CreateTable = (props) => {
                   columnId={columns[key].id}
                   toggleColumnSummary={toggleColumnSummary}
                   activeColumn={isColumnSummaryVisible && columns[key].id === selectedColumnId}
+                  columnDisabled={columns[key].columnDisabled}
+                  isDefault={false}
                 />
               )
             }) : null
@@ -167,7 +175,9 @@ const CreateTable = (props) => {
               type={columns[selectedColumnId] ? columns[selectedColumnId].type : 'select'}
               selectValues={columns[selectedColumnId] ? columns[selectedColumnId].items : company.products.length ? company.products : null}
               isDefault={columns[selectedColumnId] ? false : true}
-              setters={settersForDeleteDialog}
+              setters={settersForColumnSummary}
+              companyId={selectedColumnId ? undefined : company.id}
+              columnDisabled={columns[selectedColumnId] ? columns[selectedColumnId].columnDisabled : company ? company.productsDisabled : null}
             />
           )
         }
@@ -184,7 +194,7 @@ const CreateTable = (props) => {
               Here you can set the name and type of the column.
             </DialogContentText>
             <NewColumnForm
-              setters={settersForCreateDialog}
+              setters={settersForNewColumnForm}
               label={label}
               type={type}
               selectValue={selectValue}

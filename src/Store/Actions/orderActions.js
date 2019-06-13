@@ -40,7 +40,6 @@ export const initializeOrders = () => {
 
 export const createOrder = (order) => {
   return (dispatch, getState, { getFirestore }) => {
-    // make async call to database
     const firestore = getFirestore();
     const authorId = getState().firebase.auth.uid;
     const { updateCompanyInUseProp } = order;
@@ -50,6 +49,7 @@ export const createOrder = (order) => {
       description: order.description,
       createdAt: new Date().getTime(),
       finished: false,
+      disabledColumns: [],
       authorId
     }
 
@@ -141,6 +141,7 @@ export const createCompany = (company) => {
       products: company.products,
       createdAt: new Date().getTime(),
       inUse: company.inUse,
+      productsDisabled: false,
       authorId
     };
 
@@ -285,7 +286,8 @@ export const createTableColumn = (orderId, columnData) => {
       type: columnData.type,
       items: columnData.items,
       ownerId: orderId,
-      createdAt: new Date().getTime()
+      createdAt: new Date().getTime(),
+      columnDisabled: false
     }
 
     firestore.collection('columns').add({
@@ -314,5 +316,28 @@ export const deleteTableColumn = (columnId) => {
     }).catch((error) => {
       dispatch({ type: 'DELETE_COLUMN_ERROR', error });
     });
+  }
+}
+
+export const disableTableColumn = (columnId, disabled) => {
+  return (dispatch, getState, { getFirestore }) => {
+    const firestore = getFirestore();
+
+    const payload = { columnId, disabled };
+
+    firestore.collection('columns').doc(columnId).update({ 
+      columnDisabled: disabled
+    }).then(() => {
+      dispatch({ type: 'DISABLE_COLUMN', payload });
+    }).catch((error) => {
+      dispatch({ type: 'DISABLE_COLUMN_ERROR', error });
+    });
+  }
+}
+
+export const disableCompany = (companyId, disabled) => {
+  return (dispatch, getState, { getFirestore }) => {
+    // TODO: update value (productsDisabled) in db then dispatch event
+    console.log(companyId, disabled);
   }
 }
