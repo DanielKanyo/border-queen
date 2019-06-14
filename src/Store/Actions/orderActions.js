@@ -337,7 +337,16 @@ export const disableTableColumn = (columnId, disabled) => {
 
 export const disableCompany = (companyId, disabled) => {
   return (dispatch, getState, { getFirestore }) => {
-    // TODO: update value (productsDisabled) in db then dispatch event
-    console.log(companyId, disabled);
+    const firestore = getFirestore();
+
+    const payload = { companyId, disabled };
+
+    firestore.collection('companies').doc(companyId).update({ 
+      productsDisabled: disabled
+    }).then(() => {
+      dispatch({ type: 'DISABLE_COMPANY', payload });
+    }).catch((error) => {
+      dispatch({ type: 'DISABLE_COMPANY_ERROR', error });
+    });
   }
 }

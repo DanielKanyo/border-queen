@@ -151,7 +151,7 @@ const ColumnSummary = (props) => {
           variant="contained"
           color="secondary"
           className={classes.button}
-          disabled={isDefault}
+          disabled={isDefault || columnDisabled}
           onClick={() => { toggleDeleteDialog(true); setColumnIdToDelete(columnId); setColumnLabelToDelete(label) }}
         >
           Delete
@@ -168,7 +168,7 @@ const ColumnSummary = (props) => {
           variant="contained"
           color="primary"
           className={classes.button}
-          disabled={isDefault}
+          disabled={isDefault || columnDisabled}
         >
           Edit
         </Button>

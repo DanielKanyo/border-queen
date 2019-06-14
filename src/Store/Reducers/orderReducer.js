@@ -211,6 +211,25 @@ const disableColumnEntry = (state, action) => {
   }
 }
 
+/** The products column will be hidden if the company is disabled */
+const disableCompanyEntry = (state, action) => {
+  const { payload } = action
+  const { companyId, disabled } = payload
+
+  const { companies } = state
+
+  return {
+    ...state,
+    companies: {
+      ...companies,
+      [companyId]: {
+        ...companies[companyId],
+        productsDisabled: disabled
+      }
+    }
+  }
+}
+
 const orderReducer = (state = initState, action) => {
   switch (action.type) {
     /** Init */
@@ -263,6 +282,11 @@ const orderReducer = (state = initState, action) => {
       return deleteCompanyEntry(state, action)
     case 'DELETE_COMPANY_ERROR':
       console.log('Delete company error', action.error)
+      return state
+    case 'DISABLE_COMPANY':
+      return disableCompanyEntry(state, action)
+    case 'DISABLE_COMPANY_ERROR':
+      console.log('Disable company error', action.error)
       return state
 
     /** Column */
