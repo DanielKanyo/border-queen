@@ -6,6 +6,7 @@ import Chip from '@material-ui/core/Chip'
 import TextField from '@material-ui/core/TextField'
 import Divider from '@material-ui/core/Divider'
 import Button from '@material-ui/core/Button'
+import WarningIcon from '@material-ui/icons/ReportProblemOutlined'
 
 import { connect } from 'react-redux'
 import { compose } from 'redux'
@@ -56,6 +57,16 @@ const styles = theme => ({
     margin: theme.spacing(1),
     marginLeft: 4
   },
+  disabledText: {
+    padding: theme.spacing(2),
+    fontSize: 13,
+    color: '#adadad',
+    display: 'flex',
+    alignItems: 'center'
+  },
+  warningIcon: {
+    paddingRight: 8
+  }
 });
 
 const ColumnSummary = (props) => {
@@ -87,6 +98,22 @@ const ColumnSummary = (props) => {
 
   return (
     <Paper>
+      {
+        columnDisabled && (
+          <React.Fragment>
+            <div className={classes.disabledText}>
+              <div className={classes.warningIcon}>
+                <WarningIcon />
+              </div>
+              <div>
+                This column is disabled, which means that you will not see it in the table.
+                If you want to see it again, edit or delete it, click on the enable button.
+              </div>
+            </div>
+            <Divider />
+          </React.Fragment>
+        )
+      }
       <div className={classes.columns}>
         <div className={classes.column}>
           <div className={classes.title}>Label</div>
