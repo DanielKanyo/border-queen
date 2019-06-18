@@ -57,6 +57,7 @@ const OrderSummary = ({ classes, order, company, setters, last }) => {
 
   const textStyle = { color };
   const iconStyle = { color: lightOrDark === 'dark' ? 'rgba(255, 255, 255, 0.84)' : 'rgba(0, 0, 0, 0.54)' };
+  const disabledIconStyle = { color: lightOrDark === 'dark' ? 'rgba(255, 255, 255, 0.34)' : 'rgba(0, 0, 0, 0.24)' }
 
   return (
     <Paper className={last ? classes.paperLast : classes.paper} style={paperStyle}>
@@ -64,32 +65,52 @@ const OrderSummary = ({ classes, order, company, setters, last }) => {
         <div className={classes.headerTitle}><Typography style={textStyle} variant="h5">{isDefault ? company.name : order.title}</Typography></div>
         <div className="order-header-action">
           <Tooltip title="Delete order" placement="left">
-            <IconButton
-              aria-label="Delete"
-              onClick={() => { setters.toggleDeleteDialog(true); setters.setOrderId(order.id); setters.setSelectedCompanyKey(isDefault ? order.title : null) }}
-              style={iconStyle}
-            >
-              <DeleteIcon />
-            </IconButton>
+            <span>
+              <IconButton
+                aria-label="Delete"
+                onClick={() => { setters.toggleDeleteDialog(true); setters.setOrderId(order.id); setters.setSelectedCompanyKey(isDefault ? order.title : null) }}
+                style={iconStyle}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </span>
           </Tooltip>
           <Tooltip title="Change state" placement="left">
-            <IconButton
-              aria-label={order.finished ? 'finished' : 'unfinished'}
-              style={iconStyle}
-              onClick={() => setters.toggleOrderFinishedState(order.id, order.finished)}
-            >
-              {order.finished ? <CheckCircleIcon /> : <CheckCircleOutlineIcon />}
-            </IconButton>
+            <span>
+              <IconButton
+                aria-label={order.finished ? 'finished' : 'unfinished'}
+                style={iconStyle}
+                onClick={() => setters.toggleOrderFinishedState(order.id, order.finished)}
+              >
+                {order.finished ? <CheckCircleIcon /> : <CheckCircleOutlineIcon />}
+              </IconButton>
+            </span>
           </Tooltip>
           <Tooltip title="Edit order" placement="left">
-            <IconButton aria-label="editOrder" component={Link} to={`/edit/${order.id}`} style={iconStyle}>
-              <EditIcon />
-            </IconButton>
+            <span>
+              <IconButton
+                aria-label="editOrder"
+                component={Link}
+                to={`/edit/${order.id}`}
+                style={order.finished ? disabledIconStyle : iconStyle}
+                disabled={order.finished ? true : false}
+              >
+                <EditIcon />
+              </IconButton>
+            </span>
           </Tooltip>
           <Tooltip title="Edit columns" placement="left">
-            <IconButton aria-label="columns" component={Link} to={`/columns/${order.id}`} style={iconStyle}>
-              <SettingsIcon />
-            </IconButton>
+            <span>
+              <IconButton
+                aria-label="columns"
+                component={Link}
+                to={`/columns/${order.id}`}
+                style={order.finished ? disabledIconStyle : iconStyle}
+                disabled={order.finished ? true : false}
+              >
+                <SettingsIcon />
+              </IconButton>
+            </span>
           </Tooltip>
         </div>
       </div>
