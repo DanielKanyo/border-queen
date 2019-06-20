@@ -35,7 +35,7 @@ const styles = theme => ({
 });
 
 const NewColumnForm = (props) => {
-  const { 
+  const {
     classes,
     label,
     type,
@@ -48,12 +48,20 @@ const NewColumnForm = (props) => {
     <React.Fragment>
       <div>
         <TextField
-          id="products"
+          id="label"
           label="Label"
           className={classes.textField}
           value={label}
           onChange={e => setters.setLabel(e.target.value)}
           margin="normal"
+        />
+        <TextField
+          id="labelId"
+          label="LabelId"
+          className={classes.textField}
+          value={label.toLowerCase()}
+          margin="normal"
+          disabled
         />
         <FormControl className={classes.formControl}>
           <InputLabel htmlFor="type-native-select">Type</InputLabel>

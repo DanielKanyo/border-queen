@@ -523,7 +523,7 @@ class EditOrder extends Component {
               component={Link}
               to={`/columns/${this.props.orderId}`}
             >
-              Create columns
+              Create columns or enable at least one
             </Button>
           </div>
         );

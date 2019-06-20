@@ -105,6 +105,22 @@ const CreateTable = (props) => {
     }
   }
 
+  const getUsedLabels = (columns, company, isDefault) => {
+    let usedLabelIds = [];
+
+    if (Object.keys(columns).length) {
+      usedLabelIds = Object.keys(columns).map(key => {
+        return columns[key].labelId; 
+      });
+    }
+
+    if (isDefault) {
+      usedLabelIds.push(company.labelId)
+    }
+
+    return usedLabelIds;
+  }
+
   const initReady = orderInitDone && tableColumnsInitDone && companyInitDone;
 
   if (initReady) {
@@ -124,6 +140,8 @@ const CreateTable = (props) => {
 
     if (isDefault) company = companies[order.title];
 
+    const usedLabelIds = getUsedLabels(columns, company, isDefault);
+
     return (
       <div className={classes.root}>
         <Paper className={classes.paper}>
@@ -139,7 +157,7 @@ const CreateTable = (props) => {
           {
             isDefault && company.products.length && (
               <ColumnListItem
-                label="Products"
+                label="Product"
                 type="Select"
                 values={company.products}
                 toggleColumnSummary={toggleColumnSummary}
@@ -171,7 +189,7 @@ const CreateTable = (props) => {
             <ColumnSummary
               columnId={selectedColumnId}
               className={classes.root}
-              label={columns[selectedColumnId] ? columns[selectedColumnId].label : 'Products'}
+              label={columns[selectedColumnId] ? columns[selectedColumnId].label : 'Product'}
               type={columns[selectedColumnId] ? columns[selectedColumnId].type : 'select'}
               selectValues={columns[selectedColumnId] ? columns[selectedColumnId].items : company.products.length ? company.products : null}
               isDefault={columns[selectedColumnId] ? false : true}
@@ -208,6 +226,7 @@ const CreateTable = (props) => {
             <Button
               onClick={() => { toggleCreateDialog(false); createTableColumn(id, columnData) }}
               color="primary"
+              disabled={usedLabelIds.includes(label.toLowerCase())}
             >
               Save
             </Button>
