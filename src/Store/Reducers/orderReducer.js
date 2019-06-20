@@ -82,9 +82,9 @@ const initializeCompanies = (state, action) => {
 
 const addCompanyEntry = (state, action) => {
   const { payload } = action
-  const { id, name, description, color, authorId, createdAt, products, productsDisabled } = payload
+  const { id, name, description, color, authorId, createdAt, products, productsDisabled, labelId } = payload
 
-  const company = { id, name, description, color, authorId, createdAt, products, productsDisabled }
+  const company = { id, name, description, color, authorId, createdAt, products, productsDisabled, labelId }
 
   return {
     ...state,
@@ -165,9 +165,9 @@ const toggleOrderFinishedState = (state, action) => {
 
 const addColumnEntry = (state, action) => {
   const { payload } = action
-  const { id, label, type, items, ownerId, columnDisabled, createdAt } = payload
+  const { id, label, type, items, ownerId, columnDisabled, createdAt, labelId } = payload
 
-  const column = { id, label, type, items, ownerId, columnDisabled, createdAt }
+  const column = { id, label, type, items, ownerId, columnDisabled, createdAt, labelId }
 
   return {
     ...state,

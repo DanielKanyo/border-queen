@@ -142,7 +142,8 @@ export const createCompany = (company) => {
       createdAt: new Date().getTime(),
       inUse: company.inUse,
       productsDisabled: false,
-      authorId
+      authorId,
+      labelId: 'product'
     };
 
     firestore.collection('companies').add({
@@ -287,7 +288,8 @@ export const createTableColumn = (orderId, columnData) => {
       items: columnData.items,
       ownerId: orderId,
       createdAt: new Date().getTime(),
-      columnDisabled: false
+      columnDisabled: false,
+      labelId: columnData.label.toLowerCase()
     }
 
     firestore.collection('columns').add({

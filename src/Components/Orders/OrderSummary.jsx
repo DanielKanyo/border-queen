@@ -86,7 +86,10 @@ const OrderSummary = ({ classes, order, company, setters, last }) => {
               </IconButton>
             </span>
           </Tooltip>
-          <Tooltip title="Edit order" placement="left">
+          <Tooltip
+            title={order.finished ? "Order finished! You cannot modify it..." : "Edit order"}
+            placement="left"
+          >
             <span>
               <IconButton
                 aria-label="editOrder"
@@ -99,7 +102,10 @@ const OrderSummary = ({ classes, order, company, setters, last }) => {
               </IconButton>
             </span>
           </Tooltip>
-          <Tooltip title="Edit columns" placement="left">
+          <Tooltip
+            title={order.finished ? "Order finished! You cannot modify it..." : "Edit columns"}
+            placement="left"
+          >
             <span>
               <IconButton
                 aria-label="columns"

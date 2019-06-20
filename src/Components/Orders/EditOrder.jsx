@@ -22,17 +22,14 @@ import { Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import LinearProgress from '@material-ui/core/LinearProgress'
+import Button from '@material-ui/core/Button'
+import { Link } from 'react-router-dom'
 
 import {
   initializeOrders,
-  initializeCompanies
+  initializeCompanies,
+  initializeTableColumns
 } from '../../Store/Actions/orderActions'
-
-let counter = 0;
-function createData(name, calories, fat, carbs, protein) {
-  counter += 1;
-  return { id: counter, name, calories, fat, carbs, protein };
-}
 
 function desc(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -58,21 +55,13 @@ function getSorting(order, orderBy) {
   return order === 'desc' ? (a, b) => desc(a, b, orderBy) : (a, b) => -desc(a, b, orderBy);
 }
 
-const columns = [
-  { id: 'name', numeric: false, disablePadding: true, label: 'Dessert (100g serving)' },
-  { id: 'calories', numeric: true, disablePadding: false, label: 'Calories' },
-  { id: 'fat', numeric: true, disablePadding: false, label: 'Fat (g)' },
-  { id: 'carbs', numeric: true, disablePadding: false, label: 'Carbs (g)' },
-  { id: 'protein', numeric: true, disablePadding: false, label: 'Protein (g)' },
-];
-
 class EnhancedTableHead extends Component {
   createSortHandler = property => event => {
     this.props.onRequestSort(event, property);
   };
 
   render() {
-    const { onSelectAllClick, order, orderBy, numSelected, rowCount } = this.props;
+    const { onSelectAllClick, order, orderBy, numSelected, rowCount, columns } = this.props;
 
     return (
       <TableHead>
@@ -84,29 +73,32 @@ class EnhancedTableHead extends Component {
               onChange={onSelectAllClick}
             />
           </TableCell>
-          {columns.map(
-            row => (
-              <TableCell
-                key={row.id}
-                align={row.numeric ? 'right' : 'left'}
-                padding={row.disablePadding ? 'none' : 'default'}
-                sortDirection={orderBy === row.id ? order : false}
+          {Object.keys(columns).length && Object.keys(columns).map(key => {
+            if (!columns[key].columnDisabled) {
+              return <TableCell
+                key={key}
+                align={'center'}
+                padding={'default'}
+                sortDirection={orderBy === columns[key].id ? order : false}
               >
                 <Tooltip
                   title="Sort"
-                  placement={row.numeric ? 'bottom-end' : 'bottom-start'}
+                  placement={'bottom'}
                   enterDelay={300}
                 >
                   <TableSortLabel
-                    active={orderBy === row.id}
+                    active={orderBy === columns[key].labelId}
                     direction={order}
-                    onClick={this.createSortHandler(row.id)}
+                    onClick={this.createSortHandler(columns[key].labelId)}
                   >
-                    {row.label}
+                    {columns[key].label}
                   </TableSortLabel>
                 </Tooltip>
               </TableCell>
-            ),
+            } else {
+              return null
+            }
+          },
             this,
           )}
         </TableRow>
@@ -232,35 +224,98 @@ const styles = theme => ({
   tableWrapper: {
     overflowX: 'auto',
   },
+  button: {
+    width: '100%'
+  }
 });
 
 class EditOrder extends Component {
   state = {
     order: 'asc',
-    orderBy: 'calories',
+    orderBy: '',
     selected: [],
     data: [
-      createData('Cupcake', 305, 3.7, 67, 4.3),
-      createData('Donut', 452, 25.0, 51, 4.9),
-      createData('Eclair', 262, 16.0, 24, 6.0),
-      createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-      createData('Gingerbread', 356, 16.0, 49, 3.9),
-      createData('Honeycomb', 408, 3.2, 87, 6.5),
-      createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-      createData('Jelly Bean', 375, 0.0, 94, 0.0),
-      createData('KitKat', 518, 26.0, 65, 7.0),
-      createData('Lollipop', 392, 0.2, 98, 0.0),
-      createData('Marshmallow', 318, 0, 81, 2.0),
-      createData('Nougat', 360, 19.0, 9, 37.0),
-      createData('Oreo', 437, 18.0, 63, 4.0),
+      {
+        id: 'id_test1',
+        description: 'Hello',
+        date: '2019.08.21',
+        product: 'Test1'
+      },
+      {
+        id: 'id_test2',
+        description: 'Test',
+        date: '2019.08.22',
+        product: 'Test2'
+      },
+      {
+        id: 'id_test3',
+        description: 'Hello',
+        date: '2019.08.21',
+        product: 'Test3'
+      },
+      {
+        id: 'id_test4',
+        description: 'Test',
+        date: '2019.08.22',
+        product: 'Test4'
+      },
+      {
+        id: 'id_test5',
+        description: 'Hello',
+        date: '2019.08.21',
+        product: 'Test1'
+      },
+      {
+        id: 'id_test6',
+        description: 'Test',
+        date: '2019.08.22',
+        product: 'Test2'
+      },
+      {
+        id: 'id_test7',
+        description: 'Hello',
+        date: '2019.08.21',
+        product: 'Test3'
+      },
+      {
+        id: 'id_test8',
+        description: 'Test',
+        date: '2019.08.22',
+        product: 'Test4'
+      },
+      {
+        id: 'id_test9',
+        description: 'Hello',
+        date: '2019.08.21',
+        product: 'Test5'
+      },
+      {
+        id: 'id_test10',
+        description: 'Szia',
+        date: '2019.08.23',
+        product: 'Test4'
+      },
+      {
+        id: 'id_test11',
+        description: 'Hello',
+        date: '2019.08.21',
+        product: 'Test0'
+      },
+      {
+        id: 'id_test12',
+        description: 'Aloha',
+        date: '2019.08.22',
+        product: 'Test3'
+      },
     ],
     page: 0,
-    rowsPerPage: 10,
+    rowsPerPage: 18,
   };
 
   componentDidMount = () => {
     this.props.initializeOrders();
     this.props.initializeCompanies();
+    this.props.initializeTableColumns(this.props.orderId);
   }
 
   handleRequestSort = (event, property) => {
@@ -311,6 +366,51 @@ class EditOrder extends Component {
     this.setState({ rowsPerPage: event.target.value });
   };
 
+  getLabelIds = (columns, company, isDefault) => {
+    let labelIds = [];
+    let columnIds = [];
+
+    for (let key in columns) {
+      if (!columns[key].columnDisabled) {
+        labelIds.push(columns[key].labelId);
+        columnIds.push(key);
+      }
+    }
+
+    if (isDefault && !company.productsDisabled) {
+      if (company.labelId) {
+        labelIds.unshift(company.labelId);
+        columnIds.unshift(company.id)
+      }
+    }
+
+    return {
+      labelIds,
+      columnIds
+    };
+  }
+
+  getOrderedColumns = (order, columns, company) => {
+    let orderedColumns = {};
+
+    for (let i in order) {
+      const key = order[i];
+
+      if (columns[key]) {
+        orderedColumns[key] = columns[key];
+      } else {
+        orderedColumns[key] = {
+          columnDisabled: false,
+          label: company.labelId.charAt(0).toUpperCase() + company.labelId.slice(1),
+          labelId: company.labelId,
+          id: key,
+        }
+      }
+    }
+
+    return orderedColumns;
+  }
+
   isSelected = id => this.state.selected.indexOf(id) !== -1;
 
   render() {
@@ -320,96 +420,114 @@ class EditOrder extends Component {
       companyInitDone,
       orderObject,
       companies,
-      // table
+      columns,
+      tableColumnsInitDone
     } = this.props;
 
     if (!auth.uid) return <Redirect to='/signin' />
 
-    const initReady = orderInitDone && companyInitDone;
+    const initReady = orderInitDone && companyInitDone && tableColumnsInitDone;
 
     if (initReady) {
-      const { data, order, orderBy, selected, rowsPerPage, page } = this.state;
-      const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
+      const { data, order, selected, rowsPerPage, page } = this.state;
+      let { orderBy } = this.state;
 
       const isDefault = companies[orderObject.title] ? true : false;
       const company = companies[orderObject.title];
+
+      const orderOf = this.getLabelIds(columns, company, isDefault);
+      const orderedColumns = this.getOrderedColumns(orderOf.columnIds, columns, company, isDefault);
 
       const style = {
         backgroundColor: isDefault ? company.color : 'white',
         border: isDefault ? `1px solid ${company.color}` : '1px solid grey'
       }
 
-      return (
-        <div className={classes.root}>
-          <Paper>
-            <EnhancedTableToolbar
-              numSelected={selected.length}
-              tableTitle={isDefault ? company.name : orderObject.title}
-              circleStyle={style}
-              description={orderObject.description}
-            />
-            <div className={classes.tableWrapper}>
-              <Table className={classes.table} aria-labelledby="tableTitle">
-                <EnhancedTableHead
-                  numSelected={selected.length}
-                  order={order}
-                  orderBy={orderBy}
-                  onSelectAllClick={this.handleSelectAllClick}
-                  onRequestSort={this.handleRequestSort}
-                  rowCount={data.length}
-                />
-                <TableBody>
-                  {stableSort(data, getSorting(order, orderBy))
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map(n => {
-                      const isSelected = this.isSelected(n.id);
-                      return (
-                        <TableRow
-                          hover
-                          onClick={event => this.handleClick(event, n.id)}
-                          role="checkbox"
-                          aria-checked={isSelected}
-                          tabIndex={-1}
-                          key={n.id}
-                          selected={isSelected}
-                        >
-                          <TableCell padding="checkbox">
-                            <Checkbox checked={isSelected} />
-                          </TableCell>
-                          <TableCell component="th" scope="row" padding="none">{n.name}</TableCell>
-                          <TableCell align="right">{n.calories}</TableCell>
-                          <TableCell align="right">{n.fat}</TableCell>
-                          <TableCell align="right">{n.carbs}</TableCell>
-                          <TableCell align="right">{n.protein}</TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  {emptyRows > 0 && (
-                    <TableRow style={{ height: 49 * emptyRows }}>
-                      <TableCell colSpan={6} />
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-            <TablePagination
-              rowsPerPageOptions={[]}
-              component="div"
-              count={data.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              backIconButtonProps={{
-                'aria-label': 'Previous Page',
-              }}
-              nextIconButtonProps={{
-                'aria-label': 'Next Page',
-              }}
-              onChangePage={this.handleChangePage}
-              onChangeRowsPerPage={this.handleChangeRowsPerPage}
-            />
-          </Paper>
-        </div>
-      );
+      orderBy = orderBy ? orderBy : orderOf.labelIds[0];
+
+      if (orderOf.labelIds.length && orderOf.columnIds.length) {
+        return (
+          <div className={classes.root}>
+            <Paper>
+              <EnhancedTableToolbar
+                numSelected={selected.length}
+                tableTitle={isDefault ? company.name : orderObject.title}
+                circleStyle={style}
+                description={orderObject.description}
+              />
+              <div className={classes.tableWrapper}>
+                <Table className={classes.table} aria-labelledby="tableTitle">
+                  <EnhancedTableHead
+                    numSelected={selected.length}
+                    order={order}
+                    orderBy={orderBy}
+                    onSelectAllClick={this.handleSelectAllClick}
+                    onRequestSort={this.handleRequestSort}
+                    rowCount={data.length}
+                    columns={orderedColumns}
+                  />
+                  <TableBody>
+                    {stableSort(data, getSorting(order, orderBy))
+                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                      .map(n => {
+                        const isSelected = this.isSelected(n.id);
+                        return (
+                          <TableRow
+                            hover
+                            onClick={event => this.handleClick(event, n.id)}
+                            role="checkbox"
+                            aria-checked={isSelected}
+                            tabIndex={-1}
+                            key={n.id}
+                            selected={isSelected}
+                          >
+                            <TableCell padding="checkbox">
+                              <Checkbox checked={isSelected} />
+                            </TableCell>
+                            {
+                              orderOf.labelIds.map((labelId) => {
+                                return <TableCell key={labelId} align="center">{n[labelId]}</TableCell>
+                              })
+                            }
+                          </TableRow>
+                        );
+                      })}
+                  </TableBody>
+                </Table>
+              </div>
+              <TablePagination
+                rowsPerPageOptions={[]}
+                component="div"
+                count={data.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                backIconButtonProps={{
+                  'aria-label': 'Previous Page',
+                }}
+                nextIconButtonProps={{
+                  'aria-label': 'Next Page',
+                }}
+                onChangePage={this.handleChangePage}
+                onChangeRowsPerPage={this.handleChangeRowsPerPage}
+              />
+            </Paper>
+          </div>
+        );
+      } else {
+        return (
+          <div className={classes.root}>
+            <Button
+              variant="contained"
+              color="secondary"
+              className={classes.button}
+              component={Link}
+              to={`/columns/${this.props.orderId}`}
+            >
+              Create columns
+            </Button>
+          </div>
+        );
+      }
     } else {
       return <div className={classes.root}><LinearProgress color="primary" /></div>
     }
@@ -430,7 +548,9 @@ const mapStateToProps = (state, ownProps) => {
     companies: state.order.companies,
     orderInitDone: state.order.orderInitDone,
     companyInitDone: state.order.companyInitDone,
-    table: state.order.table,
+    tableColumnsInitDone: state.order.tableColumnsInitDone,
+    columns: state.order.columns,
+    orderId: id,
     auth: state.firebase.auth
   }
 }
@@ -438,7 +558,8 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     initializeOrders: () => dispatch(initializeOrders()),
-    initializeCompanies: () => dispatch(initializeCompanies())
+    initializeCompanies: () => dispatch(initializeCompanies()),
+    initializeTableColumns: id => dispatch(initializeTableColumns(id))
   }
 }
 
