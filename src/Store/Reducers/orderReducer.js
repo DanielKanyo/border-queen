@@ -3,10 +3,12 @@ const initState = {
   companies: {},
   table: {},
   columns: {},
+  rows: {},
   orderOfIds: [],
   orderInitDone: false,
   companyInitDone: false,
-  tableColumnsInitDone: false
+  tableColumnsInitDone: false,
+  tableRowsInitDone: false
 }
 
 const initializeOrders = (state, action) => {
@@ -165,9 +167,9 @@ const toggleOrderFinishedState = (state, action) => {
 
 const addColumnEntry = (state, action) => {
   const { payload } = action
-  const { id, label, type, items, ownerId, columnDisabled, createdAt, labelId } = payload
+  const { id, label, type, items, ownerId, columnDisabled, createdAt, labelId, defaultValue } = payload
 
-  const column = { id, label, type, items, ownerId, columnDisabled, createdAt, labelId }
+  const column = { id, label, type, items, ownerId, columnDisabled, createdAt, labelId, defaultValue }
 
   return {
     ...state,
@@ -230,6 +232,74 @@ const disableCompanyEntry = (state, action) => {
   }
 }
 
+const addRowEntry = (state, action) => {
+  const { payload } = action
+  const { id } = payload;
+
+  return {
+    ...state,
+    rows: {
+      ...state.rows,
+      [id]: {
+        ...payload
+      }
+    }
+  }
+}
+
+const initializeTableRows = (state, action) => {
+  const { payload } = action
+  const { rows } = payload
+
+  return {
+    ...state,
+    rows: rows,
+    tableRowsInitDone: true
+  };
+}
+
+const discardTableRows = (state) => {
+  return {
+    ...state,
+    rows: {},
+    tableRowsInitDone: false
+  }
+}
+
+const deleteTableRows = (state, action) => {
+  const { payload } = action
+  const { selectedRows } = payload
+  const { rows } = state
+
+  for(let key in rows) {
+    if (selectedRows.includes(key)) {
+      delete rows[key]
+    }
+  }
+  
+  return {
+    ...state,
+    rows: {
+      ...rows
+    }
+  }
+}
+
+const updateTableRow = (state, action) => {
+  const { payload } = action
+  const { id } = payload
+
+  return {
+    ...state,
+    rows: {
+      ...state.rows,
+      [id]: {
+        ...payload
+      }
+    }
+  }
+}
+
 const orderReducer = (state = initState, action) => {
   switch (action.type) {
     /** Init */
@@ -244,9 +314,17 @@ const orderReducer = (state = initState, action) => {
     case 'INITIALIZE_COLUMNS_ERROR':
       console.log('Init columns error', action.error)
       return state
+    case 'INITIALIZE_ROWS':
+      return initializeTableRows(state, action)
+    case 'INITIALIZE_ROWS_ERROR':
+      console.log('Init rows error', action.error)
+      return state
 
+      /** Discard */
     case 'DISCARD_COLUMNS':
       return discardTableColumns(state)
+    case 'DISCARD_ROWS':
+      return discardTableRows(state)
 
     /** Order */
     case 'CREATE_ORDER':
@@ -304,6 +382,23 @@ const orderReducer = (state = initState, action) => {
       return disableColumnEntry(state, action)
     case 'DISABLE_COLUMN_ERROR':
       console.log('Disable column error', action.error)
+      return state
+
+    /** Row */
+    case 'ADD_ROW':
+      return addRowEntry(state, action)
+    case 'ADD_ROW_ERROR':
+      console.log('Add row error', action.error)
+      return state
+    case 'DELETE_ROWS':
+      return deleteTableRows(state, action)
+    case 'DELETE_ROWS_ERROR':
+      console.log('Delete rows error', action.error)
+      return state
+    case 'UPDATE_ROW':
+      return updateTableRow(state, action)
+    case 'UPDATE_ROW_ERROR':
+      console.log('Update rows error', action.error)
       return state
 
     /** Auth */

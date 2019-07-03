@@ -1,7 +1,7 @@
-import React, { Component } from 'react'
+import React, { useState, useEffect } from 'react'
 import clsx from 'clsx';
+import { lighten, makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
@@ -16,19 +16,31 @@ import Checkbox from '@material-ui/core/Checkbox'
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
 import DeleteIcon from '@material-ui/icons/Delete'
-import FilterListIcon from '@material-ui/icons/FilterList'
-import { lighten } from '@material-ui/core/styles/colorManipulator'
+import AddIcon from '@material-ui/icons/Add'
+import EditIcon from '@material-ui/icons/Edit'
 import { Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import Button from '@material-ui/core/Button'
 import { Link } from 'react-router-dom'
+import Dialog from '@material-ui/core/Dialog'
+import DialogActions from '@material-ui/core/DialogActions'
+import DialogContentText from '@material-ui/core/DialogContentText'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogTitle from '@material-ui/core/DialogTitle'
+import NewRowForm from './NewRowForm'
+import moment from 'moment'
 
 import {
   initializeOrders,
   initializeCompanies,
-  initializeTableColumns
+  initializeTableColumns,
+  saveTableRow,
+  initializeTableRows,
+  discardTableRows,
+  deleteTableRows,
+  updateTableRow
 } from '../../Store/Actions/orderActions'
 
 function desc(a, b, orderBy) {
@@ -41,8 +53,8 @@ function desc(a, b, orderBy) {
   return 0;
 }
 
-function stableSort(array, cmp) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
+function stableSort(rows, cmp) {
+  const stabilizedThis = Object.keys(rows).map((key, index) => [rows[key], index]);
   stabilizedThis.sort((a, b) => {
     const order = cmp(a[0], b[0]);
     if (order !== 0) return order;
@@ -55,56 +67,52 @@ function getSorting(order, orderBy) {
   return order === 'desc' ? (a, b) => desc(a, b, orderBy) : (a, b) => -desc(a, b, orderBy);
 }
 
-class EnhancedTableHead extends Component {
-  createSortHandler = property => event => {
-    this.props.onRequestSort(event, property);
+const EnhancedTableHead = (props) => {
+  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort, columns } = props;
+
+  const createSortHandler = property => event => {
+    onRequestSort(event, property);
   };
 
-  render() {
-    const { onSelectAllClick, order, orderBy, numSelected, rowCount, columns } = this.props;
-
-    return (
-      <TableHead>
-        <TableRow>
-          <TableCell padding="checkbox">
-            <Checkbox
-              indeterminate={numSelected > 0 && numSelected < rowCount}
-              checked={numSelected === rowCount}
-              onChange={onSelectAllClick}
-            />
-          </TableCell>
-          {Object.keys(columns).length && Object.keys(columns).map(key => {
-            if (!columns[key].columnDisabled) {
-              return <TableCell
-                key={key}
-                align={'center'}
-                padding={'default'}
-                sortDirection={orderBy === columns[key].id ? order : false}
+  return (
+    <TableHead>
+      <TableRow>
+        <TableCell padding="checkbox">
+          <Checkbox
+            indeterminate={numSelected > 0 && numSelected < rowCount}
+            checked={numSelected === rowCount}
+            onChange={onSelectAllClick}
+          />
+        </TableCell>
+        {Object.keys(columns).length && Object.keys(columns).map(key => {
+          if (!columns[key].columnDisabled) {
+            return <TableCell
+              key={key}
+              align={'center'}
+              padding={'default'}
+              sortDirection={orderBy === columns[key].id ? order : false}
+            >
+              <Tooltip
+                title="Sort"
+                placement={'bottom'}
+                enterDelay={300}
               >
-                <Tooltip
-                  title="Sort"
-                  placement={'bottom'}
-                  enterDelay={300}
+                <TableSortLabel
+                  active={orderBy === columns[key].labelId}
+                  direction={order}
+                  onClick={createSortHandler(columns[key].labelId)}
                 >
-                  <TableSortLabel
-                    active={orderBy === columns[key].labelId}
-                    direction={order}
-                    onClick={this.createSortHandler(columns[key].labelId)}
-                  >
-                    {columns[key].label}
-                  </TableSortLabel>
-                </Tooltip>
-              </TableCell>
-            } else {
-              return null
-            }
-          },
-            this,
-          )}
-        </TableRow>
-      </TableHead>
-    );
-  }
+                  {columns[key].label}
+                </TableSortLabel>
+              </Tooltip>
+            </TableCell>
+          } else {
+            return null
+          }
+        })}
+      </TableRow>
+    </TableHead>
+  );
 }
 
 EnhancedTableHead.propTypes = {
@@ -116,7 +124,7 @@ EnhancedTableHead.propTypes = {
   rowCount: PropTypes.number.isRequired,
 };
 
-const toolbarStyles = theme => ({
+const useToolbarStyles = makeStyles(theme => ({
   root: {
     paddingRight: theme.spacing(),
   },
@@ -155,11 +163,28 @@ const toolbarStyles = theme => ({
   description: {
     color: '#bfbfbf',
     marginLeft: 8
+  },
+  tableActionsContainer: {
+    display: 'flex'
+  },
+  tableActionBtn: {
+    marginLeft: 6
   }
-});
+}));
 
-let EnhancedTableToolbar = props => {
-  const { numSelected, classes, tableTitle, circleStyle, description } = props;
+const EnhancedTableToolbar = props => {
+  const classes = useToolbarStyles();
+
+  const {
+    numSelected,
+    tableTitle,
+    circleStyle,
+    description,
+    setCreateDialog,
+    setDeleteDialog,
+    setEditMode,
+    fillFormWithSelectedData
+  } = props;
 
   return (
     <Toolbar
@@ -187,15 +212,39 @@ let EnhancedTableToolbar = props => {
       <div className={classes.spacer} />
       <div className={classes.actions}>
         {numSelected > 0 ? (
-          <Tooltip title="Delete">
-            <IconButton aria-label="Delete">
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
+          <div className={classes.tableActionsContainer}>
+            <Tooltip title="Delete row">
+              <div>
+                <IconButton
+                  aria-label="Delete row"
+                  className={classes.tableActionBtn}
+                  onClick={() => setDeleteDialog(true)}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </div>
+            </Tooltip>
+            <Tooltip title="Edit row">
+              <div>
+                <IconButton
+                  aria-label="Edit row"
+                  className={classes.tableActionBtn}
+                  disabled={numSelected > 1}
+                  onClick={() => {
+                    setEditMode(true);
+                    setCreateDialog(true)
+                    fillFormWithSelectedData()
+                  }}
+                >
+                  <EditIcon />
+                </IconButton>
+              </div>
+            </Tooltip>
+          </div>
         ) : (
-            <Tooltip title="Filter list">
-              <IconButton aria-label="Filter list">
-                <FilterListIcon />
+            <Tooltip title="Add new row">
+              <IconButton aria-label="Add new row" onClick={() => setCreateDialog(true)}>
+                <AddIcon />
               </IconButton>
             </Tooltip>
           )}
@@ -204,14 +253,7 @@ let EnhancedTableToolbar = props => {
   );
 };
 
-EnhancedTableToolbar.propTypes = {
-  classes: PropTypes.object.isRequired,
-  numSelected: PropTypes.number.isRequired,
-};
-
-EnhancedTableToolbar = withStyles(toolbarStyles)(EnhancedTableToolbar);
-
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
   root: {
     paddingLeft: 8,
     paddingRight: 8,
@@ -227,123 +269,77 @@ const styles = theme => ({
   button: {
     width: '100%'
   }
-});
+}));
 
-class EditOrder extends Component {
-  state = {
-    order: 'asc',
-    orderBy: '',
-    selected: [],
-    data: [
-      {
-        id: 'id_test1',
-        description: 'Hello',
-        date: '2019.08.21',
-        product: 'Test1'
-      },
-      {
-        id: 'id_test2',
-        description: 'Test',
-        date: '2019.08.22',
-        product: 'Test2'
-      },
-      {
-        id: 'id_test3',
-        description: 'Hello',
-        date: '2019.08.21',
-        product: 'Test3'
-      },
-      {
-        id: 'id_test4',
-        description: 'Test',
-        date: '2019.08.22',
-        product: 'Test4'
-      },
-      {
-        id: 'id_test5',
-        description: 'Hello',
-        date: '2019.08.21',
-        product: 'Test1'
-      },
-      {
-        id: 'id_test6',
-        description: 'Test',
-        date: '2019.08.22',
-        product: 'Test2'
-      },
-      {
-        id: 'id_test7',
-        description: 'Hello',
-        date: '2019.08.21',
-        product: 'Test3'
-      },
-      {
-        id: 'id_test8',
-        description: 'Test',
-        date: '2019.08.22',
-        product: 'Test4'
-      },
-      {
-        id: 'id_test9',
-        description: 'Hello',
-        date: '2019.08.21',
-        product: 'Test5'
-      },
-      {
-        id: 'id_test10',
-        description: 'Szia',
-        date: '2019.08.23',
-        product: 'Test4'
-      },
-      {
-        id: 'id_test11',
-        description: 'Hello',
-        date: '2019.08.21',
-        product: 'Test0'
-      },
-      {
-        id: 'id_test12',
-        description: 'Aloha',
-        date: '2019.08.22',
-        product: 'Test3'
-      },
-    ],
-    page: 0,
-    rowsPerPage: 18,
-  };
+const EditOrder = (props) => {
+  const classes = useStyles();
 
-  componentDidMount = () => {
-    this.props.initializeOrders();
-    this.props.initializeCompanies();
-    this.props.initializeTableColumns(this.props.orderId);
+  const [order, setOrder] = useState('asc');
+  const [orderBy, setOrderBy] = useState('');
+  const [selected, setSelected] = useState([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(18);
+  const [createDialog, setCreateDialog] = useState(false);
+  const [deleteDialog, setDeleteDialog] = useState(false);
+  const [newRowData, setNewRowData] = useState({});
+  const [editMode, setEditMode] = useState(false);
+
+  const {
+    auth,
+    orderInitDone,
+    companyInitDone,
+    orderObject,
+    companies,
+    columns,
+    tableColumnsInitDone,
+    orderId,
+    initializeOrders,
+    initializeCompanies,
+    initializeTableColumns,
+    saveTableRow,
+    rows,
+    initializeTableRows,
+    tableRowsInitDone,
+    deleteTableRows,
+    updateTableRow
+  } = props;
+
+  /** component did mount */
+  useEffect(() => {
+    initializeOrders();
+    initializeCompanies();
+    initializeTableColumns(orderId);
+    initializeTableRows(orderId);
+  }, []);
+
+  /** component will unmount */
+  useEffect(() => {
+    return () => {
+      discardTableRows();
+    }
+  }, []);
+
+  const handleRequestSort = (event, property) => {
+    const isDesc = orderBy === property && order === 'desc';
+    setOrder(isDesc ? 'asc' : 'desc');
+    setOrderBy(property);
   }
 
-  handleRequestSort = (event, property) => {
-    const orderBy = property;
-    let order = 'desc';
-
-    if (this.state.orderBy === property && this.state.order === 'desc') {
-      order = 'asc';
-    }
-
-    this.setState({ order, orderBy });
-  };
-
-  handleSelectAllClick = event => {
+  const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      this.setState(state => ({ selected: state.data.map(n => n.id) }));
+      const newSelecteds = Object.keys(rows).map(key => rows[key].id);
+      setSelected(newSelecteds);
       return;
     }
-    this.setState({ selected: [] });
-  };
+    setSelected([]);
+  }
 
-  handleClick = (event, id) => {
-    const { selected } = this.state;
-    const selectedIndex = selected.indexOf(id);
+  const handleClick = (event, name) => {
+    const selectedIndex = selected.indexOf(name);
     let newSelected = [];
 
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, id);
+      newSelected = newSelected.concat(selected, name);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
     } else if (selectedIndex === selected.length - 1) {
@@ -355,18 +351,18 @@ class EditOrder extends Component {
       );
     }
 
-    this.setState({ selected: newSelected });
-  };
+    setSelected(newSelected);
+  }
 
-  handleChangePage = (event, page) => {
-    this.setState({ page });
-  };
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  }
 
-  handleChangeRowsPerPage = event => {
-    this.setState({ rowsPerPage: event.target.value });
-  };
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(+event.target.value);
+  }
 
-  getLabelIds = (columns, company, isDefault) => {
+  const getLabelIds = (columns, company, isDefault) => {
     let labelIds = [];
     let columnIds = [];
 
@@ -390,7 +386,7 @@ class EditOrder extends Component {
     };
   }
 
-  getOrderedColumns = (order, columns, company) => {
+  const getOrderedColumns = (order, columns, company) => {
     let orderedColumns = {};
 
     for (let i in order) {
@@ -411,132 +407,264 @@ class EditOrder extends Component {
     return orderedColumns;
   }
 
-  isSelected = id => this.state.selected.indexOf(id) !== -1;
+  const saveRow = (orderedColumns, company) => {
+    let dataToSave = { ...newRowData };
 
-  render() {
-    const { classes,
-      auth,
-      orderInitDone,
-      companyInitDone,
-      orderObject,
-      companies,
-      columns,
-      tableColumnsInitDone
-    } = this.props;
+    for (let key in orderedColumns) {
+      const column = orderedColumns[key];
+      const { labelId } = column;
 
-    if (!auth.uid) return <Redirect to='/signin' />
-
-    const initReady = orderInitDone && companyInitDone && tableColumnsInitDone;
-
-    if (initReady) {
-      const { data, order, selected, rowsPerPage, page } = this.state;
-      let { orderBy } = this.state;
-
-      const isDefault = companies[orderObject.title] ? true : false;
-      const company = companies[orderObject.title];
-
-      const orderOf = this.getLabelIds(columns, company, isDefault);
-      const orderedColumns = this.getOrderedColumns(orderOf.columnIds, columns, company, isDefault);
-
-      const style = {
-        backgroundColor: isDefault ? company.color : 'white',
-        border: isDefault ? `1px solid ${company.color}` : '1px solid grey'
+      if (!newRowData[labelId]) {
+        if (column.type === 'date') {
+          if (column.defaultValue) {
+            dataToSave[labelId] = column.defaultValue.split('-').join('.');
+          } else {
+            dataToSave[labelId] = moment(new Date().getTime()).format('YYYY.MM.DD');
+          }
+        } else if (column.type === 'time') {
+          if (column.defaultValue) {
+            dataToSave[labelId] = column.defaultValue;
+          } else {
+            dataToSave[labelId] = moment(new Date().getTime()).format('HH:mm');
+          }
+        } else if (column.type === 'select') {
+          if (column.defaultValue) {
+            dataToSave[labelId] = column.defaultValue;
+          } else if (column.items[0]) {
+            dataToSave[labelId] = column.items[0];
+          } else {
+            dataToSave[labelId] = '';
+          }
+        } else {
+          if (labelId === 'product') {
+            dataToSave['product'] = company.products[0];
+          } else {
+            dataToSave[labelId] = '';
+          }
+        }
       }
-
-      orderBy = orderBy ? orderBy : orderOf.labelIds[0];
-
-      if (orderOf.labelIds.length && orderOf.columnIds.length) {
-        return (
-          <div className={classes.root}>
-            <Paper>
-              <EnhancedTableToolbar
-                numSelected={selected.length}
-                tableTitle={isDefault ? company.name : orderObject.title}
-                circleStyle={style}
-                description={orderObject.description}
-              />
-              <div className={classes.tableWrapper}>
-                <Table className={classes.table} aria-labelledby="tableTitle">
-                  <EnhancedTableHead
-                    numSelected={selected.length}
-                    order={order}
-                    orderBy={orderBy}
-                    onSelectAllClick={this.handleSelectAllClick}
-                    onRequestSort={this.handleRequestSort}
-                    rowCount={data.length}
-                    columns={orderedColumns}
-                  />
-                  <TableBody>
-                    {stableSort(data, getSorting(order, orderBy))
-                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                      .map(n => {
-                        const isSelected = this.isSelected(n.id);
-                        return (
-                          <TableRow
-                            hover
-                            onClick={event => this.handleClick(event, n.id)}
-                            role="checkbox"
-                            aria-checked={isSelected}
-                            tabIndex={-1}
-                            key={n.id}
-                            selected={isSelected}
-                          >
-                            <TableCell padding="checkbox">
-                              <Checkbox checked={isSelected} />
-                            </TableCell>
-                            {
-                              orderOf.labelIds.map((labelId) => {
-                                return <TableCell key={labelId} align="center">{n[labelId]}</TableCell>
-                              })
-                            }
-                          </TableRow>
-                        );
-                      })}
-                  </TableBody>
-                </Table>
-              </div>
-              <TablePagination
-                rowsPerPageOptions={[]}
-                component="div"
-                count={data.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                backIconButtonProps={{
-                  'aria-label': 'Previous Page',
-                }}
-                nextIconButtonProps={{
-                  'aria-label': 'Next Page',
-                }}
-                onChangePage={this.handleChangePage}
-                onChangeRowsPerPage={this.handleChangeRowsPerPage}
-              />
-            </Paper>
-          </div>
-        );
-      } else {
-        return (
-          <div className={classes.root}>
-            <Button
-              variant="contained"
-              color="secondary"
-              className={classes.button}
-              component={Link}
-              to={`/columns/${this.props.orderId}`}
-            >
-              Create columns or enable at least one
-            </Button>
-          </div>
-        );
-      }
-    } else {
-      return <div className={classes.root}><LinearProgress color="primary" /></div>
     }
+
+    dataToSave.orderId = orderId;
+
+    saveTableRow(dataToSave);
+  }
+
+  const fillFormWithSelectedData = () => {
+    const selectedRow = selected[0];
+
+    let dataToFill;
+
+    for (let key in rows) {
+      if (rows[key].id === selectedRow) {
+        dataToFill = {
+          ...rows[key]
+        }
+      }
+    }
+
+    setNewRowData(dataToFill);
+  }
+
+  const isSelected = name => selected.indexOf(name) !== -1;
+
+  if (!auth.uid) return <Redirect to='/signin' />
+
+  const initReady = orderInitDone && companyInitDone && tableColumnsInitDone && tableRowsInitDone;
+
+  if (initReady) {
+    const isDefault = companies[orderObject.title] ? true : false;
+    const company = companies[orderObject.title];
+
+    const orderOf = getLabelIds(columns, company, isDefault);
+    const orderedColumns = getOrderedColumns(orderOf.columnIds, columns, company, isDefault);
+
+    const style = {
+      backgroundColor: isDefault ? company.color : 'white',
+      border: isDefault ? `1px solid ${company.color}` : '1px solid grey'
+    }
+
+    if (orderOf.labelIds.length && orderOf.columnIds.length) {
+      return (
+        <div className={classes.root}>
+          <Paper>
+            <EnhancedTableToolbar
+              numSelected={selected.length}
+              tableTitle={isDefault ? company.name : orderObject.title}
+              circleStyle={style}
+              description={orderObject.description}
+              setCreateDialog={setCreateDialog}
+              setDeleteDialog={setDeleteDialog}
+              setEditMode={setEditMode}
+              fillFormWithSelectedData={fillFormWithSelectedData}
+            />
+            <div className={classes.tableWrapper}>
+              <Table className={classes.table} aria-labelledby="tableTitle">
+                <EnhancedTableHead
+                  numSelected={selected.length}
+                  order={order}
+                  orderBy={orderBy ? orderBy : orderOf.labelIds[0]}
+                  onSelectAllClick={handleSelectAllClick}
+                  onRequestSort={handleRequestSort}
+                  rowCount={Object.keys(rows).length}
+                  columns={orderedColumns}
+                />
+                <TableBody>
+                  {stableSort(rows, getSorting(order, orderBy ? orderBy : orderOf.labelIds[0]))
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map(n => {
+                      const isItemSelected = isSelected(n.id);
+                      return (
+                        <TableRow
+                          hover
+                          onClick={event => handleClick(event, n.id)}
+                          role="checkbox"
+                          aria-checked={isItemSelected}
+                          tabIndex={-1}
+                          key={n.id}
+                          selected={isItemSelected}
+                        >
+                          <TableCell padding="checkbox">
+                            <Checkbox checked={isItemSelected} />
+                          </TableCell>
+                          {
+                            orderOf.labelIds.map((labelId) => {
+                              return <TableCell key={labelId} align="center">{n[labelId]}</TableCell>
+                            })
+                          }
+                        </TableRow>
+                      );
+                    })}
+                </TableBody>
+              </Table>
+            </div>
+            <TablePagination
+              rowsPerPageOptions={[]}
+              component="div"
+              count={Object.keys(rows).length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              backIconButtonProps={{
+                'aria-label': 'Previous Page',
+              }}
+              nextIconButtonProps={{
+                'aria-label': 'Next Page',
+              }}
+              onChangePage={handleChangePage}
+              onChangeRowsPerPage={handleChangeRowsPerPage}
+            />
+          </Paper>
+
+          <Dialog
+            open={createDialog}
+            onClose={() => {
+              setCreateDialog(false);
+              setNewRowData({});
+              setEditMode(false)
+            }}
+            scroll={'body'}
+            aria-labelledby="scroll-dialog-title"
+          >
+            <DialogTitle id="scroll-dialog-title">Add new row</DialogTitle>
+            <DialogContent>
+              <NewRowForm
+                columns={orderedColumns}
+                company={company}
+                isDefault={isDefault}
+                newRowData={newRowData}
+                setNewRowData={setNewRowData}
+                editMode={editMode}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={() => {
+                  setCreateDialog(false);
+                  setNewRowData({});
+                  setEditMode(false)
+                }}
+                color="primary"
+              >
+                Cancel
+              </Button>
+              {
+                editMode ? (
+                  <Button
+                    onClick={() => {
+                      setCreateDialog(false);
+                      updateTableRow(selected[0], newRowData)
+                      setNewRowData({})
+                      setEditMode(false)
+                    }}
+                    color="primary"
+                  >
+                    Update
+                  </Button>
+                ) : (
+                    <Button
+                      onClick={() => {
+                        setCreateDialog(false);
+                        saveRow(orderedColumns, company);
+                        setNewRowData({})
+                      }}
+                      color="primary"
+                    >
+                      Add
+                    </Button>
+                  )
+              }
+            </DialogActions>
+          </Dialog>
+
+          <Dialog
+            open={deleteDialog}
+            onClose={() => setDeleteDialog(false)}
+            scroll={'body'}
+            aria-labelledby="scroll-dialog-title"
+          >
+            <DialogTitle id="scroll-dialog-title">Delete {selected.length > 1 ? 'rows' : 'row'}</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                Are you sure you want to delete the selected {selected.length > 1 ? 'rows' : 'row'}?
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setDeleteDialog(false)} color="primary">
+                Cancel
+              </Button>
+              <Button
+                onClick={() => {
+                  setDeleteDialog(false);
+                  deleteTableRows(orderId, selected)
+                  setSelected([])
+                }}
+                color="primary"
+              >
+                Delete
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </div >
+      );
+    } else {
+      return (
+        <div className={classes.root}>
+          <Button
+            variant="contained"
+            color="secondary"
+            className={classes.button}
+            component={Link}
+            to={`/columns/${orderId}`}
+          >
+            Create columns or enable at least one
+          </Button>
+        </div>
+      );
+    }
+  } else {
+    return <div className={classes.root}><LinearProgress color="primary" /></div>
   }
 }
-
-EditOrder.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
 
 const mapStateToProps = (state, ownProps) => {
   const id = ownProps.match.params.id;
@@ -551,6 +679,8 @@ const mapStateToProps = (state, ownProps) => {
     tableColumnsInitDone: state.order.tableColumnsInitDone,
     columns: state.order.columns,
     orderId: id,
+    rows: state.order.rows,
+    tableRowsInitDone: state.order.tableRowsInitDone,
     auth: state.firebase.auth
   }
 }
@@ -559,11 +689,15 @@ const mapDispatchToProps = (dispatch) => {
   return {
     initializeOrders: () => dispatch(initializeOrders()),
     initializeCompanies: () => dispatch(initializeCompanies()),
-    initializeTableColumns: id => dispatch(initializeTableColumns(id))
+    initializeTableColumns: id => dispatch(initializeTableColumns(id)),
+    saveTableRow: data => dispatch(saveTableRow(data)),
+    initializeTableRows: id => dispatch(initializeTableRows(id)),
+    discardTableRows: () => dispatch(discardTableRows()),
+    deleteTableRows: (id, rows) => dispatch(deleteTableRows(id, rows)),
+    updateTableRow: (id, data) => dispatch(updateTableRow(id, data))
   }
 }
 
 export default compose(
-  connect(mapStateToProps, mapDispatchToProps),
-  withStyles(styles)
+  connect(mapStateToProps, mapDispatchToProps)
 )(EditOrder)

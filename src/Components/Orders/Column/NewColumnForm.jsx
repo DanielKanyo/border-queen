@@ -8,17 +8,20 @@ import Select from '@material-ui/core/Select'
 import IconButton from '@material-ui/core/IconButton'
 import AddIcon from '@material-ui/icons/Add'
 import Chip from '@material-ui/core/Chip'
+import moment from 'moment'
 
 const styles = theme => ({
   textField: {
     marginTop: theme.spacing(1),
     marginBottom: theme.spacing(1),
-    width: '100%'
+    width: '100%',
+    minWidth: 300
   },
   formControl: {
     marginTop: theme.spacing(1),
     marginBottom: theme.spacing(1),
-    width: '100%'
+    width: '100%',
+    minWidth: 300
   },
   addValueContainer: {
     position: 'relative'
@@ -31,6 +34,10 @@ const styles = theme => ({
   chip: {
     marginRight: 4,
     marginBottom: 4
+  },
+  addedSelectItemsContainer: {
+    paddingTop: 8,
+    paddingBottom: 6
   }
 });
 
@@ -41,8 +48,23 @@ const NewColumnForm = (props) => {
     type,
     selectValue,
     items,
+    defaultValue,
     setters
   } = props;
+
+  let placeholder;
+
+  if (!defaultValue) {
+    if (type === 'date') {
+      placeholder = moment(new Date().getTime()).format('YYYY-MM-DD');
+    } else if (type === 'time') {
+      placeholder = moment(new Date().getTime()).format('HH:mm');
+    } else {
+      placeholder = '';
+    }
+  } else {
+    placeholder = defaultValue;
+  }
 
   return (
     <React.Fragment>
@@ -59,7 +81,7 @@ const NewColumnForm = (props) => {
           id="labelId"
           label="LabelId"
           className={classes.textField}
-          value={label.toLowerCase()}
+          value={label.toLowerCase().split(' ').join('_')}
           margin="normal"
           disabled
         />
@@ -105,21 +127,57 @@ const NewColumnForm = (props) => {
             </div>
           )
         }
+        <div className={items.length ? classes.addedSelectItemsContainer : ''}>
+          {
+            items.length && type === 'select' ? (
+              items.map((item, i) => {
+                return (
+                  <Chip
+                    key={i}
+                    label={item}
+                    className={classes.chip}
+                    onDelete={() => setters.setItems([...items.slice(0, i), ...items.slice(i + 1)])}
+                  />
+                )
+              })
+            ) : null
+          }
+        </div>
         {
-          items.length ? (
-            items.map((item, i) => {
-              return (
-                <Chip
-                  key={i}
-                  label={item}
-                  className={classes.chip}
-                  onDelete={() => setters.setItems([...items.slice(0, i), ...items.slice(i + 1)])}
-                />
-              )
-            })
-          ) : null
+          type === 'select' ? (
+            items.length ? (
+              <FormControl className={classes.formControl}>
+                <InputLabel htmlFor="type-native-select-default">Default value</InputLabel>
+                <Select
+                  native
+                  onChange={e => setters.setDefaultValue(e.target.value)}
+                  value={defaultValue}
+                  inputProps={{
+                    name: 'defaultValue',
+                    id: 'type-native-select-default',
+                  }}
+                >
+                  <option value={''} />
+                  {
+                    items.map((item, i) => {
+                      return <option key={i} value={item}>{item}</option>
+                    })
+                  }
+                </Select>
+              </FormControl>
+            ) : null
+          ) : (
+              <TextField
+                id="defaultValue"
+                label="Default value"
+                className={classes.textField}
+                onChange={e => setters.setDefaultValue(e.target.value)}
+                margin="normal"
+                value={placeholder}
+                type={type}
+              />
+            )
         }
-
       </div>
     </React.Fragment>
   )

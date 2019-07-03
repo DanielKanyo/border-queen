@@ -81,7 +81,8 @@ const ColumnSummary = (props) => {
     companyId,
     disableTableColumn,
     disableCompany,
-    columnDisabled
+    columnDisabled,
+    defaultValue
   } = props;
 
   const disable = () => {
@@ -134,6 +135,16 @@ const ColumnSummary = (props) => {
                   })
                 }
               </div>
+            </div>
+          ) : null
+        }
+        {
+          defaultValue ? (
+            <div className={classes.column}>
+              <div className={classes.title}>Default value</div>
+              {
+                type === 'date' ? <div>{defaultValue.split('-').join('.')}</div> : <div>{defaultValue}</div>
+              }
             </div>
           ) : null
         }

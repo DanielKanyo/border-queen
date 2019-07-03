@@ -289,7 +289,8 @@ export const createTableColumn = (orderId, columnData) => {
       ownerId: orderId,
       createdAt: new Date().getTime(),
       columnDisabled: false,
-      labelId: columnData.label.toLowerCase()
+      labelId: columnData.label.toLowerCase(),
+      defaultValue: columnData.defaultValue
     }
 
     firestore.collection('columns').add({
@@ -350,5 +351,119 @@ export const disableCompany = (companyId, disabled) => {
     }).catch((error) => {
       dispatch({ type: 'DISABLE_COMPANY_ERROR', error });
     });
+  }
+}
+
+export const saveTableRow = (rowData) => {
+  return (dispatch, getState, { getFirestore }) => {
+    const firestore = getFirestore();
+
+    const payload = {
+      ...rowData,
+      createdAt: new Date().getTime()
+    }
+
+    firestore.collection('rows').add({
+      ...payload,
+    }).then(snapshot => {
+      const { id } = snapshot;
+
+      firestore.collection('rows').doc(id).update({ id });
+      payload.id = id;
+
+      dispatch({ type: 'ADD_ROW', payload });
+    }).catch((error) => {
+      dispatch({ type: 'ADD_ROW_ERROR', error });
+    });
+  }
+}
+
+export const initializeTableRows = (orderId) => {
+  return (dispatch, getState, { getFirestore }) => {
+    const firestore = getFirestore();
+    const { tableRowsInitDone } = getState().order;
+
+    if (tableRowsInitDone) return;
+
+    const tableRowsRef = firestore.collection("rows");
+
+    let payload = {};
+    let rows = {};
+
+    tableRowsRef.get().then((docSnapshot) => {
+      if (!docSnapshot.empty) {
+        tableRowsRef.where('orderId', '==', orderId).orderBy('createdAt').get().then((rowsResponse) => {
+          rowsResponse.forEach((doc) => {
+            let row = doc.data();
+
+            rows[row.id] = {
+              ...row
+            }
+          });
+
+          payload = {
+            rows: {
+              ...rows
+            }
+          }
+        }).then(() => {
+          dispatch({ type: 'INITIALIZE_ROWS', payload });
+        })
+      } else {
+        payload = { 
+          rows: {} 
+        }
+        
+        dispatch({ type: 'INITIALIZE_ROWS', payload });
+      }
+    }).catch((error) => {
+      dispatch({ type: 'INITIALIZE_ROWS_ERROR', error });
+    });
+  }
+}
+
+export const discardTableRows = () => {
+  return (dispatch) => {
+    dispatch({ type: 'DISCARD_ROWS' });
+  }
+}
+
+export const deleteTableRows = (orderId, selectedRows) => {
+  return (dispatch, getState, { getFirestore }) => {
+    const firestore = getFirestore();
+
+    const rows = firestore.collection('rows').where('orderId','==',orderId);
+
+    rows.get().then(querySnapshot => {
+      querySnapshot.forEach(doc => {
+        if (selectedRows.includes(doc.ref.id)) {
+          doc.ref.delete();
+        }
+      });
+    }).then(() => {
+      const payload = { selectedRows }
+
+      dispatch({ type: 'DELETE_ROWS', payload });
+    }).catch((error) => {
+      dispatch({ type: 'DELETE_ROWS_ERROR', error });
+    });
+  }
+}
+
+export const updateTableRow = (rowId, rowData) => {
+  return (dispatch, getState, { getFirestore }) => {
+    const firestore = getFirestore();
+
+    const payload = {
+      ...rowData
+    }
+
+    firestore.collection('rows').doc(rowId).update({
+      ...rowData
+    }).then(() => {
+      dispatch({ type: 'UPDATE_ROW', payload });
+    }).catch(error => {
+      dispatch({ type: 'UPDATE_ROW_ERROR', error });
+    })
   }
 }

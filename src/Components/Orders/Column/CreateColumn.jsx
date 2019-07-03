@@ -86,6 +86,7 @@ const CreateTable = (props) => {
   const [type, setType] = useState('text');
   const [selectValue, setSelectValue] = useState('');
   const [items, setItems] = useState([]);
+  const [defaultValue, setDefaultValue] = useState('');
 
   const [isColumnSummaryVisible, setColumnSummaryVisiblity] = useState(false);
   const [selectedColumnId, setSelectedColumnId] = useState('');
@@ -127,14 +128,14 @@ const CreateTable = (props) => {
     const order = orders[id];
     const isDefault = companies[order.title] ? true : false;
 
-    const settersForNewColumnForm = { setLabel, setType, setSelectValue, setItems };
+    const settersForNewColumnForm = { setLabel, setType, setSelectValue, setItems, setDefaultValue };
     const settersForColumnSummary = { 
       toggleDeleteDialog,
       setColumnIdToDelete,
       setColumnLabelToDelete
     };
 
-    const columnData = { label, type, items };
+    const columnData = { label, type, items, defaultValue };
 
     let company;
 
@@ -196,6 +197,7 @@ const CreateTable = (props) => {
               setters={settersForColumnSummary}
               companyId={selectedColumnId ? undefined : company.id}
               columnDisabled={columns[selectedColumnId] ? columns[selectedColumnId].columnDisabled : company ? company.productsDisabled : null}
+              defaultValue={columns[selectedColumnId] ? columns[selectedColumnId].defaultValue : null}
             />
           )
         }
@@ -217,6 +219,7 @@ const CreateTable = (props) => {
               type={type}
               selectValue={selectValue}
               items={items}
+              defaultValue={defaultValue}
             />
           </DialogContent>
           <DialogActions>
