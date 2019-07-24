@@ -301,7 +301,8 @@ const EditOrder = (props) => {
     initializeTableRows,
     tableRowsInitDone,
     deleteTableRows,
-    updateTableRow
+    updateTableRow,
+    discardTableRows
   } = props;
 
   /** component did mount */
@@ -310,14 +311,14 @@ const EditOrder = (props) => {
     initializeCompanies();
     initializeTableColumns(orderId);
     initializeTableRows(orderId);
-  }, []);
+  });
 
   /** component will unmount */
   useEffect(() => {
     return () => {
       discardTableRows();
     }
-  }, []);
+  }, [discardTableRows]);
 
   const handleRequestSort = (event, property) => {
     const isDesc = orderBy === property && order === 'desc';

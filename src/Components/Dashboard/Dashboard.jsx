@@ -168,7 +168,7 @@ const Dashboard = (props) => {
   const [selectedCompanyKey, setSelectedCompanyKey] = useState('');
   const [activeFilter, setActiveFilter] = useState('all')
 
-  useEffect(() => { initializeOrders(); initializeCompanies() }, []);
+  useEffect(() => { initializeOrders(); initializeCompanies() });
 
   const onDragEnd = result => {
     if (!result.destination) {

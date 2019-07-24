@@ -70,14 +70,14 @@ const CreateTable = (props) => {
   const { id } = props.match.params;
 
   /** component did mount */
-  useEffect(() => { initializeOrders(); initializeTableColumns(id); initializeCompanies() }, []);
+  useEffect(() => { initializeOrders(); initializeTableColumns(id); initializeCompanies() });
 
   /** component will unmount */
   useEffect(() => {
     return () => {
       discardTableColumns();
     }
-  }, []);
+  }, [discardTableColumns]);
 
   const [createDialog, toggleCreateDialog] = useState(false);
   const [deleteDialog, toggleDeleteDialog] = useState(false);

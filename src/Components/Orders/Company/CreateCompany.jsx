@@ -78,7 +78,7 @@ const CreateCompany = (props) => {
   const [deleteDialog, toggleDeleteDialog] = useState(false);
   const [inUse, setInUse] = useState(false);
 
-  useEffect(() => { initializeCompanies() }, []);
+  useEffect(() => { initializeCompanies() });
 
   const handleSubmit = e => {
     e.preventDefault();

@@ -162,6 +162,7 @@ const ColumnSummary = (props) => {
                   SelectProps={{
                     native: true
                   }}
+                  value={selectValues[0]}
                   margin="normal"
                 >
                   {selectValues.map((val, i) => (
