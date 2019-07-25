@@ -32,7 +32,7 @@ const NewRowForm = (props) => {
                 select
                 placeholder="Select a product..."
                 label="Select"
-                value={newRowData[columns[key].labelId]}
+                value={newRowData[columns[key].labelId] ? newRowData[columns[key].labelId] : company.products[0]}
                 className={classes.textField}
                 onChange={e => setNewRowData({ ...newRowData, [columns[key].labelId]: e.target.value })}
                 SelectProps={{
@@ -56,7 +56,7 @@ const NewRowForm = (props) => {
                   select
                   placeholder="Select a product..."
                   label="Select"
-                  value={newRowData[columns[key].labelId]}
+                  value={newRowData[columns[key].labelId] ? newRowData[columns[key].labelId] : columns[key].defaultValue ? columns[key].defaultValue : ''}
                   className={classes.textField}
                   onChange={e => setNewRowData({ ...newRowData, [columns[key].labelId]: e.target.value })}
                   SelectProps={{
@@ -64,6 +64,7 @@ const NewRowForm = (props) => {
                   }}
                   margin="normal"
                 >
+                  <option value='' />
                   {columns[key].items.map((val, i) => (
                     <option key={i} value={val}>
                       {val}
@@ -100,4 +101,4 @@ const NewRowForm = (props) => {
   )
 }
 
-export default NewRowForm
+export default React.memo(NewRowForm)

@@ -230,4 +230,4 @@ const mapDispatchToProps = (dispatch) => {
 export default compose(
   connect(null, mapDispatchToProps),
   withStyles(styles)
-)(ColumnSummary)
+)(React.memo(ColumnSummary))

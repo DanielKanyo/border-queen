@@ -62,4 +62,4 @@ ColumnListItem.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(ColumnListItem)
+export default withStyles(styles)(React.memo(ColumnListItem))

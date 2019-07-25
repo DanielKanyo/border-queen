@@ -150,4 +150,4 @@ CompanySummary.propTypes = {
 export default compose(
   connect(mapStateToProps),
   withStyles(styles),
-)(CompanySummary)
+)(React.memo(CompanySummary))

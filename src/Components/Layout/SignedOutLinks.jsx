@@ -23,4 +23,4 @@ SignedOutLinks.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(SignedOutLinks)
+export default withStyles(styles)(React.memo(SignedOutLinks))

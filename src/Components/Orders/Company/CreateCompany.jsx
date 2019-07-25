@@ -268,4 +268,4 @@ const mapDispatchToProps = (dispatch) => {
 export default compose(
   connect(mapStateToProps, mapDispatchToProps),
   withStyles(styles),
-)(CreateCompany)
+)(React.memo(CreateCompany))
