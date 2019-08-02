@@ -4,11 +4,12 @@ import Paper from '@material-ui/core/Paper'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import NotificationItem from '../Notifications/NotificationItem'
+import Chip from '@material-ui/core/Chip'
+import { dhm } from '../../Constants/Utils/Utils'
 import {
   initializeNotifications,
   discardNotifications
 } from '../../Store/Actions/orderActions'
-import { dhm } from '../../Constants/Utils/Utils'
 
 const constants = {
   SHOW_NOTIFICATION_AFTER_X_DAYS: 15,
@@ -21,11 +22,16 @@ const useStyles = makeStyles(theme => ({
     marginBottom: 8,
     height: 58,
     paddingLeft: 16,
+    paddingRight: 16,
     background: '#db2214',
     color: 'white',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center'
+  },
+  chip: {
+    background: 'rgba(255, 255, 255, 0.3)',
+    color: 'white'
   }
 }));
 
@@ -96,7 +102,8 @@ const Notifications = (props) => {
   return (
     <div>
       <Paper className={classes.paper}>
-        Notifications
+        <div>Notifications</div>
+        <div><Chip label={precessedNotifications.length} className={classes.chip} /></div>
         </Paper>
       {
         precessedNotifications.map((n, i) => {
