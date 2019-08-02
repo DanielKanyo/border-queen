@@ -416,34 +416,44 @@ const EditOrder = (props) => {
       const { labelId } = column;
 
       if (!newRowData[labelId]) {
-        if (column.type === 'date') {
-          if (column.defaultValue) {
-            dataToSave[labelId] = column.defaultValue.split('-').join('.');
-          } else {
-            dataToSave[labelId] = moment(new Date().getTime()).format('YYYY.MM.DD');
-          }
-        } else if (column.type === 'time') {
-          if (column.defaultValue) {
-            dataToSave[labelId] = column.defaultValue;
-          } else {
-            dataToSave[labelId] = moment(new Date().getTime()).format('HH:mm');
-          }
-        } else if (column.type === 'select') {
-          if (column.defaultValue) {
-            dataToSave[labelId] = column.defaultValue;
-          } else if (column.items[0]) {
-            dataToSave[labelId] = column.items[0];
-          } else {
-            dataToSave[labelId] = '';
-          }
-        } else {
-          if (labelId === 'product') {
-            dataToSave['product'] = company.products[0];
-          } else {
-            dataToSave[labelId] = '';
-          }
+        switch (column.type) {
+          case 'date':
+            if (column.defaultValue) {
+              dataToSave[labelId] = column.defaultValue;
+            } else {
+              dataToSave[labelId] = moment(new Date().getTime()).format('YYYY-MM-DD');
+            }
+            break;
+          case 'time':
+            if (column.defaultValue) {
+              dataToSave[labelId] = column.defaultValue;
+            } else {
+              dataToSave[labelId] = moment(new Date().getTime()).format('HH:mm');
+            }
+            break;
+          case 'select':
+            if (column.defaultValue) {
+              dataToSave[labelId] = column.defaultValue;
+            } else if (column.items[0]) {
+              dataToSave[labelId] = column.items[0];
+            } else {
+              dataToSave[labelId] = '';
+            }
+            break;
+          default:
+            if (labelId === 'product') {
+              dataToSave['product'] = company.products[0];
+            } else {
+              dataToSave[labelId] = '';
+            }
+            break;
         }
       }
+    }
+
+    if (!newRowData.notificationsFor) {
+      dataToSave.notificationsFor = [];
+      dataToSave.isNotificationEnabled = false;
     }
 
     dataToSave.orderId = orderId;

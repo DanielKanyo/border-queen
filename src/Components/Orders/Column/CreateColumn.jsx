@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
@@ -24,7 +23,7 @@ import {
   deleteTableColumn
 } from '../../../Store/Actions/orderActions'
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
   button: {
     margin: 6
   },
@@ -48,11 +47,12 @@ const styles = theme => ({
     alignItems: 'stretch',
     marginBottom: 8
   }
-});
+}));
 
 const CreateTable = (props) => {
+  const classes = useStyles();
+
   const {
-    classes,
     initializeTableColumns,
     discardTableColumns,
     orders,
@@ -273,10 +273,6 @@ const CreateTable = (props) => {
   }
 }
 
-CreateTable.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
-
 const mapStateToProps = (state) => {
   return {
     columns: state.order.columns,
@@ -300,6 +296,5 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 export default compose(
-  connect(mapStateToProps, mapDispatchToProps),
-  withStyles(styles)
+  connect(mapStateToProps, mapDispatchToProps)
 )(React.memo(CreateTable))

@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
@@ -10,7 +9,7 @@ import { signIn } from '../../Store/Actions/authActions'
 import { compose } from 'redux'
 import { Redirect } from 'react-router-dom'
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
   root: {
     height: 'calc(100vh - 72px)',
     display: 'flex',
@@ -38,9 +37,10 @@ const styles = theme => ({
     color: 'red',
     textAlign: 'center'
   }
-});
+}));
 
-const SignIn = ({ classes, authError, auth, signIn }) => {
+const SignIn = ({ authError, auth, signIn }) => {
+  const classes = useStyles();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -89,10 +89,6 @@ const SignIn = ({ classes, authError, auth, signIn }) => {
   )
 }
 
-SignIn.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
-
 const mapStateToProps = (state) => {
   return {
     authError: state.auth.authError,
@@ -106,4 +102,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(SignIn)
+export default compose(connect(mapStateToProps, mapDispatchToProps))(SignIn)

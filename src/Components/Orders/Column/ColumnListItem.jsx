@@ -1,9 +1,8 @@
 import React from 'react'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
   root: {
     flex: 1,
     overflow: 'hidden',
@@ -21,7 +20,8 @@ const styles = theme => ({
   },
   label: {
     textOverflow: 'ellipsis',
-    overflow: 'hidden'
+    overflow: 'hidden',
+    whiteSpace: 'nowrap'
   },
   activeColumn: {
     transition: 'background .2s',
@@ -35,17 +35,17 @@ const styles = theme => ({
   columnDisabled: {
     opacity: .6
   }
-});
+}));
 
 const ColumnListItem = (props) => {
+  const classes = useStyles();
+
   const {
-    classes,
     label,
     columnId,
     toggleColumnSummary,
     activeColumn,
-    columnDisabled,
-    // isDefault
+    columnDisabled
   } = props;
 
   return (
@@ -58,8 +58,4 @@ const ColumnListItem = (props) => {
   )
 }
 
-ColumnListItem.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
-
-export default withStyles(styles)(React.memo(ColumnListItem))
+export default React.memo(ColumnListItem)

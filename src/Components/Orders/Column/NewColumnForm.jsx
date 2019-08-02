@@ -1,6 +1,5 @@
 import React from 'react'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
 import InputLabel from '@material-ui/core/InputLabel'
 import FormControl from '@material-ui/core/FormControl'
@@ -10,7 +9,7 @@ import AddIcon from '@material-ui/icons/Add'
 import Chip from '@material-ui/core/Chip'
 import moment from 'moment'
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
   textField: {
     marginTop: theme.spacing(1),
     marginBottom: theme.spacing(1),
@@ -39,11 +38,12 @@ const styles = theme => ({
     paddingTop: 8,
     paddingBottom: 6
   }
-});
+}));
 
 const NewColumnForm = (props) => {
+  const classes = useStyles();
+
   const {
-    classes,
     label,
     type,
     selectValue,
@@ -183,8 +183,4 @@ const NewColumnForm = (props) => {
   )
 }
 
-NewColumnForm.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
-
-export default withStyles(styles)(React.memo(NewColumnForm))
+export default React.memo(NewColumnForm)

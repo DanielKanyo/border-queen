@@ -9,6 +9,8 @@ export const initializeOrders = () => {
     let orders = {};
     let payload;
 
+    if (!authorId) return;
+
     firestore.collection('orders').where('authorId', '==', authorId).get().then((orderResponse) => {
       orderResponse.forEach((doc) => {
         let order = doc.data();
@@ -171,6 +173,8 @@ export const initializeCompanies = () => {
 
     let companies = {};
     let payload;
+    
+    if (!authorId) return;
 
     firestore.collection('companies').where('authorId', '==', authorId).orderBy('createdAt').get().then((companyResponse) => {
       companyResponse.forEach((doc) => {
@@ -465,5 +469,49 @@ export const updateTableRow = (rowId, rowData) => {
     }).catch(error => {
       dispatch({ type: 'UPDATE_ROW_ERROR', error });
     })
+  }
+}
+
+export const initializeNotifications = () => {
+  return (dispatch, getState, { getFirestore }) => {
+    const firestore = getFirestore();
+    const { notificationsInitDone } = getState().order;
+
+    if (notificationsInitDone) return;
+
+    const tableRowsRef = firestore.collection("rows");
+
+    let payload = {};
+    let notifications = {};
+
+    tableRowsRef.get().then((docSnapshot) => {
+      if (!docSnapshot.empty) {
+        tableRowsRef.where('isNotificationEnabled', '==', true).orderBy('createdAt').get().then((rowsResponse) => {
+          rowsResponse.forEach((doc) => {
+            let notification = doc.data();
+
+            notifications[notification.id] = {
+              ...notification
+            }
+          });
+
+          payload = {
+            notifications: {
+              ...notifications
+            }
+          }
+        }).then(() => {
+          dispatch({ type: 'INITIALIZE_NOTIFICATIONS', payload });
+        })
+      } else {
+        payload = { 
+          notifications: {} 
+        }
+        
+        dispatch({ type: 'INITIALIZE_NOTIFICATIONS', payload });
+      }
+    }).catch((error) => {
+      dispatch({ type: 'INITIALIZE_NOTIFICATIONS_ERROR', error });
+    });
   }
 }

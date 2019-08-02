@@ -1,6 +1,5 @@
 import React from 'react'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
 import Chip from '@material-ui/core/Chip'
 import TextField from '@material-ui/core/TextField'
@@ -12,7 +11,7 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { disableTableColumn, disableCompany } from '../../../Store/Actions/orderActions'
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
   columns: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -67,11 +66,12 @@ const styles = theme => ({
   warningIcon: {
     paddingRight: 8
   }
-});
+}));
 
 const ColumnSummary = (props) => {
+  const classes = useStyles();
+
   const {
-    classes,
     label,
     type,
     selectValues,
@@ -142,9 +142,7 @@ const ColumnSummary = (props) => {
           defaultValue ? (
             <div className={classes.column}>
               <div className={classes.title}>Default value</div>
-              {
-                type === 'date' ? <div>{defaultValue.split('-').join('.')}</div> : <div>{defaultValue}</div>
-              }
+              <div>{defaultValue}</div>
             </div>
           ) : null
         }
@@ -216,10 +214,6 @@ const ColumnSummary = (props) => {
   )
 }
 
-ColumnSummary.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
-
 const mapDispatchToProps = (dispatch) => {
   return {
     disableTableColumn: (id, disabled) => dispatch(disableTableColumn(id, disabled)),
@@ -228,6 +222,5 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 export default compose(
-  connect(null, mapDispatchToProps),
-  withStyles(styles)
+  connect(null, mapDispatchToProps)
 )(React.memo(ColumnSummary))

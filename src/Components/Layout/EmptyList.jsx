@@ -1,8 +1,7 @@
 import React from 'react'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 
-const styles = ({
+const useStyles = makeStyles(theme => ({
   paper: {
     padding: 20,
     textAlign: 'center',
@@ -10,16 +9,14 @@ const styles = ({
     background: '#d6d6d6',
     borderRadius: 4
   }
-});
+}));
 
-const EmptyList = ({ classes }) => {
+const EmptyList = () => {
+  const classes = useStyles();
+
   return (
     <div className={classes.paper}>List is empty...</div>
   )
 }
 
-EmptyList.propTypes = {
-  classes: PropTypes.object.isRequired
-};
-
-export default withStyles(styles)(EmptyList)
+export default EmptyList

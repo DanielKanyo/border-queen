@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
 import { Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
@@ -22,7 +21,7 @@ import Chip from '@material-ui/core/Chip'
 import IconButton from '@material-ui/core/IconButton'
 import AddIcon from '@material-ui/icons/Add'
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
   root: {
     paddingLeft: 8,
     paddingRight: 8
@@ -63,10 +62,12 @@ const styles = theme => ({
     right: 0,
     top: 'calc(50% - 21px)'
   }
-});
+}));
 
 const CreateCompany = (props) => {
-  const { classes, auth, createCompany, companies, updateCompany, deleteCompany, initializeCompanies } = props;
+  const classes = useStyles();
+
+  const { auth, createCompany, companies, updateCompany, deleteCompany, initializeCompanies } = props;
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -245,10 +246,6 @@ const CreateCompany = (props) => {
   )
 }
 
-CreateCompany.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
-
 const mapStateToProps = (state) => {
   return {
     auth: state.firebase.auth,
@@ -266,6 +263,5 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 export default compose(
-  connect(mapStateToProps, mapDispatchToProps),
-  withStyles(styles),
+  connect(mapStateToProps, mapDispatchToProps)
 )(React.memo(CreateCompany))

@@ -1,6 +1,5 @@
 import React from 'react'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import IconButton from '@material-ui/core/IconButton'
@@ -14,7 +13,7 @@ import moment from 'moment'
 import { lightOrDark } from '../../Constants/Utils/Utils'
 import Tooltip from '@material-ui/core/Tooltip'
 
-const styles = ({
+const useStyles = makeStyles(theme => ({
   paper: {
     padding: '8px 8px 8px 20px',
     marginBottom: 8
@@ -39,13 +38,15 @@ const styles = ({
     justifyContent: 'flex-end',
     alignItems: 'center'
   }
-});
+}));
 
 const colorDefinition = (color) => {
   return lightOrDark(color);
 }
 
-const OrderSummary = ({ classes, order, company, setters, last }) => {
+const OrderSummary = ({ order, company, setters, last }) => {
+  const classes = useStyles();
+
   const isDefault = company ? true : false;
   const lightOrDark = company && company.color ? colorDefinition(company.color) : 'light';
   const color = lightOrDark === 'dark' ? 'white' : 'rgba(0, 0, 0, 0.87)';
@@ -130,8 +131,4 @@ const OrderSummary = ({ classes, order, company, setters, last }) => {
   )
 }
 
-OrderSummary.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
-
-export default withStyles(styles)(React.memo(OrderSummary))
+export default React.memo(OrderSummary)

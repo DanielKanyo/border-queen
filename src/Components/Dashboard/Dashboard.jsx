@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import Grid from '@material-ui/core/Grid'
-import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
-import { withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import Notifications from './Notifications'
 import Fab from '@material-ui/core/Fab'
 import AddIcon from '@material-ui/icons/Add'
@@ -46,7 +45,7 @@ const FILTER_OPTIONS = {
   ALL: 'all'
 }
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
     width: 1000,
@@ -107,7 +106,7 @@ const styles = theme => ({
   filterIcon: {
     color: 'rgba(0, 0, 0, 0.24)'
   }
-});
+}));
 
 // a little function to help us with reordering the result
 const reorder = (list, startIndex, endIndex) => {
@@ -144,8 +143,9 @@ const filterOrders = (orders, activeFilter) => {
 }
 
 const Dashboard = (props) => {
+  const classes = useStyles();
+
   const {
-    classes,
     orders,
     auth,
     orderOfIds,
@@ -429,12 +429,6 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-Dashboard.propTypes = {
-  classes: PropTypes.object.isRequired,
-  createOrder: PropTypes.func.isRequired,
-};
-
 export default compose(
-  connect(mapStateToProps, mapDispatchToProps),
-  withStyles(styles),
+  connect(mapStateToProps, mapDispatchToProps)
 )(React.memo(Dashboard))

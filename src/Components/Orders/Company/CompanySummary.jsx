@@ -1,6 +1,5 @@
 import React from 'react'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import { withStyles, makeStyles } from '@material-ui/core/styles'
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails'
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary'
 import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions'
@@ -27,7 +26,7 @@ const ExpansionPanel = withStyles({
   expanded: {},
 })(MuiExpansionPanel);
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
   heading: {
     fontSize: theme.typography.pxToRem(15),
     fontWeight: theme.typography.fontWeightRegular,
@@ -61,9 +60,10 @@ const styles = theme => ({
     color: '#a8a8a8',
     marginLeft: 8
   }
-});
+}));
 
-const CompanySummary = ({ classes, auth, company, setters }) => {
+const CompanySummary = ({ auth, company, setters }) => {
+  const classes = useStyles();
 
   const { setName, setDescription, setColor, setId, setEditMode, toggleDeleteDialog, setProducts, setInUse } = setters;
 
@@ -143,11 +143,6 @@ const mapStateToProps = (state) => {
   }
 }
 
-CompanySummary.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
-
 export default compose(
   connect(mapStateToProps),
-  withStyles(styles),
 )(React.memo(CompanySummary))

@@ -1,16 +1,17 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
 
-const styles = {
+const useStyles = makeStyles(theme => ({
   button: {
     marginLeft: 10
   },
-};
+}));
 
-const SignedOutLinks = ({ classes }) => {
+const SignedOutLinks = () => {
+  const classes = useStyles();
+
   return (
     <React.Fragment>
       <Button component={Link} to="/signup" className={classes.button} color="inherit">Sign Up</Button>
@@ -19,8 +20,4 @@ const SignedOutLinks = ({ classes }) => {
   )
 }
 
-SignedOutLinks.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
-
-export default withStyles(styles)(React.memo(SignedOutLinks))
+export default React.memo(SignedOutLinks)

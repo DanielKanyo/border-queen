@@ -1,7 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
 import Avatar from '@material-ui/core/Avatar'
 import { signOut } from '../../Store/Actions/authActions'
@@ -9,7 +8,7 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { firestoreConnect } from 'react-redux-firebase'
 
-const styles = {
+const useStyles = makeStyles(theme => ({
   avatar: {
     margin: 10,
     textDecoration: 'none',
@@ -19,9 +18,11 @@ const styles = {
   button: {
     marginLeft: 10
   },
-};
+}));
 
-const SignedInLinks = ({ classes, signOut, loggedInUser }) => {
+const SignedInLinks = ({ signOut, loggedInUser }) => {
+  const classes = useStyles();
+
   const initials = loggedInUser ? loggedInUser.initials.toUpperCase() : null; 
   
   return (
@@ -32,10 +33,6 @@ const SignedInLinks = ({ classes, signOut, loggedInUser }) => {
     </React.Fragment>
   )
 }
-
-SignedInLinks.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
 
 const mapStateToProps = (state) => {
   const loggedInUserId = state.firebase.auth.uid;
@@ -54,7 +51,6 @@ const mapDispatchToProps = (dispatch) => {
 
 export default compose(
   connect(mapStateToProps, mapDispatchToProps),
-  withStyles(styles),
   firestoreConnect([
     { collection: 'users' }
   ])

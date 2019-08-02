@@ -4,11 +4,13 @@ const initState = {
   table: {},
   columns: {},
   rows: {},
+  notifications: {},
   orderOfIds: [],
   orderInitDone: false,
   companyInitDone: false,
   tableColumnsInitDone: false,
-  tableRowsInitDone: false
+  tableRowsInitDone: false,
+  notificationsInitDone: false
 }
 
 const initializeOrders = (state, action) => {
@@ -300,6 +302,17 @@ const updateTableRow = (state, action) => {
   }
 }
 
+const initializeNotifications = (state, action) => {
+  const { payload } = action
+  const { notifications } = payload
+
+  return {
+    ...state,
+    notifications: notifications,
+    notificationsInitDone: true
+  };
+}
+
 const orderReducer = (state = initState, action) => {
   switch (action.type) {
     /** Init */
@@ -314,10 +327,17 @@ const orderReducer = (state = initState, action) => {
     case 'INITIALIZE_COLUMNS_ERROR':
       console.log('Init columns error', action.error)
       return state
+
     case 'INITIALIZE_ROWS':
       return initializeTableRows(state, action)
     case 'INITIALIZE_ROWS_ERROR':
       console.log('Init rows error', action.error)
+      return state
+
+    case 'INITIALIZE_NOTIFICATIONS':
+      return initializeNotifications(state, action)
+    case 'INITIALIZE_NOTIFICATIONS_ERROR':
+      console.log('Init notifications error', action.error)
       return state
 
       /** Discard */

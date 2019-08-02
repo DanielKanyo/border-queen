@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
@@ -10,7 +9,7 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { signUp } from '../../Store/Actions/authActions'
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
   root: {
     height: 'calc(100vh - 72px)',
     display: 'flex',
@@ -38,9 +37,10 @@ const styles = theme => ({
     color: 'red',
     textAlign: 'center'
   }
-});
+}));
 
-const SignUp = ({ classes, auth, authError, signUp }) => {
+const SignUp = ({ auth, authError, signUp }) => {
+  const classes = useStyles();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
@@ -122,8 +122,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-SignUp.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
-
-export default compose(connect(mapStateToProps, mapDispatchToProps), withStyles(styles))(SignUp)
+export default compose(connect(mapStateToProps, mapDispatchToProps))(SignUp)
