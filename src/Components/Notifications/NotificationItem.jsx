@@ -34,7 +34,7 @@ function NotificationItem(props) {
   const { timeLeft, orderId, isUrgent } = props;
 
   return (
-    <Link component={RouterLink} to={`/edit/${orderId}`}>
+    <Link component={RouterLink} to={`/edit/${orderId}`} style={{ textDecoration: 'none' }}>
       <Paper className={`${classes.paper} ${isUrgent ? classes.urgent : classes.notUrgent} notificationItem`}>
         <div className={classes.timeContainer}>
           <div className={classes.number}>{timeLeft.days}</div>

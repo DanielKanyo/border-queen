@@ -31,6 +31,7 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import NewRowForm from './NewRowForm'
 import moment from 'moment'
+import { dhm } from '../../Constants/Utils/Utils'
 
 import {
   initializeOrders,
@@ -43,6 +44,11 @@ import {
   updateTableRow,
   discardTableColumns
 } from '../../Store/Actions/orderActions'
+
+const constants = {
+  SHOW_NOTIFICATION_AFTER_X_DAYS: 15,
+  NOTIFICATION_IS_URGENT_AFTER_X_DAYS: 5
+}
 
 function desc(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -269,6 +275,12 @@ const useStyles = makeStyles(theme => ({
   },
   button: {
     width: '100%'
+  },
+  urgentWarning: {
+    color: '#ff3333'
+  },
+  warning: {
+    color: '#ffa433'
   }
 }));
 
@@ -480,6 +492,26 @@ const EditOrder = (props) => {
     setNewRowData(dataToFill);
   }
 
+  const getClassForDate = (row, labelId) => {
+    const now = new Date().getTime();
+    const savedDateInTimestamp = new Date(row[labelId]).setHours(0, 0, 0, 0);
+    const differenceInMilliseconds = savedDateInTimestamp - now;
+
+    let classForDate = '';
+
+    if (differenceInMilliseconds > 0) {
+      const daysHoursMinutesObject = dhm(differenceInMilliseconds);
+
+      if (parseInt(daysHoursMinutesObject.days) < constants.NOTIFICATION_IS_URGENT_AFTER_X_DAYS) {
+        classForDate = classes.urgentWarning;
+      } else if (parseInt(daysHoursMinutesObject.days) < constants.SHOW_NOTIFICATION_AFTER_X_DAYS) {
+        classForDate = classes.warning;
+      }
+    }
+
+    return classForDate;
+  }
+
   const isSelected = name => selected.indexOf(name) !== -1;
 
   if (!auth.uid) return <Redirect to='/signin' />
@@ -543,7 +575,21 @@ const EditOrder = (props) => {
                           </TableCell>
                           {
                             orderOf.labelIds.map((labelId) => {
-                              return <TableCell key={labelId} align="center">{n[labelId]}</TableCell>
+                              let warningClass = '';
+
+                              if (n.notificationsFor.includes(labelId)) {
+                                warningClass = getClassForDate(n, labelId);
+                              }
+                              
+                              return (
+                                <TableCell
+                                  key={labelId}
+                                  className={warningClass}
+                                  align="center"
+                                >
+                                    {n[labelId]}
+                                </TableCell>
+                              )
                             })
                           }
                         </TableRow>

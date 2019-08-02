@@ -8,6 +8,7 @@ import {
   initializeNotifications,
   discardNotifications
 } from '../../Store/Actions/orderActions'
+import { dhm } from '../../Constants/Utils/Utils'
 
 const constants = {
   SHOW_NOTIFICATION_AFTER_X_DAYS: 15,
@@ -27,31 +28,6 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center'
   }
 }));
-
-const dhm = (t) => {
-  let daysHoursMinutes = {};
-
-  let cd = 24 * 60 * 60 * 1000,
-    ch = 60 * 60 * 1000,
-    d = Math.floor(t / cd),
-    h = Math.floor((t - d * cd) / ch),
-    m = Math.round((t - d * cd - h * ch) / 60000),
-    pad = (n) => n < 10 ? '0' + n : n;
-  if (m === 60) {
-    h++;
-    m = 0;
-  }
-  if (h === 24) {
-    d++;
-    h = 0;
-  }
-
-  daysHoursMinutes.days = d;
-  daysHoursMinutes.hours = pad(h);
-  daysHoursMinutes.minutes = pad(m);
-
-  return daysHoursMinutes;
-}
 
 const Notifications = (props) => {
   const classes = useStyles();
