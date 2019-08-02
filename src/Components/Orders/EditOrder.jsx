@@ -16,6 +16,7 @@ import Checkbox from '@material-ui/core/Checkbox'
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
 import DeleteIcon from '@material-ui/icons/Delete'
+import SettingsIcon from '@material-ui/icons/SettingsOutlined'
 import AddIcon from '@material-ui/icons/Add'
 import EditIcon from '@material-ui/icons/Edit'
 import { Redirect } from 'react-router-dom'
@@ -190,7 +191,8 @@ const EnhancedTableToolbar = props => {
     setCreateDialog,
     setDeleteDialog,
     setEditMode,
-    fillFormWithSelectedData
+    fillFormWithSelectedData,
+    orderId
   } = props;
 
   return (
@@ -249,11 +251,23 @@ const EnhancedTableToolbar = props => {
             </Tooltip>
           </div>
         ) : (
-            <Tooltip title="Add new row">
-              <IconButton aria-label="Add new row" onClick={() => setCreateDialog(true)}>
-                <AddIcon />
-              </IconButton>
-            </Tooltip>
+            <div className={classes.tableActionsContainer}>
+              <Tooltip title="Column settings">
+                <IconButton
+                  aria-label="Column settings"
+                  className={classes.tableActionBtn}
+                  component={Link}
+                  to={`/columns/${orderId}`}
+                >
+                  <SettingsIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Add new row">
+                <IconButton aria-label="Add new row" onClick={() => setCreateDialog(true)} className={classes.tableActionBtn}>
+                  <AddIcon />
+                </IconButton>
+              </Tooltip>
+            </div>
           )}
       </div>
     </Toolbar>
@@ -543,6 +557,7 @@ const EditOrder = (props) => {
               setDeleteDialog={setDeleteDialog}
               setEditMode={setEditMode}
               fillFormWithSelectedData={fillFormWithSelectedData}
+              orderId={orderId}
             />
             <div className={classes.tableWrapper}>
               <Table className={classes.table} aria-labelledby="tableTitle">
@@ -580,14 +595,14 @@ const EditOrder = (props) => {
                               if (n.notificationsFor.includes(labelId)) {
                                 warningClass = getClassForDate(n, labelId);
                               }
-                              
+
                               return (
                                 <TableCell
                                   key={labelId}
                                   className={warningClass}
                                   align="center"
                                 >
-                                    {n[labelId]}
+                                  {n[labelId]}
                                 </TableCell>
                               )
                             })

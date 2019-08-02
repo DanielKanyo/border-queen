@@ -13,6 +13,10 @@ import Paper from '@material-ui/core/Paper'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import ColumnListItem from './ColumnListItem'
 import ColumnSummary from './ColumnSummary'
+import EditIcon from '@material-ui/icons/Edit'
+import Fab from '@material-ui/core/Fab'
+import { Link } from 'react-router-dom'
+import Tooltip from '@material-ui/core/Tooltip'
 
 import {
   initializeTableColumns,
@@ -46,6 +50,11 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'row',
     alignItems: 'stretch',
     marginBottom: 8
+  },
+  fab: {
+    position: 'absolute',
+    bottom: 15,
+    right: 15
   }
 }));
 
@@ -111,7 +120,7 @@ const CreateTable = (props) => {
 
     if (Object.keys(columns).length) {
       usedLabelIds = Object.keys(columns).map(key => {
-        return columns[key].labelId; 
+        return columns[key].labelId;
       });
     }
 
@@ -129,7 +138,7 @@ const CreateTable = (props) => {
     const isDefault = companies[order.title] ? true : false;
 
     const settersForNewColumnForm = { setLabel, setType, setSelectValue, setItems, setDefaultValue };
-    const settersForColumnSummary = { 
+    const settersForColumnSummary = {
       toggleDeleteDialog,
       setColumnIdToDelete,
       setColumnLabelToDelete
@@ -201,6 +210,19 @@ const CreateTable = (props) => {
             />
           )
         }
+
+        <Tooltip title="Edit order" placement="left">
+          <Fab
+            color="primary"
+            aria-label="edit"
+            className={classes.fab}
+            component={Link}
+            to={`/edit/${id}`}
+          >
+            <EditIcon />
+          </Fab>
+        </Tooltip>
+
 
         <Dialog
           open={createDialog}

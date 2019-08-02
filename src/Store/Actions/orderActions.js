@@ -80,7 +80,6 @@ export const createOrder = (order) => {
 
 export const deleteOrder = (id, companyKey) => {
   return (dispatch, getState, { getFirestore }) => {
-    // make async call to database
     const firestore = getFirestore();
     const authorId = getState().firebase.auth.uid;
     const payload = { id };
@@ -95,9 +94,26 @@ export const deleteOrder = (id, companyKey) => {
         orderOfIds: firestore.FieldValue.arrayRemove(id)
       });
 
-      dispatch({ type: 'DELETE_ORDER', payload });
-    }).catch((error) => {
-      dispatch({ type: 'DELETE_ORDER_ERROR', error });
+      const columns = firestore.collection('columns').where('ownerId', '==', id);
+
+      columns.get().then(querySnapshot => {
+        querySnapshot.forEach(doc => {
+          doc.ref.delete();
+        });
+      }).then(() => {
+
+        const rows = firestore.collection('rows').where('orderId', '==', id);
+
+        rows.get().then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+              doc.ref.delete();
+          });
+        }).then(() => {
+          dispatch({ type: 'DELETE_ORDER', payload });
+        }).catch((error) => {
+          dispatch({ type: 'DELETE_ORDER_ERROR', error });
+        });
+      });
     });
   }
 }
@@ -361,10 +377,12 @@ export const disableCompany = (companyId, disabled) => {
 export const saveTableRow = (rowData) => {
   return (dispatch, getState, { getFirestore }) => {
     const firestore = getFirestore();
+    const authorId = getState().firebase.auth.uid;
 
     const payload = {
       ...rowData,
-      createdAt: new Date().getTime()
+      createdAt: new Date().getTime(),
+      ownerId: authorId
     }
 
     firestore.collection('rows').add({
@@ -475,6 +493,7 @@ export const updateTableRow = (rowId, rowData) => {
 export const initializeNotifications = () => {
   return (dispatch, getState, { getFirestore }) => {
     const firestore = getFirestore();
+    const authorId = getState().firebase.auth.uid;
     const { notificationsInitDone } = getState().order;
 
     if (notificationsInitDone) return;
@@ -490,8 +509,10 @@ export const initializeNotifications = () => {
           rowsResponse.forEach((doc) => {
             let notification = doc.data();
 
-            notifications[notification.id] = {
-              ...notification
+            if (notification.ownerId === authorId) {
+              notifications[notification.id] = {
+                ...notification
+              }
             }
           });
 
