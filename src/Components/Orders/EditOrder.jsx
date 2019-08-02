@@ -40,7 +40,8 @@ import {
   initializeTableRows,
   discardTableRows,
   deleteTableRows,
-  updateTableRow
+  updateTableRow,
+  discardTableColumns
 } from '../../Store/Actions/orderActions'
 
 function desc(a, b, orderBy) {
@@ -302,7 +303,8 @@ const EditOrder = (props) => {
     tableRowsInitDone,
     deleteTableRows,
     updateTableRow,
-    discardTableRows
+    discardTableRows,
+    discardTableColumns
   } = props;
 
   /** component did mount */
@@ -317,8 +319,9 @@ const EditOrder = (props) => {
   useEffect(() => {
     return () => {
       discardTableRows();
+      discardTableColumns();
     }
-  }, [discardTableRows]);
+  }, [discardTableRows, discardTableColumns]);
 
   const handleRequestSort = (event, property) => {
     const isDesc = orderBy === property && order === 'desc';
@@ -705,7 +708,8 @@ const mapDispatchToProps = (dispatch) => {
     initializeTableRows: id => dispatch(initializeTableRows(id)),
     discardTableRows: () => dispatch(discardTableRows()),
     deleteTableRows: (id, rows) => dispatch(deleteTableRows(id, rows)),
-    updateTableRow: (id, data) => dispatch(updateTableRow(id, data))
+    updateTableRow: (id, data) => dispatch(updateTableRow(id, data)),
+    discardTableColumns: () => dispatch(discardTableColumns())
   }
 }
 

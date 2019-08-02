@@ -515,3 +515,9 @@ export const initializeNotifications = () => {
     });
   }
 }
+
+export const discardNotifications = () => {
+  return (dispatch) => {
+    dispatch({ type: 'DISCARD_NOTIFICATIONS' });
+  }
+}

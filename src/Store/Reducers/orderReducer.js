@@ -313,6 +313,14 @@ const initializeNotifications = (state, action) => {
   };
 }
 
+const discardNotifications = (state) => {
+  return {
+    ...state,
+    notifications: {},
+    notificationsInitDone: false
+  }
+}
+
 const orderReducer = (state = initState, action) => {
   switch (action.type) {
     /** Init */
@@ -345,6 +353,8 @@ const orderReducer = (state = initState, action) => {
       return discardTableColumns(state)
     case 'DISCARD_ROWS':
       return discardTableRows(state)
+    case 'DISCARD_NOTIFICATIONS':
+      return discardNotifications(state)
 
     /** Order */
     case 'CREATE_ORDER':

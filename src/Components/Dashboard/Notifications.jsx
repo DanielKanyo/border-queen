@@ -5,7 +5,8 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import NotificationItem from '../Notifications/NotificationItem'
 import {
-  initializeNotifications
+  initializeNotifications,
+  discardNotifications
 } from '../../Store/Actions/orderActions'
 
 const constants = {
@@ -57,12 +58,14 @@ const Notifications = (props) => {
   const {
     initializeNotifications,
     rawNotifications,
-    notificationsInitDone
+    notificationsInitDone,
+    discardNotifications
   } = props;
 
   const [init, setInit] = useState(false);
   const [precessedNotifications, setPrecessedNotifications] = useState([]);
 
+  /** component did mount */
   useEffect(() => { 
     initializeNotifications();
 
@@ -71,6 +74,13 @@ const Notifications = (props) => {
     }, constants.INTERVAL);
     return () => clearInterval(interval);
   });
+
+  /** component will unmount */
+  useEffect(() => {
+    return () => {
+      discardNotifications()
+    }
+  }, [discardNotifications]);
 
   const collectNotifications = () => {
     const now = new Date().getTime();
@@ -136,6 +146,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     initializeNotifications: () => dispatch(initializeNotifications()),
+    discardNotifications: () => dispatch(discardNotifications())
   }
 }
 
