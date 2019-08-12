@@ -295,6 +295,11 @@ const useStyles = makeStyles(theme => ({
   },
   warning: {
     color: '#ffa433'
+  },
+  emptyTable: {
+    textAlign: 'center',
+    background: '#f5f5f5',
+    color: '#bababa'
   }
 }));
 
@@ -571,45 +576,55 @@ const EditOrder = (props) => {
                   columns={orderedColumns}
                 />
                 <TableBody>
-                  {stableSort(rows, getSorting(order, orderBy ? orderBy : orderOf.labelIds[0]))
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map(n => {
-                      const isItemSelected = isSelected(n.id);
-                      return (
-                        <TableRow
-                          hover
-                          onClick={event => handleClick(event, n.id)}
-                          role="checkbox"
-                          aria-checked={isItemSelected}
-                          tabIndex={-1}
-                          key={n.id}
-                          selected={isItemSelected}
-                        >
-                          <TableCell padding="checkbox">
-                            <Checkbox checked={isItemSelected} />
-                          </TableCell>
-                          {
-                            orderOf.labelIds.map((labelId) => {
-                              let warningClass = '';
+                  {
+                    Object.keys(rows).length > 0 ? (
+                      stableSort(rows, getSorting(order, orderBy ? orderBy : orderOf.labelIds[0]))
+                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                        .map(n => {
+                          const isItemSelected = isSelected(n.id);
+                          return (
+                            <TableRow
+                              hover
+                              onClick={event => handleClick(event, n.id)}
+                              role="checkbox"
+                              aria-checked={isItemSelected}
+                              tabIndex={-1}
+                              key={n.id}
+                              selected={isItemSelected}
+                            >
+                              <TableCell padding="checkbox">
+                                <Checkbox checked={isItemSelected} />
+                              </TableCell>
+                              {
+                                orderOf.labelIds.map((labelId) => {
+                                  let warningClass = '';
 
-                              if (n.notificationsFor.includes(labelId)) {
-                                warningClass = getClassForDate(n, labelId);
+                                  if (n.notificationsFor.includes(labelId)) {
+                                    warningClass = getClassForDate(n, labelId);
+                                  }
+
+                                  return (
+                                    <TableCell
+                                      key={labelId}
+                                      className={warningClass}
+                                      align="center"
+                                    >
+                                      {n[labelId]}
+                                    </TableCell>
+                                  )
+                                })
                               }
-
-                              return (
-                                <TableCell
-                                  key={labelId}
-                                  className={warningClass}
-                                  align="center"
-                                >
-                                  {n[labelId]}
-                                </TableCell>
-                              )
-                            })
-                          }
+                            </TableRow>
+                          );
+                        })
+                    ) : (
+                        <TableRow>
+                          <TableCell colSpan={Object.keys(orderedColumns).length + 1} className={classes.emptyTable}>
+                            Table is empty...
+                          </TableCell>
                         </TableRow>
-                      );
-                    })}
+                      )
+                  }
                 </TableBody>
               </Table>
             </div>
