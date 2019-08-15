@@ -262,7 +262,6 @@ const CreateTable = (props) => {
               {
                 editMode ? 'Here you can edit the column.' : 'Here you can set the name, type, value and default value of the column.'
               }
-              Here you can set the name and type of the column.
             </DialogContentText>
             <NewColumnForm
               setters={settersForNewColumnForm}
