@@ -62,12 +62,16 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const CompanySummary = ({ auth, company, setters }) => {
+const CompanySummary = ({ auth, company, setters, expandedPanel }) => {
   const classes = useStyles();
 
-  const { setName, setDescription, setColor, setId, setEditMode, toggleDeleteDialog, setProducts, setInUse } = setters;
+  const { setName, setDescription, setColor, setId, setEditMode, toggleDeleteDialog, setProducts, setInUse, setExpandedPanel } = setters;
 
   if (!auth.uid) return <Redirect to='/signin' />
+
+  const handleChange = companyId => (event, isExpanded) => {
+    setExpandedPanel(isExpanded ? companyId : '');
+  };
 
   const styles = {
     background: company.color ? company.color : 'white',
@@ -86,7 +90,7 @@ const CompanySummary = ({ auth, company, setters }) => {
 
   return (
     <React.Fragment>
-      <ExpansionPanel>
+      <ExpansionPanel expanded={expandedPanel === company.id} onChange={handleChange(company.id)}>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
           <Avatar className={classes.smallAvatar} style={styles}></Avatar>
           <Typography className={classes.heading}>{company.name}</Typography>

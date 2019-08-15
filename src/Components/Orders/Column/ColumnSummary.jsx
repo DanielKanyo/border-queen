@@ -6,6 +6,7 @@ import TextField from '@material-ui/core/TextField'
 import Divider from '@material-ui/core/Divider'
 import Button from '@material-ui/core/Button'
 import WarningIcon from '@material-ui/icons/ReportProblemOutlined'
+import { Link } from 'react-router-dom'
 
 import { connect } from 'react-redux'
 import { compose } from 'redux'
@@ -41,6 +42,8 @@ const useStyles = makeStyles(theme => ({
   textFieldContainer: {
     display: 'flex',
     justifyContent: 'center',
+    height: '100%',
+    alignItems: 'center'
   },
   textField: {
     margin: 0,
@@ -65,6 +68,12 @@ const useStyles = makeStyles(theme => ({
   },
   warningIcon: {
     paddingRight: 8
+  },
+  columnValue: {
+    height: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 }));
 
@@ -82,7 +91,8 @@ const ColumnSummary = (props) => {
     disableTableColumn,
     disableCompany,
     columnDisabled,
-    defaultValue
+    defaultValue,
+    openCreateDialogInEditMode
   } = props;
 
   const disable = () => {
@@ -118,22 +128,24 @@ const ColumnSummary = (props) => {
       <div className={classes.columns}>
         <div className={classes.column}>
           <div className={classes.title}>Label</div>
-          <div>{label}</div>
+          <div className={classes.columnValue}>{label}</div>
         </div>
         <div className={classes.column}>
           <div className={classes.title}>Type</div>
-          <div>{type}</div>
+          <div className={classes.columnValue}>{type}</div>
         </div>
         {
           selectValues.length ? (
             <div className={classes.column}>
               <div className={classes.title}>Select values</div>
-              <div>
-                {
-                  selectValues.map((val, index) => {
-                    return <Chip key={index} label={val} className={classes.chip} />
-                  })
-                }
+              <div className={classes.columnValue}>
+                <div>
+                  {
+                    selectValues.map((val, index) => {
+                      return <Chip key={index} label={val} className={classes.chip} />
+                    })
+                  }
+                </div>
               </div>
             </div>
           ) : null
@@ -142,7 +154,7 @@ const ColumnSummary = (props) => {
           defaultValue ? (
             <div className={classes.column}>
               <div className={classes.title}>Default value</div>
-              <div>{defaultValue}</div>
+              <div className={classes.columnValue}>{defaultValue}</div>
             </div>
           ) : null
         }
@@ -201,14 +213,29 @@ const ColumnSummary = (props) => {
         >
           {columnDisabled ? 'Enable' : 'Disable'}
         </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          className={classes.button}
-          disabled={isDefault || columnDisabled}
-        >
-          Edit
-        </Button>
+        {
+          isDefault ? (
+            <Button
+              variant="contained"
+              color="primary"
+              className={classes.button}
+              component={Link}
+              to={`/settings?selectedCompany=${companyId}`}
+            >
+              Edit
+            </Button>
+          ) : (
+              <Button
+                variant="contained"
+                color="primary"
+                className={classes.button}
+                disabled={columnDisabled}
+                onClick={() => openCreateDialogInEditMode(columnId)}
+              >
+                Edit
+              </Button>
+            )
+        }
       </div>
     </Paper>
   )

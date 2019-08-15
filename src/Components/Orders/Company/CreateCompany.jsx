@@ -69,6 +69,12 @@ const CreateCompany = (props) => {
 
   const { auth, createCompany, companies, updateCompany, deleteCompany, initializeCompanies } = props;
 
+  const findActiveCompany = () => {
+    const url = new URL(window.location.href);
+
+    return url.searchParams.get('selectedCompany');
+  }
+
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [product, setProduct] = useState('');
@@ -78,8 +84,11 @@ const CreateCompany = (props) => {
   const [editMode, setEditMode] = useState(false);
   const [deleteDialog, toggleDeleteDialog] = useState(false);
   const [inUse, setInUse] = useState(false);
+  const [expandedPanel, setExpandedPanel] = useState(findActiveCompany());
 
-  useEffect(() => { initializeCompanies() });
+  useEffect(() => {
+    initializeCompanies()
+  });
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -123,7 +132,8 @@ const CreateCompany = (props) => {
     setEditMode,
     toggleDeleteDialog,
     setProducts,
-    setInUse
+    setInUse,
+    setExpandedPanel
   }
 
   return (
@@ -214,6 +224,7 @@ const CreateCompany = (props) => {
                   key={key}
                   company={companies[key]}
                   setters={setters}
+                  expandedPanel={expandedPanel}
                 />
               )
             }) : <EmptyList />

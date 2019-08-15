@@ -49,7 +49,8 @@ const NewColumnForm = (props) => {
     selectValue,
     items,
     defaultValue,
-    setters
+    setters,
+    editMode
   } = props;
 
   let placeholder;
@@ -77,33 +78,39 @@ const NewColumnForm = (props) => {
           onChange={e => setters.setLabel(e.target.value)}
           margin="normal"
         />
-        <TextField
-          id="labelId"
-          label="LabelId"
-          className={classes.textField}
-          value={label.toLowerCase().split(' ').join('_')}
-          margin="normal"
-          disabled
-        />
-        <FormControl className={classes.formControl}>
-          <InputLabel htmlFor="type-native-select">Type</InputLabel>
-          <Select
-            native
-            onChange={e => setters.setType(e.target.value)}
-            value={type}
-            inputProps={{
-              name: 'type',
-              id: 'type-native-select',
-            }}
-          >
-            <option value={''} />
-            <option value={'text'}>Text</option>
-            <option value={'number'}>Number</option>
-            <option value={'select'}>Select</option>
-            <option value={'date'}>Date</option>
-            <option value={'time'}>Time</option>
-          </Select>
-        </FormControl>
+        {
+          !editMode && (
+            <React.Fragment>
+              <TextField
+                id="labelId"
+                label="LabelId"
+                className={classes.textField}
+                value={label.toLowerCase().split(' ').join('_')}
+                margin="normal"
+                disabled
+              />
+              <FormControl className={classes.formControl}>
+                <InputLabel htmlFor="type-native-select">Type</InputLabel>
+                <Select
+                  native
+                  onChange={e => setters.setType(e.target.value)}
+                  value={type}
+                  inputProps={{
+                    name: 'type',
+                    id: 'type-native-select',
+                  }}
+                >
+                  <option value={''} />
+                  <option value={'text'}>Text</option>
+                  <option value={'number'}>Number</option>
+                  <option value={'select'}>Select</option>
+                  <option value={'date'}>Date</option>
+                  <option value={'time'}>Time</option>
+                </Select>
+              </FormControl>
+            </React.Fragment>
+          )
+        }
         {
           type === 'select' && (
             <div className={classes.addValueContainer}>

@@ -230,7 +230,7 @@ export const updateCompany = (id, newCompanyData) => {
       dispatch({ type: 'UPDATE_COMPANY', payload });
     }).catch(error => {
       dispatch({ type: 'UPDATE_COMPANY_ERROR', error });
-    })
+    });
   }
 }
 
@@ -326,6 +326,28 @@ export const createTableColumn = (orderId, columnData) => {
       dispatch({ type: 'CREATE_COLUMN_ERROR', error });
     });
   }
+}
+
+export const updateTableColumn = (id, columnData) => {
+  return (dispatch, getState, { getFirestore }) => {
+    const firestore = getFirestore();
+
+    const payload = {
+      label: columnData.label,
+      items: columnData.items,
+      defaultValue: columnData.defaultValue
+    }
+
+    firestore.collection('columns').doc(id).update({
+      ...payload
+    }).then(() => {
+      payload.id = id;
+
+      dispatch({ type: 'UPDATE_COLUMN', payload });
+    }).catch(error => {
+      dispatch({ type: 'UPDATE_COLUMN_ERROR', error });
+    });
+  } 
 }
 
 export const deleteTableColumn = (columnId) => {

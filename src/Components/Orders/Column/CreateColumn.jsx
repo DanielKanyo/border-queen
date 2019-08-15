@@ -24,7 +24,8 @@ import {
   initializeOrders,
   initializeCompanies,
   createTableColumn,
-  deleteTableColumn
+  deleteTableColumn,
+  updateTableColumn
 } from '../../../Store/Actions/orderActions'
 
 const useStyles = makeStyles(theme => ({
@@ -73,7 +74,8 @@ const CreateTable = (props) => {
     companyInitDone,
     companies,
     createTableColumn,
-    deleteTableColumn
+    deleteTableColumn,
+    updateTableColumn
   } = props;
 
   const { id } = props.match.params;
@@ -102,7 +104,9 @@ const CreateTable = (props) => {
   const [prevSelectedColumnId, setPrevSelectedColumnId] = useState('');
 
   const [columnIdToDelete, setColumnIdToDelete] = useState('');
+  const [columnIdToEdit, setColumnIdToEdit] = useState('');
   const [columnLabelToDelete, setColumnLabelToDelete] = useState('');
+  const [editMode, setEditMode] = useState(false);
 
   const toggleColumnSummary = (columnId) => {
     if (columnId !== prevSelectedColumnId) {
@@ -113,6 +117,27 @@ const CreateTable = (props) => {
       setSelectedColumnId(columnId);
       setColumnSummaryVisiblity(!isColumnSummaryVisible);
     }
+  }
+
+  const openCreateDialogInEditMode = (columnId) => {
+    const selectedColumn = columns[columnId];
+    
+    setEditMode(true);
+    toggleCreateDialog(true);
+
+    setLabel(selectedColumn.label);
+    setType(selectedColumn.type);
+    setItems(selectedColumn.items);
+    setDefaultValue(selectedColumn.defaultValue);
+    
+    setColumnIdToEdit(columnId);
+  }
+
+  const discardFilledForm = () => {
+    setLabel('');
+    setType('text');
+    setItems([]);
+    setDefaultValue('');
   }
 
   const getUsedLabels = (columns, company, isDefault) => {
@@ -207,6 +232,7 @@ const CreateTable = (props) => {
               companyId={selectedColumnId ? undefined : company.id}
               columnDisabled={columns[selectedColumnId] ? columns[selectedColumnId].columnDisabled : company ? company.productsDisabled : null}
               defaultValue={columns[selectedColumnId] ? columns[selectedColumnId].defaultValue : null}
+              openCreateDialogInEditMode={openCreateDialogInEditMode}
             />
           )
         }
@@ -230,9 +256,12 @@ const CreateTable = (props) => {
           scroll='body'
           aria-labelledby="scroll-dialog-title"
         >
-          <DialogTitle id="scroll-dialog-title">Define Table Columns</DialogTitle>
+          <DialogTitle id="scroll-dialog-title">{editMode ? 'Edit Tabel Column' : 'Define Table Columns'}</DialogTitle>
           <DialogContent>
             <DialogContentText className={classes.dialogText}>
+              {
+                editMode ? 'Here you can edit the column.' : 'Here you can set the name, type, value and default value of the column.'
+              }
               Here you can set the name and type of the column.
             </DialogContentText>
             <NewColumnForm
@@ -242,19 +271,32 @@ const CreateTable = (props) => {
               selectValue={selectValue}
               items={items}
               defaultValue={defaultValue}
+              editMode={editMode}
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => toggleCreateDialog(false)} color="primary">
+            <Button onClick={() => { toggleCreateDialog(false); discardFilledForm() }} color="primary">
               Cancel
             </Button>
-            <Button
-              onClick={() => { toggleCreateDialog(false); createTableColumn(id, columnData) }}
-              color="primary"
-              disabled={usedLabelIds.includes(label.toLowerCase())}
-            >
-              Save
-            </Button>
+            {
+              editMode ? (
+                <Button
+                  onClick={() => { toggleCreateDialog(false); updateTableColumn(columnIdToEdit, columnData) }}
+                  color="primary"
+                >
+                  Update
+                </Button>
+              ) : (
+                  <Button
+                    onClick={() => { toggleCreateDialog(false); createTableColumn(id, columnData) }}
+                    color="primary"
+                    disabled={usedLabelIds.includes(label.toLowerCase())}
+                  >
+                    Save
+                  </Button>
+                )
+            }
+
           </DialogActions>
         </Dialog>
 
@@ -313,7 +355,8 @@ const mapDispatchToProps = (dispatch) => {
     initializeOrders: () => dispatch(initializeOrders()),
     initializeCompanies: () => dispatch(initializeCompanies()),
     createTableColumn: (id, data) => dispatch(createTableColumn(id, data)),
-    deleteTableColumn: id => dispatch(deleteTableColumn(id))
+    deleteTableColumn: id => dispatch(deleteTableColumn(id)),
+    updateTableColumn: (id, data) => dispatch(updateTableColumn(id, data))
   }
 }
 

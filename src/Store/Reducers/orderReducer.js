@@ -321,6 +321,22 @@ const discardNotifications = (state) => {
   }
 }
 
+const updateColumnEntry = (state, action) => {
+  const { payload } = action
+  const { id } = payload
+  
+  return {
+    ...state,
+    columns: {
+      ...state.columns,
+      [id]: {
+        ...state.columns[id],
+        ...payload
+      }
+    }
+  }
+}
+
 const orderReducer = (state = initState, action) => {
   switch (action.type) {
     /** Init */
@@ -412,6 +428,11 @@ const orderReducer = (state = initState, action) => {
       return disableColumnEntry(state, action)
     case 'DISABLE_COLUMN_ERROR':
       console.log('Disable column error', action.error)
+      return state
+    case 'UPDATE_COLUMN':
+      return updateColumnEntry(state, action)
+    case 'UPDATE_COLUMN_ERROR':
+      console.log('Update column error', action.error)
       return state
 
     /** Row */
