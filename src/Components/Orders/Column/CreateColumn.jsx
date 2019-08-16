@@ -121,7 +121,7 @@ const CreateTable = (props) => {
 
   const openCreateDialogInEditMode = (columnId) => {
     const selectedColumn = columns[columnId];
-    
+
     setEditMode(true);
     toggleCreateDialog(true);
 
@@ -129,7 +129,7 @@ const CreateTable = (props) => {
     setType(selectedColumn.type);
     setItems(selectedColumn.items);
     setDefaultValue(selectedColumn.defaultValue);
-    
+
     setColumnIdToEdit(columnId);
   }
 
@@ -182,7 +182,7 @@ const CreateTable = (props) => {
         <Paper className={classes.paper}>
           <div>{isDefault ? company.name : order.title} ({order.description}) columns</div>
           <div>
-            <Button variant="contained" color="secondary" className={classes.button} onClick={() => toggleCreateDialog(true)}>
+            <Button variant="contained" color="secondary" className={classes.button} onClick={() => { setEditMode(false); toggleCreateDialog(true) }}>
               Create Column
             </Button>
           </div>
