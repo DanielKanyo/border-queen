@@ -125,18 +125,20 @@ const getItemStyle = (isDragging, draggableStyle) => ({
 const filterOrders = (orders, activeFilter) => {
   let allowedKeys = [];
 
-  for (let key in orders) {
-    if (activeFilter === FILTER_OPTIONS.ALL) {
-      allowedKeys.push(key);
-    } else if (activeFilter === FILTER_OPTIONS.DONE) {
-      if (orders[key].finished) {
+  if (orders) {
+    Object.keys(orders).forEach(key => {
+      if (activeFilter === FILTER_OPTIONS.ALL) {
         allowedKeys.push(key);
+      } else if (activeFilter === FILTER_OPTIONS.DONE) {
+        if (orders[key].finished) {
+          allowedKeys.push(key);
+        }
+      } else {
+        if (!orders[key].finished) {
+          allowedKeys.push(key);
+        }
       }
-    } else {
-      if (!orders[key].finished) {
-        allowedKeys.push(key);
-      }
-    }
+    });
   }
 
   return allowedKeys;

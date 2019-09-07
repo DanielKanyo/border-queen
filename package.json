@@ -3,9 +3,9 @@
   "version": "0.9.3",
   "private": true,
   "dependencies": {
-    "@material-ui/core": "^4.3.3",
+    "@material-ui/core": "^4.4.0",
     "@material-ui/icons": "^4.2.1",
-    "firebase": "^6.4.2",
+    "firebase": "^6.6.0",
     "moment": "^2.24.0",
     "node-sass": "^4.12.0",
     "react": "^16.9.0",
@@ -13,11 +13,11 @@
     "react-color": "^2.17.3",
     "react-dom": "^16.9.0",
     "react-redux": "5.1.1",
-    "react-redux-firebase": "^2.4.0",
+    "react-redux-firebase": "^2.4.1",
     "react-router-dom": "^5.0.1",
-    "react-scripts": "3.0.1",
+    "react-scripts": "3.1.1",
     "redux": "^4.0.4",
-    "redux-firestore": "^0.8.0",
+    "redux-firestore": "^0.9.0",
     "redux-thunk": "^2.3.0"
   },
   "scripts": {

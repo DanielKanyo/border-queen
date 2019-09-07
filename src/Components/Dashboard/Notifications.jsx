@@ -48,7 +48,7 @@ const Notifications = (props) => {
   const [precessedNotifications, setPrecessedNotifications] = useState([]);
 
   /** component did mount */
-  useEffect(() => { 
+  useEffect(() => {
     initializeNotifications();
 
     const interval = setInterval(() => {
@@ -69,26 +69,28 @@ const Notifications = (props) => {
 
     let precessedNotifications = [];
 
-    for (let key in rawNotifications) {
-      for (let i = 0; i < rawNotifications[key].notificationsFor.length; i++) {
-        const labelId = rawNotifications[key].notificationsFor[i];
-        const savedDateInTimestamp = new Date(rawNotifications[key][labelId]).setHours(0, 0, 0, 0);
-        const differenceInMilliseconds = savedDateInTimestamp - now;
+    if (rawNotifications) {
+      Object.keys(rawNotifications).forEach(key => {
+        for (let i = 0; i < rawNotifications[key].notificationsFor.length; i++) {
+          const labelId = rawNotifications[key].notificationsFor[i];
+          const savedDateInTimestamp = new Date(rawNotifications[key][labelId]).setHours(0, 0, 0, 0);
+          const differenceInMilliseconds = savedDateInTimestamp - now;
 
-        if (differenceInMilliseconds > 0) {
-          const daysHoursMinutesObject = dhm(differenceInMilliseconds);
+          if (differenceInMilliseconds > 0) {
+            const daysHoursMinutesObject = dhm(differenceInMilliseconds);
 
-          if (parseInt(daysHoursMinutesObject.days) < constants.SHOW_NOTIFICATION_AFTER_X_DAYS && rawNotifications[key].isNotificationEnabled) {
-            let data = {
-              timeLeft: daysHoursMinutesObject,
-              orderId: rawNotifications[key].orderId,
-              isUrgent: parseInt(daysHoursMinutesObject.days) < constants.NOTIFICATION_IS_URGENT_AFTER_X_DAYS ? true : false
-            };
+            if (parseInt(daysHoursMinutesObject.days) < constants.SHOW_NOTIFICATION_AFTER_X_DAYS && rawNotifications[key].isNotificationEnabled) {
+              let data = {
+                timeLeft: daysHoursMinutesObject,
+                orderId: rawNotifications[key].orderId,
+                isUrgent: parseInt(daysHoursMinutesObject.days) < constants.NOTIFICATION_IS_URGENT_AFTER_X_DAYS ? true : false
+              };
 
-            precessedNotifications.push(data);
+              precessedNotifications.push(data);
+            }
           }
         }
-      }
+      });
     }
 
     setPrecessedNotifications(precessedNotifications);
@@ -104,7 +106,7 @@ const Notifications = (props) => {
       <Paper className={classes.paper}>
         <div>Notifications</div>
         <div><Chip label={precessedNotifications.length} className={classes.chip} /></div>
-        </Paper>
+      </Paper>
       {
         precessedNotifications.map((n, i) => {
           return <NotificationItem

@@ -273,10 +273,12 @@ const deleteTableRows = (state, action) => {
   const { selectedRows } = payload
   const { rows } = state
 
-  for(let key in rows) {
-    if (selectedRows.includes(key)) {
-      delete rows[key]
-    }
+  if (rows) {
+    Object.keys(rows).forEach(key => {
+      if (selectedRows.includes(key)) {
+        delete rows[key]
+      }
+    });
   }
   
   return {

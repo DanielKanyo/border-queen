@@ -401,11 +401,13 @@ const EditOrder = (props) => {
     let labelIds = [];
     let columnIds = [];
 
-    for (let key in columns) {
-      if (!columns[key].columnDisabled) {
-        labelIds.push(columns[key].labelId);
-        columnIds.push(key);
-      }
+    if (columns) {
+      Object.keys(columns).forEach(key => {
+        if (!columns[key].columnDisabled) {
+          labelIds.push(columns[key].labelId);
+          columnIds.push(key);
+        }
+      });
     }
 
     if (isDefault && !company.productsDisabled) {
@@ -424,19 +426,21 @@ const EditOrder = (props) => {
   const getOrderedColumns = (order, columns, company) => {
     let orderedColumns = {};
 
-    for (let i in order) {
-      const key = order[i];
+    if (order) {
+      Object.keys(order).forEach(i => {
+        const key = order[i];
 
-      if (columns[key]) {
-        orderedColumns[key] = columns[key];
-      } else {
-        orderedColumns[key] = {
-          columnDisabled: false,
-          label: company.labelId.charAt(0).toUpperCase() + company.labelId.slice(1),
-          labelId: company.labelId,
-          id: key,
+        if (columns[key]) {
+          orderedColumns[key] = columns[key];
+        } else {
+          orderedColumns[key] = {
+            columnDisabled: false,
+            label: company.labelId.charAt(0).toUpperCase() + company.labelId.slice(1),
+            labelId: company.labelId,
+            id: key,
+          }
         }
-      }
+      });
     }
 
     return orderedColumns;
@@ -445,44 +449,46 @@ const EditOrder = (props) => {
   const saveRow = (orderedColumns, company) => {
     let dataToSave = { ...newRowData };
 
-    for (let key in orderedColumns) {
-      const column = orderedColumns[key];
-      const { labelId } = column;
+    if (orderedColumns) {
+      Object.keys(orderedColumns).forEach(key => {
+        const column = orderedColumns[key];
+        const { labelId } = column;
 
-      if (!newRowData[labelId]) {
-        switch (column.type) {
-          case 'date':
-            if (column.defaultValue) {
-              dataToSave[labelId] = column.defaultValue;
-            } else {
-              dataToSave[labelId] = moment(new Date().getTime()).format('YYYY-MM-DD');
-            }
-            break;
-          case 'time':
-            if (column.defaultValue) {
-              dataToSave[labelId] = column.defaultValue;
-            } else {
-              dataToSave[labelId] = moment(new Date().getTime()).format('HH:mm');
-            }
-            break;
-          case 'select':
-            if (column.defaultValue) {
-              dataToSave[labelId] = column.defaultValue;
-            } else if (column.items[0]) {
-              dataToSave[labelId] = column.items[0];
-            } else {
-              dataToSave[labelId] = '';
-            }
-            break;
-          default:
-            if (labelId === 'product') {
-              dataToSave['product'] = company.products[0];
-            } else {
-              dataToSave[labelId] = '';
-            }
-            break;
+        if (!newRowData[labelId]) {
+          switch (column.type) {
+            case 'date':
+              if (column.defaultValue) {
+                dataToSave[labelId] = column.defaultValue;
+              } else {
+                dataToSave[labelId] = moment(new Date().getTime()).format('YYYY-MM-DD');
+              }
+              break;
+            case 'time':
+              if (column.defaultValue) {
+                dataToSave[labelId] = column.defaultValue;
+              } else {
+                dataToSave[labelId] = moment(new Date().getTime()).format('HH:mm');
+              }
+              break;
+            case 'select':
+              if (column.defaultValue) {
+                dataToSave[labelId] = column.defaultValue;
+              } else if (column.items[0]) {
+                dataToSave[labelId] = column.items[0];
+              } else {
+                dataToSave[labelId] = '';
+              }
+              break;
+            default:
+              if (labelId === 'product') {
+                dataToSave['product'] = company.products[0];
+              } else {
+                dataToSave[labelId] = '';
+              }
+              break;
+          }
         }
-      }
+      });
     }
 
     if (!newRowData.notificationsFor) {
@@ -500,12 +506,14 @@ const EditOrder = (props) => {
 
     let dataToFill;
 
-    for (let key in rows) {
-      if (rows[key].id === selectedRow) {
-        dataToFill = {
-          ...rows[key]
+    if (rows) {
+      Object.keys(rows).forEach(key => {
+        if (rows[key].id === selectedRow) {
+          dataToFill = {
+            ...rows[key]
+          }
         }
-      }
+      });
     }
 
     setNewRowData(dataToFill);
